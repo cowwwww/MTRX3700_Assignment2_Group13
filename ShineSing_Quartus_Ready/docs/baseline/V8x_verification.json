@@ -1,0 +1,52 @@
+{
+  "simulator": "Verilator 5.050 (official v5.050 source build)",
+  "rtl_tests_passed": [
+    "tb_audio_features",
+    "tb_audio_features_hd",
+    "tb_audio_level",
+    "tb_audio_pipeline",
+    "tb_board_controls",
+    "tb_cdc_mailbox",
+    "tb_classifier",
+    "tb_classifier_saved",
+    "tb_codec_config",
+    "tb_course_audio",
+    "tb_course_conv3x3",
+    "tb_course_images",
+    "tb_delay_buffer",
+    "tb_game",
+    "tb_game_controller",
+    "tb_h95_classifier",
+    "tb_image_store",
+    "tb_mic_load",
+    "tb_piano_detector",
+    "tb_piano_detector_hd",
+    "tb_piano_thresholds",
+    "tb_reaction_time_fsm",
+    "tb_sync_ram",
+    "tb_system",
+    "tb_video_source"
+  ],
+  "top_lint": "passed with supplied ADC PLL black box; not a physical PLL or timing test",
+  "mutation_tests_caught": [
+    "gate_stuck",
+    "no_spacing",
+    "lost_smoothing",
+    "lost_saved_classes"
+  ],
+  "python_saved_template_tests": 2,
+  "course_source_hashes": "passed",
+  "quartus_fit": "not run: Quartus is not installed on this Mac",
+  "live_microphone_accuracy": "Not measured on hardware. H95 speaker-held-out test: 144 correct accepts, 64 rejects, 0 wrong accepts in 208 frames.",
+  "tutor_photo": "not supplied; image slot 2 still contains the previous placeholder image",
+  "demo_ready": false,
+  "saved_templates": "Enabled at startup from real H95 recordings; reset keeps all four classes ready.",
+  "supplied_classifier_dataset": "templates.svh equals templates_test.svh; explicitly synthetic D=8",
+  "stale_bitstream": "removed; rebuild with Quartus after training and the tutor image swap",
+  "recorded_audio_extraction": "556 H95 recordings, 1108 frames, passed through actual RTL frontend/FFT/HD features in Verilator 5.050",
+  "remaining_demo_checks": [
+    "Quartus fitting and timing",
+    "Live microphone/room test",
+    "Tutor photograph"
+  ]
+}

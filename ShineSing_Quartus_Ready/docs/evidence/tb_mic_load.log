@@ -1,0 +1,22 @@
+Reading E:/intelFPGA_lite/18.1/modelsim_ase/tcl/vsim/pref.tcl
+
+# 10.5b
+
+# vsim -c -onfinish stop -lib E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim tb_mic_load -do "onbreak {quit -code 1}; onerror {quit -code 1}; run -all; quit -code 0" 
+# Start time: 00:15:39 on Oct 08,2026
+# Loading sv_std.std
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim.tb_mic_load
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim.mic_load
+# onbreak {quit -code 1}
+#  Warning: onbreak command for use within macro
+#  onerror {quit -code 1}
+#  Warning: onerror command for use within macro
+#  run -all
+# ALL TESTS PASSED: tb_mic_load
+# ** Note: $finish    : tb/tb_mic_load.sv(20)
+#    Time: 14160 ns  Iteration: 1  Instance: /tb_mic_load
+# Break in Module tb_mic_load at tb/tb_mic_load.sv line 20
+# Stopped at tb/tb_mic_load.sv line 20
+#  quit -code 0
+# End time: 00:15:39 on Oct 08,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0

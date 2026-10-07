@@ -1,0 +1,199 @@
+- V e r i l a t i o n   R e p o r t:  rev vUNKNOWN-built20260516-4e853d8
+- Verilator: Built from 2.849 MB sources in 38 modules, into 1.062 MB in 5 C++ files needing 0.000 MB
+- Verilator: Walltime 0.971 s (elab=0.047, cvt=0.816, bld=0.000); cpu 0.000 s on 1 threads; allocated 58.484 MB
+%Warning-TIMESCALEMOD: rtl\audio_features.sv:6:8: Timescale missing on this module as other modules have it (IEEE 1800-2023 3.14.2.3)
+    6 | module audio_features #(parameter MODE=3, D=8, RAW_SHIFT=8, LOG_SCALE=64)(
+      |        ^~~~~~~~~~~~~~
+                       rtl\classifier.sv:4:8: ... Location of module with timescale
+    4 | module classifier #(
+      |        ^~~~~~~~~~
+                       ... For warning description see https://verilator.org/warn/TIMESCALEMOD?v=0.000
+                       ... Use "/* verilator lint_off TIMESCALEMOD */" and lint_on around source to disable this message.
+%Warning-TIMESCALEMOD: rtl\audio_frontend.sv:3:8: Timescale missing on this module as other modules have it (IEEE 1800-2023 3.14.2.3)
+    3 | module audio_frontend #(parameter N=1024)(
+      |        ^~~~~~~~~~~~~~
+                       rtl\classifier.sv:4:8: ... Location of module with timescale
+    4 | module classifier #(
+      |        ^~~~~~~~~~
+%Warning-TIMESCALEMOD: rtl\audio_level.sv:4:8: Timescale missing on this module as other modules have it (IEEE 1800-2023 3.14.2.3)
+    4 | module audio_level #(
+      |        ^~~~~~~~~~~
+                       rtl\classifier.sv:4:8: ... Location of module with timescale
+    4 | module classifier #(
+      |        ^~~~~~~~~~
+%Warning-TIMESCALEMOD: rtl\board_controls.sv:1:8: Timescale missing on this module as other modules have it (IEEE 1800-2023 3.14.2.3)
+    1 | module board_controls #(parameter DEBOUNCE=1000000)(
+      |        ^~~~~~~~~~~~~~
+                       rtl\classifier.sv:4:8: ... Location of module with timescale
+    4 | module classifier #(
+      |        ^~~~~~~~~~
+%Warning-TIMESCALEMOD: rtl\cdc_mailbox.sv:3:8: Timescale missing on this module as other modules have it (IEEE 1800-2023 3.14.2.3)
+    3 | module cdc_mailbox #(parameter WIDTH=16)(
+      |        ^~~~~~~~~~~
+                       rtl\classifier.sv:4:8: ... Location of module with timescale
+    4 | module classifier #(
+      |        ^~~~~~~~~~
+%Warning-WIDTHEXPAND: rtl\fft\DelayBuffer.v:32:25: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'pointer' generates 1 bits.
+                                                 : ... note: In instance 'extract_recording_features.fft.SU5.DB1'
+   32 |         pointer<=pointer==DEPTH-2 ? 0:pointer+1'b1;
+      |                         ^~
+                      ... For warning description see https://verilator.org/warn/WIDTHEXPAND?v=0.000
+                      ... Use "/* verilator lint_off WIDTHEXPAND */" and lint_on around source to disable this message.
+%Warning-WIDTHEXPAND: rtl\fft\DelayBuffer.v:32:25: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'pointer' generates 2 bits.
+                                                 : ... note: In instance 'extract_recording_features.fft.SU4.DB2'
+   32 |         pointer<=pointer==DEPTH-2 ? 0:pointer+1'b1;
+      |                         ^~
+%Warning-WIDTHEXPAND: rtl\fft\DelayBuffer.v:32:25: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'pointer' generates 3 bits.
+                                                 : ... note: In instance 'extract_recording_features.fft.SU4.DB1'
+   32 |         pointer<=pointer==DEPTH-2 ? 0:pointer+1'b1;
+      |                         ^~
+%Warning-WIDTHEXPAND: rtl\fft\DelayBuffer.v:32:25: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'pointer' generates 4 bits.
+                                                 : ... note: In instance 'extract_recording_features.fft.SU3.DB2'
+   32 |         pointer<=pointer==DEPTH-2 ? 0:pointer+1'b1;
+      |                         ^~
+%Warning-WIDTHEXPAND: rtl\fft\DelayBuffer.v:32:25: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'pointer' generates 6 bits.
+                                                 : ... note: In instance 'extract_recording_features.fft.SU2.DB2'
+   32 |         pointer<=pointer==DEPTH-2 ? 0:pointer+1'b1;
+      |                         ^~
+%Warning-WIDTHEXPAND: rtl\fft\DelayBuffer.v:32:25: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'pointer' generates 7 bits.
+                                                 : ... note: In instance 'extract_recording_features.fft.SU2.DB1'
+   32 |         pointer<=pointer==DEPTH-2 ? 0:pointer+1'b1;
+      |                         ^~
+%Warning-WIDTHEXPAND: rtl\fft\DelayBuffer.v:32:25: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'pointer' generates 8 bits.
+                                                 : ... note: In instance 'extract_recording_features.fft.SU1.DB2'
+   32 |         pointer<=pointer==DEPTH-2 ? 0:pointer+1'b1;
+      |                         ^~
+%Warning-WIDTHTRUNC: rtl\fft\Butterfly.v:27:15: Operator ASSIGNW expects 16 bits on the Assign RHS, but Assign RHS's SHIFTRS generates 32 or 17 bits.
+                                              : ... note: In instance 'extract_recording_features.fft.SU5.BF2'
+   27 | assign  y0_re = (add_re + RH) >>> 1;
+      |               ^
+                     ... For warning description see https://verilator.org/warn/WIDTHTRUNC?v=0.000
+                     ... Use "/* verilator lint_off WIDTHTRUNC */" and lint_on around source to disable this message.
+%Warning-WIDTHTRUNC: rtl\fft\Butterfly.v:28:15: Operator ASSIGNW expects 16 bits on the Assign RHS, but Assign RHS's SHIFTRS generates 32 or 17 bits.
+                                              : ... note: In instance 'extract_recording_features.fft.SU5.BF2'
+   28 | assign  y0_im = (add_im + RH) >>> 1;
+      |               ^
+%Warning-WIDTHTRUNC: rtl\fft\Butterfly.v:29:15: Operator ASSIGNW expects 16 bits on the Assign RHS, but Assign RHS's SHIFTRS generates 32 or 17 bits.
+                                              : ... note: In instance 'extract_recording_features.fft.SU5.BF2'
+   29 | assign  y1_re = (sub_re + RH) >>> 1;
+      |               ^
+%Warning-WIDTHTRUNC: rtl\fft\Butterfly.v:30:15: Operator ASSIGNW expects 16 bits on the Assign RHS, but Assign RHS's SHIFTRS generates 32 or 17 bits.
+                                              : ... note: In instance 'extract_recording_features.fft.SU5.BF2'
+   30 | assign  y1_im = (sub_im + RH) >>> 1;
+      |               ^
+%Warning-WIDTHEXPAND: rtl\fft\DelayBuffer.v:32:25: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'pointer' generates 9 bits.
+                                                 : ... note: In instance 'extract_recording_features.fft.SU1.DB1'
+   32 |         pointer<=pointer==DEPTH-2 ? 0:pointer+1'b1;
+      |                         ^~
+%Warning-WIDTHTRUNC: rtl\fft\Multiply.v:25:17: Operator ASSIGNW expects 16 bits on the Assign RHS, but Assign RHS's SHIFTRS generates 32 bits.
+                                             : ... note: In instance 'extract_recording_features.fft.SU5.MU'
+   25 | assign  sc_arbr = arbr >>> (WIDTH-1);
+      |                 ^
+%Warning-WIDTHTRUNC: rtl\fft\Multiply.v:26:17: Operator ASSIGNW expects 16 bits on the Assign RHS, but Assign RHS's SHIFTRS generates 32 bits.
+                                             : ... note: In instance 'extract_recording_features.fft.SU5.MU'
+   26 | assign  sc_arbi = arbi >>> (WIDTH-1);
+      |                 ^
+%Warning-WIDTHTRUNC: rtl\fft\Multiply.v:27:17: Operator ASSIGNW expects 16 bits on the Assign RHS, but Assign RHS's SHIFTRS generates 32 bits.
+                                             : ... note: In instance 'extract_recording_features.fft.SU5.MU'
+   27 | assign  sc_aibr = aibr >>> (WIDTH-1);
+      |                 ^
+%Warning-WIDTHTRUNC: rtl\fft\Multiply.v:28:17: Operator ASSIGNW expects 16 bits on the Assign RHS, but Assign RHS's SHIFTRS generates 32 bits.
+                                             : ... note: In instance 'extract_recording_features.fft.SU5.MU'
+   28 | assign  sc_aibi = aibi >>> (WIDTH-1);
+      |                 ^
+%Warning-WIDTHEXPAND: rtl\fft\DelayBuffer.v:32:25: Operator EQ expects 32 or 6 bits on the LHS, but LHS's VARREF 'pointer' generates 5 bits.
+                                                 : ... note: In instance 'extract_recording_features.fft.SU5.DB2'
+   32 |         pointer<=pointer==DEPTH-2 ? 0:pointer+1'b1;
+      |                         ^~
+%Warning-WIDTHTRUNC: rtl\fft\SdfUnit.v:232:16: Operator ASSIGNW expects 8 bits on the Assign RHS, but Assign RHS's SHIFTL generates 10 bits.
+                                             : ... note: In instance 'extract_recording_features.fft.SU5'
+  232 | assign  tw_num = bf2_count << (LOG_N-LOG_M);
+      |                ^
+%Warning-WIDTHEXPAND: rtl\reuse\low_pass_conv.sv:61:21: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'tap' generates 6 bits.
+                                                      : ... note: In instance 'extract_recording_features.front.fir'
+   61 |             if (tap == N-1) running <= 1'b0; else tap <= tap + 1'b1;
+      |                     ^~
+%Warning-WIDTHEXPAND: rtl\reuse\low_pass_conv.sv:66:45: Operator COND expects 40 bits on the Conditional True, but Conditional True's VARREF 'prod' generates 34 bits.
+                                                      : ... note: In instance 'extract_recording_features.front.fir'
+   66 |         if (prod_valid) acc <= (tap_q == 0) ? prod : acc + prod;
+      |                                             ^
+%Warning-WIDTHEXPAND: rtl\reuse\low_pass_conv.sv:66:58: Operator ADD expects 40 bits on the RHS, but RHS's VARREF 'prod' generates 34 bits.
+                                                      : ... note: In instance 'extract_recording_features.front.fir'
+   66 |         if (prod_valid) acc <= (tap_q == 0) ? prod : acc + prod;
+      |                                                          ^
+%Warning-WIDTHEXPAND: rtl\reuse\low_pass_conv.sv:67:44: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'tap_q' generates 6 bits.
+                                                      : ... note: In instance 'extract_recording_features.front.fir'
+   67 |         done       <= prod_valid && (tap_q == N-1);
+      |                                            ^~
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:47:21: Operator ASSIGN expects 64 bits on the Assign RHS, but Assign RHS's VARREF 'peak_bin' generates 9 bits.
+                                                 : ... note: In instance 'extract_recording_features.features'
+   47 |   if(MODE==1) scaled=peak_bin;
+      |                     ^
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:48:46: Operator SHIFTR expects 64 bits on the LHS, but LHS's ARRAYSEL generates 48 bits.
+                                                 : ... note: In instance 'extract_recording_features.features'
+   48 |   else if(MODE==2) scaled=energy[band_index] >> RAW_SHIFT;
+      |                                              ^~
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:51:17: Operator LT expects 32 bits on the LHS, but LHS's VARREF 'bin' generates 10 bits.
+                                                 : ... note: In instance 'extract_recording_features.features'
+   51 |   mel_up   = bin<MEL_BINS ? MEL_UP[bin] : 5'd31;
+      |                 ^
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:52:17: Operator LT expects 32 bits on the LHS, but LHS's VARREF 'bin' generates 10 bits.
+                                                 : ... note: In instance 'extract_recording_features.features'
+   52 |   mel_w    = bin<MEL_BINS ? MEL_W[bin] : 9'd0;
+      |                 ^
+%Warning-WIDTHTRUNC: rtl\audio_features.sv:54:12: Operator ASSIGN expects 33 bits on the Assign RHS, but Assign RHS's SEL generates 34 bits.
+                                                : ... note: In instance 'extract_recording_features.features'
+   54 |   mel_part = mel_prod[41:8];                  
+      |            ^
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:79:15: Operator LT expects 32 bits on the LHS, but LHS's VARREF 'mel_up' generates 5 bits.
+                                                 : ... note: In instance 'extract_recording_features.features'
+   79 |      if(mel_up<NMEL)               mel[mel_up]   <= mel[mel_up]   + 41'(mel_part);
+      |               ^
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:80:28: Operator LTE expects 32 bits on the LHS, but LHS's VARREF 'mel_up' generates 5 bits.
+                                                 : ... note: In instance 'extract_recording_features.features'
+   80 |      if(mel_up>=1 && mel_up<=NMEL) mel[mel_up-1] <= mel[mel_up-1] + 41'(mag) - 41'(mel_part);
+      |                            ^~
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:82:81: Operator ADD expects 48 bits on the RHS, but RHS's VARREF 'mag' generates 33 bits.
+                                                 : ... note: In instance 'extract_recording_features.features'
+   82 |      for(int b=0;b<8;b++) if(bin>=EDGE[b] && bin<EDGE[b+1]) energy[b]<=energy[b]+mag;
+      |                                                                                 ^
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:82:33: Operator GTE expects 32 bits on the LHS, but LHS's VARREF 'bin' generates 10 bits.
+                                                 : ... note: In instance 'extract_recording_features.features'
+   82 |      for(int b=0;b<8;b++) if(bin>=EDGE[b] && bin<EDGE[b+1]) energy[b]<=energy[b]+mag;
+      |                                 ^~
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:82:49: Operator LT expects 32 bits on the LHS, but LHS's VARREF 'bin' generates 10 bits.
+                                                 : ... note: In instance 'extract_recording_features.features'
+   82 |      for(int b=0;b<8;b++) if(bin>=EDGE[b] && bin<EDGE[b+1]) energy[b]<=energy[b]+mag;
+      |                                                 ^
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:83:46: Operator ADD expects 48 bits on the RHS, but RHS's VARREF 'mag' generates 33 bits.
+                                                 : ... note: In instance 'extract_recording_features.features'
+   83 |      if(bin>=EDGE[0] && bin<512) total<=total+mag;
+      |                                              ^
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:83:12: Operator GTE expects 32 bits on the LHS, but LHS's VARREF 'bin' generates 10 bits.
+                                                 : ... note: In instance 'extract_recording_features.features'
+   83 |      if(bin>=EDGE[0] && bin<512) total<=total+mag;
+      |            ^~
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:102:23: Operator GTE expects 49 bits on the RHS, but RHS's VARREF 'total' generates 48 bits.
+                                                  : ... note: In instance 'extract_recording_features.features'
+  102 |     remainder<=doubled>=total ? doubled-total:doubled;
+      |                       ^~
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:103:38: Operator GTE expects 49 bits on the RHS, but RHS's VARREF 'total' generates 48 bits.
+                                                  : ... note: In instance 'extract_recording_features.features'
+  103 |     quotient<={quotient[14:0],doubled>=total};
+      |                                      ^~
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:105:105: Operator GTE expects 49 bits on the RHS, but RHS's VARREF 'total' generates 48 bits.
+                                                   : ... note: In instance 'extract_recording_features.features'
+  105 |      feature[band_index]<=total==0 ? 0 : (energy[band_index]==total ? 16'hffff : {quotient[14:0],doubled>=total});
+      |                                                                                                         ^~
+%Warning-WIDTHEXPAND: rtl\audio_frontend.sv:37:12: Operator EQ expects 32 or 11 bits on the LHS, but LHS's VARREF 'wr' generates 10 bits.
+                                                 : ... note: In instance 'extract_recording_features.front'
+   37 |       if(wr==N-1) begin
+      |            ^~
+%Warning-WIDTHEXPAND: rtl\audio_frontend.sv:44:10: Operator EQ expects 32 or 11 bits on the LHS, but LHS's VARREF 'rd' generates 10 bits.
+                                                 : ... note: In instance 'extract_recording_features.front'
+   44 |     if(rd==N-1) reading<=0; else rd<=rd+1'b1;
+      |          ^~
+%Warning-WIDTHTRUNC: tb\extract_recording_features.sv:24:6: Logical operator LOGNOT expects 1 bit on the LHS, but LHS's VARREF 'output_file' generates 32 bits.
+                                                          : ... note: In instance 'extract_recording_features'
+   24 |   if(!output_file) $fatal(1,"cannot create feature output");
+      |      ^

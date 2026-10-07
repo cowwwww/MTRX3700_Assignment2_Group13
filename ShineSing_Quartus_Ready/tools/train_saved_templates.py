@@ -11,17 +11,15 @@ import json
 from pathlib import Path
 import numpy as np
 from provided_train_templates import read_capture, kmeans_sad, write_svh
+from template_common import decision
 
 ROOT = Path(__file__).resolve().parents[1]
 LABELS = ['ee', 'ah', 'oo', 'aw']
 
 
 def predict(feature, templates):
-    distances = np.abs(templates.astype(np.int64) - feature).sum(axis=2).min(axis=1)
-    order = distances.argsort(kind='stable')
-    first, second = int(distances[order[0]]), int(distances[order[1]])
-    rejected = second == 0 or first > 65000 or first * 10 > second * 7
-    return 4 if rejected else int(order[0])
+    result, rejected, _ = decision(feature, templates)
+    return 4 if rejected else result
 
 
 def train(captures, out_dir, holdout=0.3):

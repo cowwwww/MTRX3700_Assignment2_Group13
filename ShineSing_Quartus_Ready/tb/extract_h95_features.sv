@@ -37,5 +37,5 @@ module extract_h95_features;
   $fclose(output_file);
   $display("ALL TESTS PASSED: extract_h95_features");$finish;
  end
- initial begin #10000000000;$fatal(1,"watchdog");end
+ initial begin #(64'd10000000000);$fatal(1,"watchdog");end
 endmodule

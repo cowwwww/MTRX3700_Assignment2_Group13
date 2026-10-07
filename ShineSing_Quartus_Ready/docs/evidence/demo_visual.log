@@ -1,0 +1,56 @@
+Reading E:/intelFPGA_lite/18.1/modelsim_ase/tcl/vsim/pref.tcl
+
+# 10.5b
+
+# vsim -c -onfinish stop -lib E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim_d0048a7ce80b demo_visual -do "onbreak {quit -code 1}; onerror {quit -code 1}; run -all; quit -code 0" 
+# Start time: 00:17:36 on Oct 08,2026
+# Loading sv_std.std
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim_d0048a7ce80b.demo_visual
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim_d0048a7ce80b.piano_detector
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim_d0048a7ce80b.conv3x3
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim_d0048a7ce80b.sync_ram
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim_d0048a7ce80b.sobel
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim_d0048a7ce80b.cdc_mailbox
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim_d0048a7ce80b.image_store
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim_d0048a7ce80b.audio_features
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim_d0048a7ce80b.classifier
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim_d0048a7ce80b.game
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim_d0048a7ce80b.game_controller
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim_d0048a7ce80b.video_source
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim_d0048a7ce80b.reaction_time_fsm
+# ** Warning: (vsim-3017) tb/demo_visual.sv(22): [TFMPC] - Too few port connections. Expected 25, found 22.
+#    Time: 0 ps  Iteration: 0  Instance: /demo_visual/detector File: rtl/piano_detector.sv
+# ** Warning: (vsim-3722) tb/demo_visual.sv(22): [TFMPC] - Missing connection for port 'local_average'.
+# ** Warning: (vsim-3722) tb/demo_visual.sv(22): [TFMPC] - Missing connection for port 'selected_adaptive'.
+# ** Warning: (vsim-3722) tb/demo_visual.sv(22): [TFMPC] - Missing connection for port 'selected_smoothing'.
+# onbreak {quit -code 1}
+#  Warning: onbreak command for use within macro
+#  onerror {quit -code 1}
+#  Warning: onerror command for use within macro
+#  run -all
+# CAPTURE 01_untrained: score=0 active=0000 window=0000 hit=0000 trained=0000
+# CAPTURE 02_ready: score=0 active=0000 window=0000 hit=0000 trained=1111
+# CAPTURE 03_countdown2: score=0 active=0001 window=0000 hit=0000 trained=1111
+# CAPTURE 04_countdown1: score=0 active=0001 window=0000 hit=0000 trained=1111
+# CAPTURE 05_hit_window: score=0 active=0011 window=0001 hit=0000 trained=1111
+# CAPTURE 06_wrong_vowel: score=0 active=0011 window=0001 hit=0000 trained=1111
+# CAPTURE 07_correct_vowel: score=1 active=0010 window=0000 hit=0001 trained=1111
+# CAPTURE 08_duplicate_ignored: score=1 active=0010 window=0000 hit=0001 trained=1111
+# CAPTURE 09_second_window: score=1 active=0110 window=0010 hit=0000 trained=1111
+# CAPTURE 10_miss: score=1 active=0100 window=0000 hit=0000 trained=1111
+# CAPTURE p0_edge_1d: score=1 active=0100 window=0000 hit=0000 trained=1111
+# CAPTURE p0_edge_sobel: score=1 active=0100 window=0000 hit=0000 trained=1111
+# CAPTURE p0_profile: score=1 active=0100 window=0000 hit=0000 trained=1111
+# CAPTURE p0_masks: score=1 active=0100 window=0000 hit=0000 trained=1111
+# CAPTURE p1_edge_1d: score=1 active=0100 window=0000 hit=0000 trained=1111
+# CAPTURE p1_edge_sobel: score=1 active=0100 window=0000 hit=0000 trained=1111
+# CAPTURE p1_profile: score=1 active=0100 window=0000 hit=0000 trained=1111
+# CAPTURE p1_masks: score=1 active=0100 window=0000 hit=0000 trained=1111
+# ALL TESTS PASSED: demo_visual
+# ** Note: $finish    : tb/demo_visual.sv(162)
+#    Time: 663569580 ns  Iteration: 1  Instance: /demo_visual
+# Break in Module demo_visual at tb/demo_visual.sv line 162
+# Stopped at tb/demo_visual.sv line 162
+#  quit -code 0
+# End time: 00:29:57 on Oct 08,2026, Elapsed time: 0:12:21
+# Errors: 0, Warnings: 4

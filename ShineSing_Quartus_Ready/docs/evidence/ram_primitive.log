@@ -1,0 +1,28 @@
+Reading E:/intelFPGA_lite/18.1/modelsim_ase/tcl/vsim/pref.tcl
+
+# 10.5b
+
+# vsim -c -onfinish stop -lib E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\ram_primitive -L E:\intelFPGA_lite\18.1\modelsim_ase\altera\verilog\altera_mf -L E:\intelFPGA_lite\18.1\modelsim_ase\altera\verilog\cyclonev tb_sync_ram -do "run -all; quit -code 0" 
+# Start time: 00:17:47 on Oct 08,2026
+# Loading sv_std.std
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\ram_primitive.tb_sync_ram
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\ram_primitive.sync_ram
+# Loading E:\intelFPGA_lite\18.1\modelsim_ase\altera\verilog\altera_mf.altsyncram
+# Loading E:\intelFPGA_lite\18.1\modelsim_ase\altera\verilog\altera_mf.altsyncram_body
+# Loading E:\intelFPGA_lite\18.1\modelsim_ase\altera\verilog\altera_mf.ALTERA_DEVICE_FAMILIES
+# Loading E:\intelFPGA_lite\18.1\modelsim_ase\altera\verilog\altera_mf.ALTERA_MF_MEMORY_INITIALIZATION
+# ** Warning: (vsim-3017) rtl/sync_ram.sv(15): [TFMPC] - Too few port connections. Expected 23, found 19.
+#    Time: 0 ps  Iteration: 0  Instance: /tb_sync_ram/dut/ram File: /build/swbuild/SJ/nightly/18.1std/625/l64/work/modelsim/eda/sim_lib/altera_mf.v
+# ** Warning: (vsim-3722) rtl/sync_ram.sv(15): [TFMPC] - Missing connection for port 'clock1'.
+# ** Warning: (vsim-3722) rtl/sync_ram.sv(15): [TFMPC] - Missing connection for port 'clocken1'.
+# ** Warning: (vsim-3722) rtl/sync_ram.sv(15): [TFMPC] - Missing connection for port 'clocken2'.
+# ** Warning: (vsim-3722) rtl/sync_ram.sv(15): [TFMPC] - Missing connection for port 'clocken3'.
+# run -all
+# ALL TESTS PASSED: tb_sync_ram
+# ** Note: $finish    : tb/tb_sync_ram.sv(20)
+#    Time: 1366 ns  Iteration: 0  Instance: /tb_sync_ram
+# Break in Module tb_sync_ram at tb/tb_sync_ram.sv line 20
+# Stopped at tb/tb_sync_ram.sv line 20
+#  quit -code 0
+# End time: 00:17:48 on Oct 08,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 5

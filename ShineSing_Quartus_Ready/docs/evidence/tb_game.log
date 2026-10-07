@@ -1,0 +1,24 @@
+Reading E:/intelFPGA_lite/18.1/modelsim_ase/tcl/vsim/pref.tcl
+
+# 10.5b
+
+# vsim -c -onfinish stop -lib E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim tb_game -do "onbreak {quit -code 1}; onerror {quit -code 1}; run -all; quit -code 0" 
+# Start time: 00:15:30 on Oct 08,2026
+# Loading sv_std.std
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim.tb_game
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim.game
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim.game_controller
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim.reaction_time_fsm
+# onbreak {quit -code 1}
+#  Warning: onbreak command for use within macro
+#  onerror {quit -code 1}
+#  Warning: onerror command for use within macro
+#  run -all
+# ALL TESTS PASSED: tb_game
+# ** Note: $finish    : tb/tb_game.sv(25)
+#    Time: 9430 ns  Iteration: 1  Instance: /tb_game
+# Break in Module tb_game at tb/tb_game.sv line 25
+# Stopped at tb/tb_game.sv line 25
+#  quit -code 0
+# End time: 00:15:31 on Oct 08,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0

@@ -1,68 +1,11 @@
-Work inside ShineSing_Quartus_Ready.
+V9: default templates use the group WAV recordings in data/recordings.
 
-Ed / Verilator 5.050:
-  sh run_ed.sh
-  python3 tools/test_course_mutations.py
+See README.md for Chinese instructions, Ed tests, VGA captures and retraining.
 
-Original uploaded sources and datasets:
-  course_sources/manifest.json records each archive, member and SHA-256.
-  course_sources/reuse.json maps course modules to the assignment build.
-  course_sources/reuse.patch shows adaptations and completed exercise TODOs.
-  Course originals are reference files; do not add their duplicate modules to Quartus.
+Ed: sh run_ed.sh
+Retrain: python3 tools/train_recordings.py --sim verilator
+Windows: python tools/train_recordings.py --sim modelsim
+Quartus: python tools/check_project.py --require-trained
+         quartus_sh --flow compile shine_sing
 
-Saved HD vowel templates (already included and enabled):
-  The default FPGA build uses real H95 recordings from data/h95/h95.zip.
-  No group recording, KEY3 enrolment or training during the demo is needed.
-  KEY0 reset keeps the saved templates. Gameplay still uses the live microphone.
-  Vowel mapping: iy -> ee, ah -> ah, uw -> oo, aw -> aw.
-  H95 ah is the vowel in hod/cot; accents can differ from the assignment's car example.
-  Do not use H95 oo (hood) for the assignment's oo (boot); use uw.
-
-Rebuild the included templates (optional; not needed for Quartus or Ed):
-  python3 -m pip install -r requirements.txt
-  sh tools/build_h95_templates.sh
-  Requires Verilator 5.050. Extraction uses the actual FIR, window, FFT and
-  24-band log-Mel RTL, after 16-to-48 kHz resampling of marked vowel segments.
-  Outputs: rtl/templates.svh, rtl/templates.hex, rtl/templates_training.json.
-  data/h95/segments.json and features.csv record the source and speaker split.
-  900 frames train the templates. 208 frames from different speakers test them:
-  144 correct accepted frames, 64 rejects, zero wrong accepted frames.
-  These are frame results before voting, not a claim of live microphone accuracy.
-
-Alternative saved feature captures can still be imported with:
-  python3 tools/train_saved_templates.py ee.csv ah.csv oo.csv aw.csv
-  Captures must use MODE=4, D=24, LOG_SCALE=64 from this design.
-
-The earlier course classifier ZIP's synthetic D=8 templates remain test-only.
-The supplied tone and barcode datasets are used in the course regression tests.
-
-Quartus 18.1:
-  python3 tools/check_project.py --require-trained
-  sh build_quartus.sh
-  On Windows, run the Python check, then:
-    quartus_sh --flow compile shine_sing
-    quartus_sta -t tools/report_timing.tcl
-  Or open shine_sing.qpf in Quartus after the input check passes.
-  The checked-in project includes the FIR, Mel table, VGA IP and pin assignments.
-  Pull the complete updated project, including rtl/video_profile_ram.sv and the QSF.
-  The profile display now uses two M10K blocks instead of sending 5,120 bits
-  through registers in the video mailbox. Its payload shrinks from 5,291 to
-  172 bits. Detector output copies are also disabled in the board build.
-  This addresses the reported 3,410 / 3,207 LAB overflow without reducing image
-  size, smoothing, adaptive thresholds or the recorded H95 vowel templates.
-  The new fitted LAB count is not measured here: run a full compilation, then
-  check the Fitter report and timing before using the newly generated SOF.
-  The old SOF was removed because it does not match this source.
-  Quartus fitting, resource usage and all four clock timing results must be checked
-  on a Quartus machine. Verilator tests do not prove hardware timing.
-
-HD image controls:
-  SW5 enables Sobel; SW8 enables smoothing; SW9 enables local thresholds.
-  SW2..SW1 selects game / edges / profile / masks.
-  The profile view draws the local-average curve and both local thresholds.
-  SW0 selects which threshold KEY1/KEY2 adjust.
-  SW4..SW3 selects the image. Put the tutor MIF in assets/piano2.mif, run
-    python3 tools/sync_mif_hex.py --slot 2
-  then test and recompile. Slot 2 is not yet the tutor photograph.
-
-See verification.json for exactly what was tested and what remains unverified.
+Baseline H95 results in docs/baseline are historical, not V9 validation.

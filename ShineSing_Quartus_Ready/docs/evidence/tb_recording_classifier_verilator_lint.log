@@ -1,0 +1,75 @@
+- V e r i l a t i o n   R e p o r t:  rev vUNKNOWN-built20260516-4e853d8
+- Verilator: Built from 2.853 MB sources in 38 modules, into 0.148 MB in 3 C++ files needing 0.000 MB
+- Verilator: Walltime 0.146 s (elab=0.034, cvt=0.027, bld=0.000); cpu 0.000 s on 1 threads; allocated 21.922 MB
+%Warning-TIMESCALEMOD: rtl\audio_features.sv:6:8: Timescale missing on this module as other modules have it (IEEE 1800-2023 3.14.2.3)
+    6 | module audio_features #(parameter MODE=3, D=8, RAW_SHIFT=8, LOG_SCALE=64)(
+      |        ^~~~~~~~~~~~~~
+                       rtl\classifier.sv:4:8: ... Location of module with timescale
+    4 | module classifier #(
+      |        ^~~~~~~~~~
+                       ... For warning description see https://verilator.org/warn/TIMESCALEMOD?v=0.000
+                       ... Use "/* verilator lint_off TIMESCALEMOD */" and lint_on around source to disable this message.
+%Warning-TIMESCALEMOD: rtl\audio_frontend.sv:3:8: Timescale missing on this module as other modules have it (IEEE 1800-2023 3.14.2.3)
+    3 | module audio_frontend #(parameter N=1024)(
+      |        ^~~~~~~~~~~~~~
+                       rtl\classifier.sv:4:8: ... Location of module with timescale
+    4 | module classifier #(
+      |        ^~~~~~~~~~
+%Warning-TIMESCALEMOD: rtl\audio_level.sv:4:8: Timescale missing on this module as other modules have it (IEEE 1800-2023 3.14.2.3)
+    4 | module audio_level #(
+      |        ^~~~~~~~~~~
+                       rtl\classifier.sv:4:8: ... Location of module with timescale
+    4 | module classifier #(
+      |        ^~~~~~~~~~
+%Warning-TIMESCALEMOD: rtl\board_controls.sv:1:8: Timescale missing on this module as other modules have it (IEEE 1800-2023 3.14.2.3)
+    1 | module board_controls #(parameter DEBOUNCE=1000000)(
+      |        ^~~~~~~~~~~~~~
+                       rtl\classifier.sv:4:8: ... Location of module with timescale
+    4 | module classifier #(
+      |        ^~~~~~~~~~
+%Warning-TIMESCALEMOD: rtl\cdc_mailbox.sv:3:8: Timescale missing on this module as other modules have it (IEEE 1800-2023 3.14.2.3)
+    3 | module cdc_mailbox #(parameter WIDTH=16)(
+      |        ^~~~~~~~~~~
+                       rtl\classifier.sv:4:8: ... Location of module with timescale
+    4 | module classifier #(
+      |        ^~~~~~~~~~
+%Warning-WIDTHEXPAND: rtl\classifier.sv:71:68: Operator EQ expects 32 bits on the LHS, but LHS's ARRAYSEL generates 2 bits.
+                                             : ... note: In instance 'tb_recording_classifier.dut'
+   71 |             for (int k = 0; k < M; k++) if (vote_ok[k] && votes[k] == c) tally[c]++;
+      |                                                                    ^~
+                      ... For warning description see https://verilator.org/warn/WIDTHEXPAND?v=0.000
+                      ... Use "/* verilator lint_off WIDTHEXPAND */" and lint_on around source to disable this message.
+%Warning-WIDTHTRUNC: rtl\classifier.sv:77:79: Operator ASSIGN expects 2 bits on the Assign RHS, but Assign RHS's VARREF 'c' generates 32 bits.
+                                            : ... note: In instance 'tb_recording_classifier.dut'
+   77 |         for (int c = 1; c < NCLASS; c++) if (tally[c] > tally[winner]) winner = c;
+      |                                                                               ^
+                     ... For warning description see https://verilator.org/warn/WIDTHTRUNC?v=0.000
+                     ... Use "/* verilator lint_off WIDTHTRUNC */" and lint_on around source to disable this message.
+%Warning-WIDTHEXPAND: rtl\classifier.sv:81:37: Operator GT expects 32 bits on the LHS, but LHS's VARREF 'd1' generates 22 bits.
+                                             : ... note: In instance 'tb_recording_classifier.dut'
+   81 |     assign rej_c = (d2 == 0) || (d1 > DMAX) || (64'(d1) * RHO_DEN > 64'(d2) * RHO_NUM);
+      |                                     ^
+%Warning-WIDTHEXPAND: rtl\classifier.sv:113:23: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 't' generates 4 bits.
+                                              : ... note: In instance 'tb_recording_classifier.dut'
+  113 |                 if (t == NTT-1) st <= DECIDE; else t <= t + 1'b1;
+      |                       ^~
+%Warning-WIDTHEXPAND: rtl\classifier.sv:119:35: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'vptr' generates 3 bits.
+                                              : ... note: In instance 'tb_recording_classifier.dut'
+  119 |                     vptr <= (vptr == M-1) ? '0 : vptr + 1'b1;
+      |                                   ^~
+%Warning-WIDTHEXPAND: rtl\classifier.sv:126:35: Operator GTE expects 23 bits on the RHS, but RHS's VARREF 'd2' generates 22 bits.
+                                              : ... note: In instance 'tb_recording_classifier.dut'
+  126 |                 remainder<=doubled>=d2 ? doubled-d2:doubled;
+      |                                   ^~
+%Warning-WIDTHEXPAND: rtl\classifier.sv:127:43: Operator GTE expects 23 bits on the RHS, but RHS's VARREF 'd2' generates 22 bits.
+                                              : ... note: In instance 'tb_recording_classifier.dut'
+  127 |                 ratio<={ratio[6:0],doubled>=d2};
+      |                                           ^~
+%Warning-WIDTHEXPAND: rtl\classifier.sv:129:59: Operator GTE expects 23 bits on the RHS, but RHS's VARREF 'd2' generates 22 bits.
+                                              : ... note: In instance 'tb_recording_classifier.dut'
+  129 |                     confidence<=8'd255-{ratio[6:0],doubled>=d2};st<=VOTE;
+      |                                                           ^~
+%Warning-WIDTHEXPAND: tb\tb_recording_classifier.sv:32:23: Operator NEQ expects 32 bits on the LHS, but LHS's VARREF 'result' generates 2 bits.
+                                                         : ... note: In instance 'tb_recording_classifier'
+   32 |    if(reject || result!=c || confidence!=255) $fatal(1,"saved template overwritten or wrong after reset");
+      |                       ^~

@@ -1,29 +1,115 @@
 {
-  "source": "data/h95/h95.zip",
-  "archive_sha256": "2560548591e3a726c88549b6dc9d226995616c26874d601c69fee8b9eee9d730",
-  "feature_mode": 4,
-  "dimensions": 24,
-  "log_scale": 64,
-  "templates_per_class": 4,
-  "rho": "7/10",
-  "dmax": 65000,
+  "source": "data/recordings (group WAV recordings)",
   "labels": [
     "ee",
     "ah",
     "oo",
     "aw"
   ],
-  "vowel_mapping": {
-    "ee": "iy (heed)",
-    "ah": "ah (hod/cot)",
-    "oo": "uw (who'd)",
-    "aw": "aw (hawed)"
-  },
+  "dimensions": 24,
+  "feature_mode": 4,
+  "log_scale": 64,
+  "templates_per_class": 4,
+  "rho": "7/10",
+  "dmax": 65000,
   "training_frames": [
-    224,
-    225,
-    225,
-    226
+    15,
+    12,
+    14,
+    10
+  ],
+  "template_allocation": "Equal slots per recording up to four takes/class; for the supplied two speakers, two templates per recording. More than four takes use equal-recording-weight pooled clustering.",
+  "feature_extraction": "Actual audio_frontend -> course FFT -> fft_mag_sq -> audio_features MODE=4; simulator=modelsim",
+  "validation": "Two folds by complete recordings, then final deployment ROM retrained on all eight supplied recordings (or all replacement input files)",
+  "folds": [
+    {
+      "heldout_files": [
+        "ee.wav",
+        "ah-001.wav",
+        "oo-001.wav",
+        "aw-001.wav"
+      ],
+      "training_files": [
+        "ee1.wav",
+        "ah.wav",
+        "oo.wav",
+        "aw.wav"
+      ],
+      "confusion": [
+        [
+          0,
+          0,
+          0,
+          0,
+          6
+        ],
+        [
+          0,
+          2,
+          0,
+          0,
+          7
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          10
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          8
+        ]
+      ]
+    },
+    {
+      "heldout_files": [
+        "ee1.wav",
+        "ah.wav",
+        "oo.wav",
+        "aw.wav"
+      ],
+      "training_files": [
+        "ee.wav",
+        "ah-001.wav",
+        "oo-001.wav",
+        "aw-001.wav"
+      ],
+      "confusion": [
+        [
+          0,
+          0,
+          3,
+          0,
+          6
+        ],
+        [
+          0,
+          3,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          3
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          2
+        ]
+      ]
+    }
   ],
   "held_out_confusion_columns": [
     "ee",
@@ -34,7 +120,41 @@
   ],
   "held_out_confusion": [
     [
-      52,
+      0,
+      0,
+      3,
+      0,
+      12
+    ],
+    [
+      0,
+      5,
+      0,
+      0,
+      7
+    ],
+    [
+      0,
+      0,
+      1,
+      0,
+      13
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      10
+    ]
+  ],
+  "held_out_frames": 51,
+  "accepted_accuracy": 0.6666666666666666,
+  "overall_correct_fraction": 0.11764705882352941,
+  "rejection_fraction": 0.8235294117647058,
+  "final_training_confusion": [
+    [
+      15,
       0,
       0,
       0,
@@ -42,36 +162,32 @@
     ],
     [
       0,
-      26,
+      12,
       0,
       0,
-      26
+      0
     ],
     [
       0,
       0,
-      44,
+      14,
       0,
-      8
+      0
     ],
     [
       0,
       0,
       0,
-      22,
-      30
+      10,
+      0
     ]
   ],
-  "held_out_frames": 208,
-  "accepted_accuracy": 1.0,
-  "overall_correct_fraction": 0.6923076923076923,
-  "rejection_fraction": 0.3076923076923077,
-  "split": "All tokens of speakers whose number is divisible by 5 are held out; never used for training.",
-  "feature_extraction": "Actual audio_frontend -> course FFT -> fft_mag_sq -> audio_features MODE=4 RTL in Verilator 5.050",
-  "template_sha256": "a555f8aaf0662c5067781b8ba8ea9309985a16f8dc312a97e7bb9c80f07e3d3d",
+  "regression_frames": 63,
+  "template_sha256": "7908a74d2cad89e29f5d10a1d5098528038afb2fe1dc2e41747d713aae8616fa",
   "feature_source_hashes": {
     "rtl/audio_frontend.sv": "c2b4fe73e90add2a3f68c55b52aa1d51308219d02ff2430ba726e53d7d6f2ac1",
-    "rtl/reuse/low_pass_conv.sv": "43c7d0ebfac9490a623b9f1d58e0cf57f235591b5f6695c07b9e0893a4442b61",
+    "rtl/sync_ram.sv": "af40fb40c10da4e62eb3f286786941920f351ddb653741fc17dc4cc6f6f7dfb3",
+    "rtl/reuse/low_pass_conv.sv": "057a91895532f8915bb08b21a9178243abee41b17a7572d5c677d434686e4dcd",
     "rtl/reuse/fft_mag_sq.sv": "7c8564632904e194e6fe8684772f89e283d1d73e710d04753497da8cde26b9fa",
     "rtl/audio_features.sv": "bd12caab8d2a3c741574e45d241b2afd049f6d19f8c3d9ff0cf3d0d26da643b3",
     "rtl/mel_weights.svh": "4df35476a13376a29cc542aa212e8dff33d26fec88becca74732b3b5947f9911",
@@ -87,5 +203,40 @@
     "rtl/fft/TwiddleConvert4.v": "3361f25856aed7acf903a9919fcb559cee9425306a27902a434324decd928aa4",
     "rtl/fft/TwiddleConvert8.v": "6ea2b3709c32220e69d6d1c7769bf13d5f066d2f4a95e05c0a4e078cf60b4bf3"
   },
-  "note": "Real H95 dataset recordings, not the group members. Frame metrics before voting; microphone/accent/room performance still needs hardware testing."
+  "recordings": [
+    {
+      "file": "ah-001.wav",
+      "sha256": "7114a8b432484ee34e3511ae84e296a2673c7f706267544c9392466f7866d48f"
+    },
+    {
+      "file": "ah.wav",
+      "sha256": "2e45cb14985271f25f490fb585346820b90abba13bf34040824a61b4236c751b"
+    },
+    {
+      "file": "aw-001.wav",
+      "sha256": "4a7ae46fc80fc962f771f1fed04147855e66d5b3709b4283ff867c525f04a451"
+    },
+    {
+      "file": "aw.wav",
+      "sha256": "1a7f5a822518e29bad8c575431970a8ff914bb44a1a5804cb21b07e81b7304b3"
+    },
+    {
+      "file": "ee.wav",
+      "sha256": "334bee9181715987496678e19836231a233b2b7692a0502d4ec49235c09755d4"
+    },
+    {
+      "file": "ee1.wav",
+      "sha256": "baed1cf9ab838acfc86ce100b61b997c21f57c770534fd72358d777cb7c94dc8"
+    },
+    {
+      "file": "oo-001.wav",
+      "sha256": "4131542d2dab58e076e09a5bef83cbb33aafffea980d020998f4d23e55e4f508"
+    },
+    {
+      "file": "oo.wav",
+      "sha256": "3fea85d4e149692afd3de409af8ede34b59bc67d217e84849f1f432e3938b0d4"
+    }
+  ],
+  "note": "Final training-set scores and Python/RTL agreement are not held-out accuracy. The supplied dataset has two different speakers per vowel, one take each. Live microphone/room/pitch performance and new takes of each enrolled speaker remain unmeasured.",
+  "speaker_context": "User confirmed that the two recordings of each vowel were made by different people; cross-vowel speaker IDs were not supplied."
 }

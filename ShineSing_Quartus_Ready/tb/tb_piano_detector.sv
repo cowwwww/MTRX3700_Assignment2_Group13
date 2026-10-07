@@ -12,7 +12,6 @@ module tb_piano_detector;
  bit seen[0:76799];
  logic [8:0] expected_keys[0:16];integer writes;
  logic [7:0] captured[0:76799];integer capture_file;
- wire profile_write;wire [8:0] profile_column;wire [15:0] profile_values;
  wire [2559:0] local_average;wire selected_adaptive,selected_smoothing;
  logic use_smoothing=0,use_adaptive=0;
  piano_detector dut(.*);

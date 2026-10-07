@@ -6,16 +6,9 @@ import json
 import shutil
 import numpy as np
 from provided_train_templates import kmeans_sad, write_svh
+from template_common import decision
 ROOT=Path(__file__).resolve().parents[1]
 LABELS=['ee','ah','oo','aw']
-
-def decision(feature, templates):
-    distances=np.abs(templates-feature).sum(axis=2).min(axis=1)
-    order=distances.argsort(kind='stable')
-    c=int(order[0]);d1=int(distances[c]);d2=int(distances[order[1]])
-    reject=d2==0 or d1>65000 or d1*10>d2*7
-    confidence=0 if reject else 255-(256*d1//d2)
-    return c,reject,confidence
 
 def main():
     work=ROOT/'build/h95';manifest=json.loads((work/'manifest.json').read_text())
@@ -51,6 +44,7 @@ def main():
         # Store predicted class, reject flag and confidence for the RTL check.
         expected.append(f'{((result if not reject else 0)<<9)|(int(reject)<<8)|confidence:03x}')
     target=ROOT/'assets/h95';target.mkdir(exist_ok=True)
+    shutil.copyfile(header,target/'templates.svh')
     (target/'heldout_features.hex').write_text('\n'.join(test_features)+'\n')
     (target/'heldout_expected.hex').write_text('\n'.join(expected)+'\n')
     (target/'test_dimensions.svh').write_text(f'localparam int H95_TEST_FRAMES={len(test)};\n')

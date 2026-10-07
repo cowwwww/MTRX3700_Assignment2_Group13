@@ -5,7 +5,7 @@
       "course_source": "course_sources/fir/low_pass_conv.sv",
       "identical_text": false,
       "source_sha256": "52a5e1b16d32f2fb09c78f88242fedc37b0324fa3855105e78bcd6506534d188",
-      "build_sha256": "43c7d0ebfac9490a623b9f1d58e0cf57f235591b5f6695c07b9e0893a4442b61",
+      "build_sha256": "057a91895532f8915bb08b21a9178243abee41b17a7572d5c677d434686e4dcd",
       "changes": "Added reset, busy guard and scaling/saturation; kept supplied taps and serial multiply pipeline."
     },
     {
@@ -13,7 +13,7 @@
       "course_source": "course_sources/video/rtl/conv3x3.sv",
       "identical_text": false,
       "source_sha256": "e90b56a6118f3342409cd71642945ca0abb93526bae36711f206c590dbe83d96",
-      "build_sha256": "efc0ad715c6e71a6f7a30456935a9819380eefd7001083b9562282a4e6b85eba",
+      "build_sha256": "f1b3a0c20d43def6d0d5680b36bfd1ce8ab4c523fb0eb90e14ca509d89a6b9cf",
       "changes": "Completed the three exercise TODOs: window shift, signed multiply-sum, valid/coordinates."
     },
     {
@@ -69,7 +69,7 @@
       "course_source": "course_sources/classifier/classifier.sv",
       "identical_text": false,
       "source_sha256": "4135d11f1ae1ba9dccbcc51c9ef42d1d321cfa38c4d7c29f4bfb59c6ca2975ae",
-      "build_sha256": "426e6e43bc3486880503c0a187623f9e1d62c0de97f8efd205b5fdc9d7d0d206",
+      "build_sha256": "f89287df8604d366fb083de71c42d66b671b33b8942a309aee2eeac43c9974f3",
       "changes": "Kept nearest-template distance and vote logic; added saved-template parameters, test/capture enrolment, immediate gate clear, zero-distance rejection, and a sequential confidence divider."
     },
     {
@@ -97,31 +97,7 @@
       "changes": "Course image converter."
     },
     {
-      "build_file": "rtl/fft/TwiddleConvert4.v",
-      "course_source": "course_sources/audio/fft_ip_r22sdf/TwiddleConvert4.v",
-      "identical_text": true,
-      "source_sha256": "3361f25856aed7acf903a9919fcb559cee9425306a27902a434324decd928aa4",
-      "build_sha256": "3361f25856aed7acf903a9919fcb559cee9425306a27902a434324decd928aa4",
-      "changes": "Direct reuse except DelayBuffer, which uses circular RAM to reduce registers."
-    },
-    {
-      "build_file": "rtl/fft/SdfUnit.v",
-      "course_source": "course_sources/audio/fft_ip_r22sdf/SdfUnit.v",
-      "identical_text": true,
-      "source_sha256": "2e66d792173d339e4f1998d19f093a1febd0ad38b732f4d7e16716e3d7656276",
-      "build_sha256": "2e66d792173d339e4f1998d19f093a1febd0ad38b732f4d7e16716e3d7656276",
-      "changes": "Direct reuse except DelayBuffer, which uses circular RAM to reduce registers."
-    },
-    {
-      "build_file": "rtl/fft/SdfUnit_TC.v",
-      "course_source": "course_sources/audio/fft_ip_r22sdf/SdfUnit_TC.v",
-      "identical_text": true,
-      "source_sha256": "6f6a3d6ce834a1bb27cb748c6da9be38851822dfd92a4834736c0de0af21b02b",
-      "build_sha256": "6f6a3d6ce834a1bb27cb748c6da9be38851822dfd92a4834736c0de0af21b02b",
-      "changes": "Direct reuse except DelayBuffer, which uses circular RAM to reduce registers."
-    },
-    {
-      "build_file": "rtl/fft/Butterfly.v",
+      "build_file": "rtl\\fft\\Butterfly.v",
       "course_source": "course_sources/audio/fft_ip_r22sdf/Butterfly.v",
       "identical_text": true,
       "source_sha256": "82c7b18da61d728fd64df3eee9150b120716916ec41756e9bec5df6ddc9ed3d3",
@@ -129,31 +105,7 @@
       "changes": "Direct reuse except DelayBuffer, which uses circular RAM to reduce registers."
     },
     {
-      "build_file": "rtl/fft/FFT.v",
-      "course_source": "course_sources/audio/fft_ip_r22sdf/FFT.v",
-      "identical_text": true,
-      "source_sha256": "f49c6e23117e8fbadca155b7bda1f74ad52e65052fd01c27c287acc65274f035",
-      "build_sha256": "f49c6e23117e8fbadca155b7bda1f74ad52e65052fd01c27c287acc65274f035",
-      "changes": "Direct reuse except DelayBuffer, which uses circular RAM to reduce registers."
-    },
-    {
-      "build_file": "rtl/fft/Twiddle.v",
-      "course_source": "course_sources/audio/fft_ip_r22sdf/Twiddle.v",
-      "identical_text": true,
-      "source_sha256": "4d82703d2878ee9f780840cf6e424f8ac8557a18822a14cfda0a17c468485bb0",
-      "build_sha256": "4d82703d2878ee9f780840cf6e424f8ac8557a18822a14cfda0a17c468485bb0",
-      "changes": "Direct reuse except DelayBuffer, which uses circular RAM to reduce registers."
-    },
-    {
-      "build_file": "rtl/fft/TwiddleConvert8.v",
-      "course_source": "course_sources/audio/fft_ip_r22sdf/TwiddleConvert8.v",
-      "identical_text": true,
-      "source_sha256": "6ea2b3709c32220e69d6d1c7769bf13d5f066d2f4a95e05c0a4e078cf60b4bf3",
-      "build_sha256": "6ea2b3709c32220e69d6d1c7769bf13d5f066d2f4a95e05c0a4e078cf60b4bf3",
-      "changes": "Direct reuse except DelayBuffer, which uses circular RAM to reduce registers."
-    },
-    {
-      "build_file": "rtl/fft/DelayBuffer.v",
+      "build_file": "rtl\\fft\\DelayBuffer.v",
       "course_source": "course_sources/audio/fft_ip_r22sdf/DelayBuffer.v",
       "identical_text": false,
       "source_sha256": "9bb52fc0fed7c0d37901bd783d9c3c2b91c840c6a6409a177b592dac3fff7104",
@@ -161,7 +113,15 @@
       "changes": "Direct reuse except DelayBuffer, which uses circular RAM to reduce registers."
     },
     {
-      "build_file": "rtl/fft/Multiply.v",
+      "build_file": "rtl\\fft\\FFT.v",
+      "course_source": "course_sources/audio/fft_ip_r22sdf/FFT.v",
+      "identical_text": true,
+      "source_sha256": "f49c6e23117e8fbadca155b7bda1f74ad52e65052fd01c27c287acc65274f035",
+      "build_sha256": "f49c6e23117e8fbadca155b7bda1f74ad52e65052fd01c27c287acc65274f035",
+      "changes": "Direct reuse except DelayBuffer, which uses circular RAM to reduce registers."
+    },
+    {
+      "build_file": "rtl\\fft\\Multiply.v",
       "course_source": "course_sources/audio/fft_ip_r22sdf/Multiply.v",
       "identical_text": true,
       "source_sha256": "d5fda5b3f7e3762a62e7ba0fbdfabf5acab53e9fba0010a76f07baa5948c1a7b",
@@ -169,11 +129,51 @@
       "changes": "Direct reuse except DelayBuffer, which uses circular RAM to reduce registers."
     },
     {
-      "build_file": "rtl/fft/SdfUnit2.v",
+      "build_file": "rtl\\fft\\SdfUnit.v",
+      "course_source": "course_sources/audio/fft_ip_r22sdf/SdfUnit.v",
+      "identical_text": true,
+      "source_sha256": "2e66d792173d339e4f1998d19f093a1febd0ad38b732f4d7e16716e3d7656276",
+      "build_sha256": "2e66d792173d339e4f1998d19f093a1febd0ad38b732f4d7e16716e3d7656276",
+      "changes": "Direct reuse except DelayBuffer, which uses circular RAM to reduce registers."
+    },
+    {
+      "build_file": "rtl\\fft\\SdfUnit2.v",
       "course_source": "course_sources/audio/fft_ip_r22sdf/SdfUnit2.v",
       "identical_text": true,
       "source_sha256": "a52f23fc8b2c80309529e48dff235b1ae449988efbb2b0fe92c903b5d8fa570c",
       "build_sha256": "a52f23fc8b2c80309529e48dff235b1ae449988efbb2b0fe92c903b5d8fa570c",
+      "changes": "Direct reuse except DelayBuffer, which uses circular RAM to reduce registers."
+    },
+    {
+      "build_file": "rtl\\fft\\SdfUnit_TC.v",
+      "course_source": "course_sources/audio/fft_ip_r22sdf/SdfUnit_TC.v",
+      "identical_text": true,
+      "source_sha256": "6f6a3d6ce834a1bb27cb748c6da9be38851822dfd92a4834736c0de0af21b02b",
+      "build_sha256": "6f6a3d6ce834a1bb27cb748c6da9be38851822dfd92a4834736c0de0af21b02b",
+      "changes": "Direct reuse except DelayBuffer, which uses circular RAM to reduce registers."
+    },
+    {
+      "build_file": "rtl\\fft\\Twiddle.v",
+      "course_source": "course_sources/audio/fft_ip_r22sdf/Twiddle.v",
+      "identical_text": true,
+      "source_sha256": "4d82703d2878ee9f780840cf6e424f8ac8557a18822a14cfda0a17c468485bb0",
+      "build_sha256": "4d82703d2878ee9f780840cf6e424f8ac8557a18822a14cfda0a17c468485bb0",
+      "changes": "Direct reuse except DelayBuffer, which uses circular RAM to reduce registers."
+    },
+    {
+      "build_file": "rtl\\fft\\TwiddleConvert4.v",
+      "course_source": "course_sources/audio/fft_ip_r22sdf/TwiddleConvert4.v",
+      "identical_text": true,
+      "source_sha256": "3361f25856aed7acf903a9919fcb559cee9425306a27902a434324decd928aa4",
+      "build_sha256": "3361f25856aed7acf903a9919fcb559cee9425306a27902a434324decd928aa4",
+      "changes": "Direct reuse except DelayBuffer, which uses circular RAM to reduce registers."
+    },
+    {
+      "build_file": "rtl\\fft\\TwiddleConvert8.v",
+      "course_source": "course_sources/audio/fft_ip_r22sdf/TwiddleConvert8.v",
+      "identical_text": true,
+      "source_sha256": "6ea2b3709c32220e69d6d1c7769bf13d5f066d2f4a95e05c0a4e078cf60b4bf3",
+      "build_sha256": "6ea2b3709c32220e69d6d1c7769bf13d5f066d2f4a95e05c0a4e078cf60b4bf3",
       "changes": "Direct reuse except DelayBuffer, which uses circular RAM to reduce registers."
     }
   ],
@@ -182,9 +182,8 @@
     "rtl/audio_features.sv": "Assignment feature ladder including 24 log-Mel bands; not supplied by these ZIPs.",
     "rtl/piano_detector.sv": "Assignment scan/profile/peak logic extends course concepts with normalization, hysteresis, smoothing and adaptive thresholds.",
     "rtl/video_source.sv": "Assignment VGA views, score and game masks built around the course Avalon-ST interface.",
-    "rtl/video_profile_ram.sv": "Two M10K blocks hold the profile and local average in alternating frame banks; only bank and metadata cross the mailbox.",
     "rtl/cdc_mailbox.sv": "Held-data request/acknowledge transfer for independent clock domains.",
     "rtl/game.sv": "Assignment 1 game integration with classifier decisions.",
-    "rtl/templates.svh": "Saved 24-feature templates trained from user-supplied H95 recorded vowels; see rtl/templates_training.json. The earlier course classifier ZIP contains only synthetic 8-feature test templates."
+    "rtl/templates.svh": "Saved 24-feature templates trained from the group WAV recordings in data/recordings; see rtl/templates_training.json. The earlier course classifier ZIP contains only synthetic 8-feature test templates."
   }
 }

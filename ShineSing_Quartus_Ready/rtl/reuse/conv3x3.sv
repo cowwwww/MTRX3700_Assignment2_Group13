@@ -43,22 +43,30 @@ module conv3x3 #(
     output logic [$clog2(W)-1:0]  out_x,
     output logic [$clog2(H)-1:0]  out_y
 );
-    // ---- two line buffers: lb1 holds row y-1, lb2 holds row y-2 (indexed by column) -------
-    logic [DW-1:0] lb1 [0:W-1];
-    logic [DW-1:0] lb2 [0:W-1];
-    logic [DW-1:0] lb1_q, lb2_q;            // the values at column in_x, read as the pixel arrives
+    // ---- two line buffers, explicitly mapped to M10K -------------------------------
+    // Quartus 18.1 can fail to infer RAM from the compact read-before-write array style,
+    // turning these 320x8 buffers into thousands of registers/LABs.  Use the project's
+    // sync_ram primitive instead so each row buffer is guaranteed to use block RAM.
+    logic [DW-1:0] lb1_q, lb2_q;
+    logic          lb2_we;
+    logic [$clog2(W)-1:0] lb2_waddr;
 
-    // Read-before-write on the same address in the same cycle: the read returns the OLD value
-    // (rows y-1 and y-2 at this column) and the write stores the new one (row y moves to lb1,
-    // row y-1 moves to lb2). Quartus infers a dual-port M10K for each buffer.
+    // lb1 contains the most recently completed pixel for each column.  Reading and
+    // writing the same address returns OLD_DATA, i.e. the pixel from row y-1.
+    sync_ram #(.WIDTH(DW), .DEPTH(W), .AW($clog2(W))) linebuf1 (
+        .clk(clk), .we(in_valid),
+        .waddr(in_x), .raddr(in_x), .wdata(in_pixel), .rdata(lb1_q));
+
+    // One clock later lb1_q is the old row-y-1 value.  Move it into lb2 at the
+    // delayed column address; lb2's read port still reads the current input column
+    // and therefore returns row y-2 in parallel.
     always_ff @(posedge clk) begin
-        if (in_valid) begin
-            lb1_q   <= lb1[in_x];
-            lb2_q   <= lb2[in_x];
-            lb1[in_x] <= in_pixel;
-            lb2[in_x] <= lb1[in_x];
-        end
+        lb2_we    <= in_valid & ~reset;
+        lb2_waddr <= in_x;
     end
+    sync_ram #(.WIDTH(DW), .DEPTH(W), .AW($clog2(W))) linebuf2 (
+        .clk(clk), .we(lb2_we),
+        .waddr(lb2_waddr), .raddr(in_x), .wdata(lb1_q), .rdata(lb2_q));
 
     // ---- stage 1: the column triple for column in_x, one cycle after the pixel arrived -----
     logic                  s1_valid;

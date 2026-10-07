@@ -1,0 +1,25 @@
+Reading E:/intelFPGA_lite/18.1/modelsim_ase/tcl/vsim/pref.tcl
+
+# 10.5b
+
+# vsim -c -onfinish stop -lib E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim tb_course_images -do "onbreak {quit -code 1}; onerror {quit -code 1}; run -all; quit -code 0" 
+# Start time: 00:14:52 on Oct 08,2026
+# Loading sv_std.std
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim.tb_course_images
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim.piano_detector
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim.conv3x3
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim.sync_ram
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim.sobel
+# onbreak {quit -code 1}
+#  Warning: onbreak command for use within macro
+#  onerror {quit -code 1}
+#  Warning: onerror command for use within macro
+#  run -all
+# ALL TESTS PASSED: tb_course_images
+# ** Note: $finish    : tb/tb_course_images.sv(59)
+#    Time: 18793920 ns  Iteration: 1  Instance: /tb_course_images
+# Break in Module tb_course_images at tb/tb_course_images.sv line 59
+# Stopped at tb/tb_course_images.sv line 59
+#  quit -code 0
+# End time: 00:15:27 on Oct 08,2026, Elapsed time: 0:00:35
+# Errors: 0, Warnings: 0

@@ -1,0 +1,22 @@
+Reading E:/intelFPGA_lite/18.1/modelsim_ase/tcl/vsim/pref.tcl
+
+# 10.5b
+
+# vsim -c -onfinish stop -lib E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim tb_codec_config -do "onbreak {quit -code 1}; onerror {quit -code 1}; run -all; quit -code 0" 
+# Start time: 00:13:21 on Oct 08,2026
+# Loading sv_std.std
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim.tb_codec_config
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim.codec_config
+# onbreak {quit -code 1}
+#  Warning: onbreak command for use within macro
+#  onerror {quit -code 1}
+#  Warning: onerror command for use within macro
+#  run -all
+# ALL TESTS PASSED: tb_codec_config
+# ** Note: $finish    : tb/tb_codec_config.sv(27)
+#    Time: 26015 ns  Iteration: 0  Instance: /tb_codec_config
+# Break in Module tb_codec_config at tb/tb_codec_config.sv line 27
+# Stopped at tb/tb_codec_config.sv line 27
+#  quit -code 0
+# End time: 00:13:21 on Oct 08,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0

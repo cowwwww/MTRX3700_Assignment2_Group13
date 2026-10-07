@@ -1,0 +1,17 @@
+Analysis & Synthesis Status : Successful - Thu Oct 08 00:13:50 2026
+Quartus Prime Version : 18.1.0 Build 625 09/12/2018 SJ Lite Edition
+Revision Name : shine_sing
+Top-level Entity Name : shine_sing_top
+Family : Cyclone V
+Logic utilization (in ALMs) : N/A
+Total registers : 32618
+Total pins : 103
+Total virtual pins : 0
+Total block memory bits : 2,533,024
+Total DSP Blocks : 31
+Total HSSI RX PCSs : 0
+Total HSSI PMA RX Deserializers : 0
+Total HSSI TX PCSs : 0
+Total HSSI PMA TX Serializers : 0
+Total PLLs : 2
+Total DLLs : 0

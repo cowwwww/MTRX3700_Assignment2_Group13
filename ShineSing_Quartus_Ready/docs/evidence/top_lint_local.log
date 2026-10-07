@@ -1,0 +1,391 @@
+- V e r i l a t i o n   R e p o r t:  rev vUNKNOWN-built20260516-4e853d8
+- Verilator: Built from 3.292 MB sources in 38 modules, into 1.442 MB in 5 C++ files needing 0.000 MB
+- Verilator: Walltime 0.743 s (elab=0.048, cvt=0.611, bld=0.000); cpu 0.000 s on 1 threads; allocated 63.664 MB
+%Warning-PINMISSING: quartus\vga_sink\synthesis\vga_sink.v:24:34: Instance has missing pin: 'empty'
+   24 |  vga_sink_video_vga_controller_0 video_vga_controller_0 (
+      |                                  ^~~~~~~~~~~~~~~~~~~~~~
+                     quartus\vga_sink\synthesis\submodules\vga_sink_video_vga_controller_0.v:36:2: ... Location of port declaration
+   36 |  empty,
+      |  ^~~~~
+                     ... For warning description see https://verilator.org/warn/PINMISSING?v=0.000
+                     ... Use "/* verilator lint_off PINMISSING */" and lint_on around source to disable this message.
+%Warning-TIMESCALEMOD: rtl\audio_features.sv:6:8: Timescale missing on this module as other modules have it (IEEE 1800-2023 3.14.2.3)
+    6 | module audio_features #(parameter MODE=3, D=8, RAW_SHIFT=8, LOG_SCALE=64)(
+      |        ^~~~~~~~~~~~~~
+                       rtl\classifier.sv:4:8: ... Location of module with timescale
+    4 | module classifier #(
+      |        ^~~~~~~~~~
+                       ... For warning description see https://verilator.org/warn/TIMESCALEMOD?v=0.000
+                       ... Use "/* verilator lint_off TIMESCALEMOD */" and lint_on around source to disable this message.
+%Warning-TIMESCALEMOD: rtl\audio_frontend.sv:3:8: Timescale missing on this module as other modules have it (IEEE 1800-2023 3.14.2.3)
+    3 | module audio_frontend #(parameter N=1024)(
+      |        ^~~~~~~~~~~~~~
+                       rtl\classifier.sv:4:8: ... Location of module with timescale
+    4 | module classifier #(
+      |        ^~~~~~~~~~
+%Warning-TIMESCALEMOD: rtl\audio_level.sv:4:8: Timescale missing on this module as other modules have it (IEEE 1800-2023 3.14.2.3)
+    4 | module audio_level #(
+      |        ^~~~~~~~~~~
+                       rtl\classifier.sv:4:8: ... Location of module with timescale
+    4 | module classifier #(
+      |        ^~~~~~~~~~
+%Warning-TIMESCALEMOD: rtl\board_controls.sv:1:8: Timescale missing on this module as other modules have it (IEEE 1800-2023 3.14.2.3)
+    1 | module board_controls #(parameter DEBOUNCE=1000000)(
+      |        ^~~~~~~~~~~~~~
+                       rtl\classifier.sv:4:8: ... Location of module with timescale
+    4 | module classifier #(
+      |        ^~~~~~~~~~
+%Warning-TIMESCALEMOD: rtl\cdc_mailbox.sv:3:8: Timescale missing on this module as other modules have it (IEEE 1800-2023 3.14.2.3)
+    3 | module cdc_mailbox #(parameter WIDTH=16)(
+      |        ^~~~~~~~~~~
+                       rtl\classifier.sv:4:8: ... Location of module with timescale
+    4 | module classifier #(
+      |        ^~~~~~~~~~
+%Warning-WIDTHEXPAND: rtl\fft\DelayBuffer.v:32:25: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'pointer' generates 1 bits.
+                                                 : ... note: In instance 'shine_sing_top.fft.SU5.DB1'
+   32 |         pointer<=pointer==DEPTH-2 ? 0:pointer+1'b1;
+      |                         ^~
+                      ... For warning description see https://verilator.org/warn/WIDTHEXPAND?v=0.000
+                      ... Use "/* verilator lint_off WIDTHEXPAND */" and lint_on around source to disable this message.
+%Warning-WIDTHEXPAND: rtl\fft\DelayBuffer.v:32:25: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'pointer' generates 2 bits.
+                                                 : ... note: In instance 'shine_sing_top.fft.SU4.DB2'
+   32 |         pointer<=pointer==DEPTH-2 ? 0:pointer+1'b1;
+      |                         ^~
+%Warning-WIDTHEXPAND: rtl\fft\DelayBuffer.v:32:25: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'pointer' generates 3 bits.
+                                                 : ... note: In instance 'shine_sing_top.fft.SU4.DB1'
+   32 |         pointer<=pointer==DEPTH-2 ? 0:pointer+1'b1;
+      |                         ^~
+%Warning-WIDTHEXPAND: rtl\fft\DelayBuffer.v:32:25: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'pointer' generates 4 bits.
+                                                 : ... note: In instance 'shine_sing_top.fft.SU3.DB2'
+   32 |         pointer<=pointer==DEPTH-2 ? 0:pointer+1'b1;
+      |                         ^~
+%Warning-WIDTHEXPAND: rtl\fft\DelayBuffer.v:32:25: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'pointer' generates 6 bits.
+                                                 : ... note: In instance 'shine_sing_top.fft.SU2.DB2'
+   32 |         pointer<=pointer==DEPTH-2 ? 0:pointer+1'b1;
+      |                         ^~
+%Warning-WIDTHEXPAND: rtl\fft\DelayBuffer.v:32:25: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'pointer' generates 7 bits.
+                                                 : ... note: In instance 'shine_sing_top.fft.SU2.DB1'
+   32 |         pointer<=pointer==DEPTH-2 ? 0:pointer+1'b1;
+      |                         ^~
+%Warning-WIDTHEXPAND: rtl\fft\DelayBuffer.v:32:25: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'pointer' generates 8 bits.
+                                                 : ... note: In instance 'shine_sing_top.fft.SU1.DB2'
+   32 |         pointer<=pointer==DEPTH-2 ? 0:pointer+1'b1;
+      |                         ^~
+%Warning-WIDTHTRUNC: rtl\fft\Butterfly.v:27:15: Operator ASSIGNW expects 16 bits on the Assign RHS, but Assign RHS's SHIFTRS generates 32 or 17 bits.
+                                              : ... note: In instance 'shine_sing_top.fft.SU5.BF2'
+   27 | assign  y0_re = (add_re + RH) >>> 1;
+      |               ^
+                     ... For warning description see https://verilator.org/warn/WIDTHTRUNC?v=0.000
+                     ... Use "/* verilator lint_off WIDTHTRUNC */" and lint_on around source to disable this message.
+%Warning-WIDTHTRUNC: rtl\fft\Butterfly.v:28:15: Operator ASSIGNW expects 16 bits on the Assign RHS, but Assign RHS's SHIFTRS generates 32 or 17 bits.
+                                              : ... note: In instance 'shine_sing_top.fft.SU5.BF2'
+   28 | assign  y0_im = (add_im + RH) >>> 1;
+      |               ^
+%Warning-WIDTHTRUNC: rtl\fft\Butterfly.v:29:15: Operator ASSIGNW expects 16 bits on the Assign RHS, but Assign RHS's SHIFTRS generates 32 or 17 bits.
+                                              : ... note: In instance 'shine_sing_top.fft.SU5.BF2'
+   29 | assign  y1_re = (sub_re + RH) >>> 1;
+      |               ^
+%Warning-WIDTHTRUNC: rtl\fft\Butterfly.v:30:15: Operator ASSIGNW expects 16 bits on the Assign RHS, but Assign RHS's SHIFTRS generates 32 or 17 bits.
+                                              : ... note: In instance 'shine_sing_top.fft.SU5.BF2'
+   30 | assign  y1_im = (sub_im + RH) >>> 1;
+      |               ^
+%Warning-WIDTHEXPAND: rtl\fft\DelayBuffer.v:32:25: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'pointer' generates 9 bits.
+                                                 : ... note: In instance 'shine_sing_top.fft.SU1.DB1'
+   32 |         pointer<=pointer==DEPTH-2 ? 0:pointer+1'b1;
+      |                         ^~
+%Warning-WIDTHTRUNC: rtl\fft\Multiply.v:25:17: Operator ASSIGNW expects 16 bits on the Assign RHS, but Assign RHS's SHIFTRS generates 32 bits.
+                                             : ... note: In instance 'shine_sing_top.fft.SU5.MU'
+   25 | assign  sc_arbr = arbr >>> (WIDTH-1);
+      |                 ^
+%Warning-WIDTHTRUNC: rtl\fft\Multiply.v:26:17: Operator ASSIGNW expects 16 bits on the Assign RHS, but Assign RHS's SHIFTRS generates 32 bits.
+                                             : ... note: In instance 'shine_sing_top.fft.SU5.MU'
+   26 | assign  sc_arbi = arbi >>> (WIDTH-1);
+      |                 ^
+%Warning-WIDTHTRUNC: rtl\fft\Multiply.v:27:17: Operator ASSIGNW expects 16 bits on the Assign RHS, but Assign RHS's SHIFTRS generates 32 bits.
+                                             : ... note: In instance 'shine_sing_top.fft.SU5.MU'
+   27 | assign  sc_aibr = aibr >>> (WIDTH-1);
+      |                 ^
+%Warning-WIDTHTRUNC: rtl\fft\Multiply.v:28:17: Operator ASSIGNW expects 16 bits on the Assign RHS, but Assign RHS's SHIFTRS generates 32 bits.
+                                             : ... note: In instance 'shine_sing_top.fft.SU5.MU'
+   28 | assign  sc_aibi = aibi >>> (WIDTH-1);
+      |                 ^
+%Warning-WIDTHEXPAND: rtl\fft\DelayBuffer.v:32:25: Operator EQ expects 32 or 6 bits on the LHS, but LHS's VARREF 'pointer' generates 5 bits.
+                                                 : ... note: In instance 'shine_sing_top.fft.SU5.DB2'
+   32 |         pointer<=pointer==DEPTH-2 ? 0:pointer+1'b1;
+      |                         ^~
+%Warning-WIDTHTRUNC: rtl\fft\SdfUnit.v:232:16: Operator ASSIGNW expects 8 bits on the Assign RHS, but Assign RHS's SHIFTL generates 10 bits.
+                                             : ... note: In instance 'shine_sing_top.fft.SU5'
+  232 | assign  tw_num = bf2_count << (LOG_N-LOG_M);
+      |                ^
+%Warning-WIDTHEXPAND: rtl\reuse\low_pass_conv.sv:61:21: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'tap' generates 6 bits.
+                                                      : ... note: In instance 'shine_sing_top.frontend.fir'
+   61 |             if (tap == N-1) running <= 1'b0; else tap <= tap + 1'b1;
+      |                     ^~
+%Warning-WIDTHEXPAND: rtl\reuse\low_pass_conv.sv:66:45: Operator COND expects 40 bits on the Conditional True, but Conditional True's VARREF 'prod' generates 34 bits.
+                                                      : ... note: In instance 'shine_sing_top.frontend.fir'
+   66 |         if (prod_valid) acc <= (tap_q == 0) ? prod : acc + prod;
+      |                                             ^
+%Warning-WIDTHEXPAND: rtl\reuse\low_pass_conv.sv:66:58: Operator ADD expects 40 bits on the RHS, but RHS's VARREF 'prod' generates 34 bits.
+                                                      : ... note: In instance 'shine_sing_top.frontend.fir'
+   66 |         if (prod_valid) acc <= (tap_q == 0) ? prod : acc + prod;
+      |                                                          ^
+%Warning-WIDTHEXPAND: rtl\reuse\low_pass_conv.sv:67:44: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'tap_q' generates 6 bits.
+                                                      : ... note: In instance 'shine_sing_top.frontend.fir'
+   67 |         done       <= prod_valid && (tap_q == N-1);
+      |                                            ^~
+%Warning-WIDTHEXPAND: rtl\game_controller.sv:42:41: Operator ADD expects 4 bits on the RHS, but RHS's SEL generates 2 bits.
+                                                  : ... note: In instance 'shine_sing_top.game_logic.controller'
+   42 |                     start_count <= 4'd2 + random_value[1:0];
+      |                                         ^
+%Warning-WIDTHEXPAND: rtl\classifier.sv:71:68: Operator EQ expects 32 bits on the LHS, but LHS's ARRAYSEL generates 2 bits.
+                                             : ... note: In instance 'shine_sing_top.recognizer'
+   71 |             for (int k = 0; k < M; k++) if (vote_ok[k] && votes[k] == c) tally[c]++;
+      |                                                                    ^~
+%Warning-WIDTHTRUNC: rtl\classifier.sv:77:79: Operator ASSIGN expects 2 bits on the Assign RHS, but Assign RHS's VARREF 'c' generates 32 bits.
+                                            : ... note: In instance 'shine_sing_top.recognizer'
+   77 |         for (int c = 1; c < NCLASS; c++) if (tally[c] > tally[winner]) winner = c;
+      |                                                                               ^
+%Warning-WIDTHEXPAND: rtl\classifier.sv:81:37: Operator GT expects 32 bits on the LHS, but LHS's VARREF 'd1' generates 22 bits.
+                                             : ... note: In instance 'shine_sing_top.recognizer'
+   81 |     assign rej_c = (d2 == 0) || (d1 > DMAX) || (64'(d1) * RHO_DEN > 64'(d2) * RHO_NUM);
+      |                                     ^
+%Warning-WIDTHEXPAND: rtl\classifier.sv:113:23: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 't' generates 4 bits.
+                                              : ... note: In instance 'shine_sing_top.recognizer'
+  113 |                 if (t == NTT-1) st <= DECIDE; else t <= t + 1'b1;
+      |                       ^~
+%Warning-WIDTHEXPAND: rtl\classifier.sv:119:35: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'vptr' generates 3 bits.
+                                              : ... note: In instance 'shine_sing_top.recognizer'
+  119 |                     vptr <= (vptr == M-1) ? '0 : vptr + 1'b1;
+      |                                   ^~
+%Warning-WIDTHEXPAND: rtl\classifier.sv:126:35: Operator GTE expects 23 bits on the RHS, but RHS's VARREF 'd2' generates 22 bits.
+                                              : ... note: In instance 'shine_sing_top.recognizer'
+  126 |                 remainder<=doubled>=d2 ? doubled-d2:doubled;
+      |                                   ^~
+%Warning-WIDTHEXPAND: rtl\classifier.sv:127:43: Operator GTE expects 23 bits on the RHS, but RHS's VARREF 'd2' generates 22 bits.
+                                              : ... note: In instance 'shine_sing_top.recognizer'
+  127 |                 ratio<={ratio[6:0],doubled>=d2};
+      |                                           ^~
+%Warning-WIDTHEXPAND: rtl\classifier.sv:129:59: Operator GTE expects 23 bits on the RHS, but RHS's VARREF 'd2' generates 22 bits.
+                                              : ... note: In instance 'shine_sing_top.recognizer'
+  129 |                     confidence<=8'd255-{ratio[6:0],doubled>=d2};st<=VOTE;
+      |                                                           ^~
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:47:21: Operator ASSIGN expects 64 bits on the Assign RHS, but Assign RHS's VARREF 'peak_bin' generates 9 bits.
+                                                 : ... note: In instance 'shine_sing_top.features'
+   47 |   if(MODE==1) scaled=peak_bin;
+      |                     ^
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:48:46: Operator SHIFTR expects 64 bits on the LHS, but LHS's ARRAYSEL generates 48 bits.
+                                                 : ... note: In instance 'shine_sing_top.features'
+   48 |   else if(MODE==2) scaled=energy[band_index] >> RAW_SHIFT;
+      |                                              ^~
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:51:17: Operator LT expects 32 bits on the LHS, but LHS's VARREF 'bin' generates 10 bits.
+                                                 : ... note: In instance 'shine_sing_top.features'
+   51 |   mel_up   = bin<MEL_BINS ? MEL_UP[bin] : 5'd31;
+      |                 ^
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:52:17: Operator LT expects 32 bits on the LHS, but LHS's VARREF 'bin' generates 10 bits.
+                                                 : ... note: In instance 'shine_sing_top.features'
+   52 |   mel_w    = bin<MEL_BINS ? MEL_W[bin] : 9'd0;
+      |                 ^
+%Warning-WIDTHTRUNC: rtl\audio_features.sv:54:12: Operator ASSIGN expects 33 bits on the Assign RHS, but Assign RHS's SEL generates 34 bits.
+                                                : ... note: In instance 'shine_sing_top.features'
+   54 |   mel_part = mel_prod[41:8];                  
+      |            ^
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:79:15: Operator LT expects 32 bits on the LHS, but LHS's VARREF 'mel_up' generates 5 bits.
+                                                 : ... note: In instance 'shine_sing_top.features'
+   79 |      if(mel_up<NMEL)               mel[mel_up]   <= mel[mel_up]   + 41'(mel_part);
+      |               ^
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:80:28: Operator LTE expects 32 bits on the LHS, but LHS's VARREF 'mel_up' generates 5 bits.
+                                                 : ... note: In instance 'shine_sing_top.features'
+   80 |      if(mel_up>=1 && mel_up<=NMEL) mel[mel_up-1] <= mel[mel_up-1] + 41'(mag) - 41'(mel_part);
+      |                            ^~
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:82:81: Operator ADD expects 48 bits on the RHS, but RHS's VARREF 'mag' generates 33 bits.
+                                                 : ... note: In instance 'shine_sing_top.features'
+   82 |      for(int b=0;b<8;b++) if(bin>=EDGE[b] && bin<EDGE[b+1]) energy[b]<=energy[b]+mag;
+      |                                                                                 ^
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:82:33: Operator GTE expects 32 bits on the LHS, but LHS's VARREF 'bin' generates 10 bits.
+                                                 : ... note: In instance 'shine_sing_top.features'
+   82 |      for(int b=0;b<8;b++) if(bin>=EDGE[b] && bin<EDGE[b+1]) energy[b]<=energy[b]+mag;
+      |                                 ^~
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:82:49: Operator LT expects 32 bits on the LHS, but LHS's VARREF 'bin' generates 10 bits.
+                                                 : ... note: In instance 'shine_sing_top.features'
+   82 |      for(int b=0;b<8;b++) if(bin>=EDGE[b] && bin<EDGE[b+1]) energy[b]<=energy[b]+mag;
+      |                                                 ^
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:83:46: Operator ADD expects 48 bits on the RHS, but RHS's VARREF 'mag' generates 33 bits.
+                                                 : ... note: In instance 'shine_sing_top.features'
+   83 |      if(bin>=EDGE[0] && bin<512) total<=total+mag;
+      |                                              ^
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:83:12: Operator GTE expects 32 bits on the LHS, but LHS's VARREF 'bin' generates 10 bits.
+                                                 : ... note: In instance 'shine_sing_top.features'
+   83 |      if(bin>=EDGE[0] && bin<512) total<=total+mag;
+      |            ^~
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:102:23: Operator GTE expects 49 bits on the RHS, but RHS's VARREF 'total' generates 48 bits.
+                                                  : ... note: In instance 'shine_sing_top.features'
+  102 |     remainder<=doubled>=total ? doubled-total:doubled;
+      |                       ^~
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:103:38: Operator GTE expects 49 bits on the RHS, but RHS's VARREF 'total' generates 48 bits.
+                                                  : ... note: In instance 'shine_sing_top.features'
+  103 |     quotient<={quotient[14:0],doubled>=total};
+      |                                      ^~
+%Warning-WIDTHEXPAND: rtl\audio_features.sv:105:105: Operator GTE expects 49 bits on the RHS, but RHS's VARREF 'total' generates 48 bits.
+                                                   : ... note: In instance 'shine_sing_top.features'
+  105 |      feature[band_index]<=total==0 ? 0 : (energy[band_index]==total ? 16'hffff : {quotient[14:0],doubled>=total});
+      |                                                                                                         ^~
+%Warning-WIDTHEXPAND: rtl\video_source.sv:51:43: Operator SHIFTR expects 32 bits on the LHS, but LHS's VARREF 'ny' generates 9 bits.
+                                               : ... note: In instance 'shine_sing_top.source'
+   51 |   address=($clog2(W*H))'((V_RES==2*H ? (ny>>1):(ny*H/V_RES))*W+(H_RES==2*W ? (nx>>1):(nx*W/H_RES)));
+      |                                           ^~
+%Warning-WIDTHEXPAND: rtl\video_source.sv:51:81: Operator SHIFTR expects 32 bits on the LHS, but LHS's VARREF 'nx' generates 10 bits.
+                                               : ... note: In instance 'shine_sing_top.source'
+   51 |   address=($clog2(W*H))'((V_RES==2*H ? (ny>>1):(ny*H/V_RES))*W+(H_RES==2*W ? (nx>>1):(nx*W/H_RES)));
+      |                                                                                 ^~
+%Warning-WIDTHEXPAND: rtl\video_source.sv:69:21: Operator SHIFTR expects 32 bits on the LHS, but LHS's VARREF 'x' generates 10 bits.
+                                               : ... note: In instance 'shine_sing_top.source'
+   69 |   cx=H_RES==2*W ? (x>>1):x*W/H_RES;cy=V_RES==2*H ? (y>>1):y*H/V_RES;lane=-1;
+      |                     ^~
+%Warning-WIDTHEXPAND: rtl\video_source.sv:69:54: Operator SHIFTR expects 32 bits on the LHS, but LHS's VARREF 'y' generates 9 bits.
+                                               : ... note: In instance 'shine_sing_top.source'
+   69 |   cx=H_RES==2*W ? (x>>1):x*W/H_RES;cy=V_RES==2*H ? (y>>1):y*H/V_RES;lane=-1;
+      |                                                      ^~
+%Warning-WIDTHEXPAND: rtl\video_source.sv:86:16: Operator ASSIGN expects 32 bits on the Assign RHS, but Assign RHS's SEL generates 8 bits.
+                                               : ... note: In instance 'shine_sing_top.source'
+   86 |   average_value=local_average[cx*8+:8];
+      |                ^
+%Warning-WIDTHEXPAND: rtl\video_source.sv:87:28: Operator ADD expects 32 bits on the LHS, but LHS's VARREF 'high_threshold' generates 8 bits.
+                                               : ... note: In instance 'shine_sing_top.source'
+   87 |   high_value=high_threshold+(adaptive ? average_value:0);
+      |                            ^
+%Warning-WIDTHEXPAND: rtl\video_source.sv:88:26: Operator ADD expects 32 bits on the LHS, but LHS's VARREF 'low_threshold' generates 8 bits.
+                                               : ... note: In instance 'shine_sing_top.source'
+   88 |   low_value=low_threshold+(adaptive ? average_value:0);
+      |                          ^
+%Warning-WIDTHEXPAND: rtl\video_source.sv:94:14: Operator SUB expects 32 bits on the RHS, but RHS's VARREF 'y' generates 9 bits.
+                                               : ... note: In instance 'shine_sing_top.source'
+   94 |    if(V_RES-1-y<=height) begin r=210;g=190;b=24;end
+      |              ^
+%Warning-WIDTHEXPAND: rtl\video_source.sv:95:20: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'y' generates 9 bits.
+                                               : ... note: In instance 'shine_sing_top.source'
+   95 |    if(adaptive && y==V_RES-1-average_value*(V_RES-1)/255) begin r=220;g=80;b=255;end
+      |                    ^~
+%Warning-WIDTHEXPAND: rtl\video_source.sv:96:8: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'y' generates 9 bits.
+                                              : ... note: In instance 'shine_sing_top.source'
+   96 |    if(y==V_RES-1-high_value*(V_RES-1)/255) begin r=255;g=32;b=32;end
+      |        ^~
+%Warning-WIDTHEXPAND: rtl\video_source.sv:97:8: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'y' generates 9 bits.
+                                              : ... note: In instance 'shine_sing_top.source'
+   97 |    if(y==V_RES-1-low_value*(V_RES-1)/255) begin r=32;g=180;b=255;end
+      |        ^~
+%Warning-WIDTHEXPAND: rtl\video_source.sv:98:53: Operator EQ expects 32 bits on the RHS, but RHS's SEL generates 9 bits.
+                                               : ... note: In instance 'shine_sing_top.source'
+   98 |    for(int i=0;i<NMAX;i++) if(i<boundary_count && cx==boundaries[i*XW+:XW]) begin r=64;g=255;b=64;end
+      |                                                     ^~
+%Warning-WIDTHEXPAND: rtl\video_source.sv:109:29: Operator DIV expects 32 bits on the LHS, but LHS's VARREF 'frame_score' generates 7 bits.
+                                                : ... note: In instance 'shine_sing_top.source'
+  109 |   digit=(x<40) ? frame_score/10 : frame_score%10;
+      |                             ^
+%Warning-WIDTHEXPAND: rtl\video_source.sv:109:46: Operator MODDIV expects 32 bits on the LHS, but LHS's VARREF 'frame_score' generates 7 bits.
+                                                : ... note: In instance 'shine_sing_top.source'
+  109 |   digit=(x<40) ? frame_score/10 : frame_score%10;
+      |                                              ^
+%Warning-WIDTHEXPAND: rtl\video_source.sv:110:16: Operator SUB expects 32 bits on the LHS, but LHS's VARREF 'x' generates 10 bits.
+                                                : ... note: In instance 'shine_sing_top.source'
+  110 |   dx=(x<40) ? x-8:x-44;dy=y-8;seg=digit_segments(digit);digit_on=0;
+      |                ^
+%Warning-WIDTHEXPAND: rtl\video_source.sv:110:20: Operator SUB expects 32 bits on the LHS, but LHS's VARREF 'x' generates 10 bits.
+                                                : ... note: In instance 'shine_sing_top.source'
+  110 |   dx=(x<40) ? x-8:x-44;dy=y-8;seg=digit_segments(digit);digit_on=0;
+      |                    ^
+%Warning-WIDTHEXPAND: rtl\video_source.sv:110:28: Operator SUB expects 32 bits on the LHS, but LHS's VARREF 'y' generates 9 bits.
+                                                : ... note: In instance 'shine_sing_top.source'
+  110 |   dx=(x<40) ? x-8:x-44;dy=y-8;seg=digit_segments(digit);digit_on=0;
+      |                            ^
+%Warning-WIDTHEXPAND: rtl\piano_detector.sv:84:61: Operator SUB expects 12 bits on the LHS, but LHS's VARREF 'rom_pixel' generates 8 bits.
+                                                 : ... note: In instance 'shine_sing_top.detector'
+   84 |   strength=mode ? gx : (rom_pixel>previous_pixel ? rom_pixel-previous_pixel : previous_pixel-rom_pixel);
+      |                                                             ^
+%Warning-WIDTHEXPAND: rtl\piano_detector.sv:84:61: Operator SUB expects 12 bits on the RHS, but RHS's VARREF 'previous_pixel' generates 8 bits.
+                                                 : ... note: In instance 'shine_sing_top.detector'
+   84 |   strength=mode ? gx : (rom_pixel>previous_pixel ? rom_pixel-previous_pixel : previous_pixel-rom_pixel);
+      |                                                             ^
+%Warning-WIDTHEXPAND: rtl\piano_detector.sv:84:93: Operator SUB expects 12 bits on the LHS, but LHS's VARREF 'previous_pixel' generates 8 bits.
+                                                 : ... note: In instance 'shine_sing_top.detector'
+   84 |   strength=mode ? gx : (rom_pixel>previous_pixel ? rom_pixel-previous_pixel : previous_pixel-rom_pixel);
+      |                                                                                             ^
+%Warning-WIDTHEXPAND: rtl\piano_detector.sv:84:93: Operator SUB expects 12 bits on the RHS, but RHS's VARREF 'rom_pixel' generates 8 bits.
+                                                 : ... note: In instance 'shine_sing_top.detector'
+   84 |   strength=mode ? gx : (rom_pixel>previous_pixel ? rom_pixel-previous_pixel : previous_pixel-rom_pixel);
+      |                                                                                             ^
+%Warning-WIDTHEXPAND: rtl\piano_detector.sv:109:58: Operator ADD expects 20 bits on the RHS, but RHS's VARREF 'strength' generates 12 bits.
+                                                  : ... note: In instance 'shine_sing_top.detector'
+  109 |     if(ey>=Y0 && ey<=Y1) raw_profile[ex]<=raw_profile[ex]+strength;
+      |                                                          ^
+%Warning-WIDTHEXPAND: rtl\piano_detector.sv:142:24: Operator GTE expects 21 bits on the RHS, but RHS's VARREF 'maximum' generates 20 bits.
+                                                  : ... note: In instance 'shine_sing_top.detector'
+  142 |      remainder<=doubled>=maximum ? doubled-maximum : doubled;
+      |                        ^~
+%Warning-WIDTHEXPAND: rtl\piano_detector.sv:143:38: Operator GTE expects 21 bits on the RHS, but RHS's VARREF 'maximum' generates 20 bits.
+                                                  : ... note: In instance 'shine_sing_top.detector'
+  143 |      quotient<={quotient[6:0],doubled>=maximum};
+      |                                      ^~
+%Warning-WIDTHEXPAND: rtl\piano_detector.sv:145:94: Operator GTE expects 21 bits on the RHS, but RHS's VARREF 'maximum' generates 20 bits.
+                                                  : ... note: In instance 'shine_sing_top.detector'
+  145 |       norm[scan]<=maximum==0 ? 0 : (raw_profile[scan]==maximum ? 255 : {quotient[6:0],doubled>=maximum});
+      |                                                                                              ^~
+%Warning-WIDTHEXPAND: rtl\piano_detector.sv:146:102: Operator GTE expects 21 bits on the RHS, but RHS's VARREF 'maximum' generates 20 bits.
+                                                   : ... note: In instance 'shine_sing_top.detector'
+  146 |       profile[scan*8+:8]<=maximum==0 ? 0 : (raw_profile[scan]==maximum ? 255 : {quotient[6:0],doubled>=maximum});
+      |                                                                                                      ^~
+%Warning-WIDTHEXPAND: rtl\piano_detector.sv:184:36: Operator SUB expects 32 bits on the LHS, but LHS's VARREF 'boundary_count' generates 5 bits.
+                                                  : ... note: In instance 'shine_sing_top.detector'
+  184 |          boundaries[(boundary_count-1)*XW+:XW]<=best_position;last_position<=best_position;last_value<=best_value;
+      |                                    ^
+%Warning-WIDTHEXPAND: rtl\piano_detector.sv:199:60: Operator SUB expects 32 bits on the LHS, but LHS's VARREF 'boundary_count' generates 5 bits.
+                                                  : ... note: In instance 'shine_sing_top.detector'
+  199 |        if(best_value>last_value) boundaries[(boundary_count-1)*XW+:XW]<=best_position;
+      |                                                            ^
+%Warning-WIDTHTRUNC: rtl\codec_config.sv:22:13: Operator ASSIGN expects 5 bits on the Assign RHS, but Assign RHS's SHIFTR generates 6 bits.
+                                              : ... note: In instance 'shine_sing_top.codec'
+   22 |   bit_number=(step-6'd2)>>1; byte_number=2'(bit_number/9);in_byte=4'(bit_number%9);
+      |             ^
+%Warning-WIDTHEXPAND: rtl\audio_level.sv:44:28: Operator GTE expects 17 bits on the RHS, but RHS's ARRAYSEL generates 16 bits.
+                                              : ... note: In instance 'shine_sing_top.meter'
+   44 |             if (mean_level >= DB_THRESHOLD[d])
+      |                            ^~
+%Warning-WIDTHEXPAND: rtl\audio_level.sv:53:14: Operator ADD expects 32 or 25 bits on the RHS, but RHS's VARREF 'amplitude' generates 16 bits.
+                                              : ... note: In instance 'shine_sing_top.meter'
+   53 |         (acc + amplitude) / BLOCK;
+      |              ^
+%Warning-WIDTHTRUNC: rtl\audio_level.sv:52:23: Operator ASSIGNW expects 17 bits on the Assign RHS, but Assign RHS's DIV generates 32 or 25 bits.
+                                             : ... note: In instance 'shine_sing_top.meter'
+   52 |     assign mean_level =
+      |                       ^
+%Warning-WIDTHEXPAND: rtl\audio_level.sv:79:36: Operator EQ expects 32 or 6 bits on the LHS, but LHS's VARREF 'db_hold_count' generates 5 bits.
+                                              : ... note: In instance 'shine_sing_top.meter'
+   79 |                     (db_hold_count == DB_HOLD_BLOCKS-1)) begin
+      |                                    ^~
+%Warning-WIDTHEXPAND: rtl\audio_level.sv:99:40: Operator ADD expects 32 bits on the RHS, but RHS's VARREF 'mean_level' generates 17 bits.
+                                              : ... note: In instance 'shine_sing_top.meter'
+   99 |                         : 16'((7*noise + mean_level)/8);
+      |                                        ^
+%Warning-WIDTHEXPAND: rtl\audio_level.sv:106:48: Operator ADD expects 32 bits on the RHS, but RHS's VARREF 'mean_level' generates 17 bits.
+                                               : ... note: In instance 'shine_sing_top.meter'
+  106 |                         noise <= 16'((63*noise + mean_level)/64);
+      |                                                ^
+%Warning-WIDTHEXPAND: rtl\audio_level.sv:117:30: Operator ADD expects 25 bits on the RHS, but RHS's VARREF 'amplitude' generates 16 bits.
+                                               : ... note: In instance 'shine_sing_top.meter'
+  117 |                 acc   <= acc + amplitude;
+      |                              ^
+%Warning-WIDTHEXPAND: rtl\audio_level.sv:69:23: Operator EQ expects 32 or 9 bits on the LHS, but LHS's VARREF 'count' generates 8 bits.
+                                              : ... note: In instance 'shine_sing_top.meter'
+   69 |             if (count == BLOCK-1) begin
+      |                       ^~
+%Warning-WIDTHEXPAND: rtl\audio_frontend.sv:37:12: Operator EQ expects 32 or 11 bits on the LHS, but LHS's VARREF 'wr' generates 10 bits.
+                                                 : ... note: In instance 'shine_sing_top.frontend'
+   37 |       if(wr==N-1) begin
+      |            ^~
+%Warning-WIDTHEXPAND: rtl\audio_frontend.sv:44:10: Operator EQ expects 32 or 11 bits on the LHS, but LHS's VARREF 'rd' generates 10 bits.
+                                                 : ... note: In instance 'shine_sing_top.frontend'
+   44 |     if(rd==N-1) reading<=0; else rd<=rd+1'b1;
+      |          ^~
+%Warning-WIDTHEXPAND: rtl\shine_sing_top.sv:70:24: Operator DIV expects 32 bits on the LHS, but LHS's VARREF 'peak' generates 9 bits.
+                                                 : ... note: In instance 'shine_sing_top'
+   70 |  hex_seg h4(.d(4'((peak/10)%10)),.blank(1'b0),.seg(HEX4));
+      |                        ^

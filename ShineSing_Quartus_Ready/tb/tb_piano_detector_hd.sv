@@ -28,16 +28,7 @@ module tb_piano_detector_hd;
     logic publish_busy = 0;
     wire publish;
 
-    logic [W*8-1:0] profile,local_average;
-    wire [W*8-1:0] unused_profile,unused_average;
-    wire profile_write;wire [XW-1:0] profile_column;wire [15:0] profile_values;
-    integer profile_writes=0;
-    always @(posedge clk) if(!reset && profile_write) begin
-        if(profile_column!=profile_writes) $fatal(1,"stream column order");
-        profile[profile_column*8+:8]=profile_values[7:0];
-        local_average[profile_column*8+:8]=profile_values[15:8];
-        profile_writes++;
-    end
+    wire [W*8-1:0] profile,local_average;
     wire selected_adaptive,selected_smoothing;
     wire [NMAX*XW-1:0] boundaries;
     wire [$clog2(NMAX):0] boundary_count;
@@ -55,7 +46,7 @@ module tb_piano_detector_hd;
         .W(W),
         .H(H),
         .MIN_GAP(MIN_GAP),
-        .NMAX(NMAX),.PACKED_OUTPUT(0)
+        .NMAX(NMAX)
     ) dut (
         .clk,
         .reset,
@@ -69,8 +60,7 @@ module tb_piano_detector_hd;
         .rom_pixel,
         .publish_busy,
         .publish,
-        .profile(unused_profile),.local_average(unused_average),
-        .profile_write,.profile_column,.profile_values,.selected_adaptive,.selected_smoothing,
+        .profile,.local_average,.selected_adaptive,.selected_smoothing,
         .boundaries,
         .boundary_count,
         .edge_bank,
@@ -345,7 +335,7 @@ module tb_piano_detector_hd;
 
         // Run twice without reset to catch old data left behind.
         for (pass = 0; pass < 2; pass = pass + 1) begin
-            writes = 0;profile_writes=0;
+            writes = 0;
             for (p = 0; p < PIXELS; p = p + 1)
                 seen[p] = 0;
 
@@ -359,8 +349,6 @@ module tb_piano_detector_hd;
                 selected_low !== low_threshold)
                 $fatal(1, "R-V4 threshold metadata mismatch");
 
-            if(profile_writes!=W || unused_profile!==0 || unused_average!==0)
-                $fatal(1,"stream count or unused packed outputs");
             // Check each column total.
             for (x = 0; x < W; x = x + 1) begin
                 if (profile[x*8 +: 8] !== norm_ref[x][7:0])

@@ -35,9 +35,8 @@ patch=''.join(''.join(difflib.unified_diff((ROOT/r['course_source']).read_text()
  'rtl/audio_features.sv':'Assignment feature ladder including 24 log-Mel bands; not supplied by these ZIPs.',
  'rtl/piano_detector.sv':'Assignment scan/profile/peak logic extends course concepts with normalization, hysteresis, smoothing and adaptive thresholds.',
  'rtl/video_source.sv':'Assignment VGA views, score and game masks built around the course Avalon-ST interface.',
- 'rtl/video_profile_ram.sv':'Two M10K blocks hold the profile and local average in alternating frame banks; only bank and metadata cross the mailbox.',
  'rtl/cdc_mailbox.sv':'Held-data request/acknowledge transfer for independent clock domains.',
  'rtl/game.sv':'Assignment 1 game integration with classifier decisions.',
- 'rtl/templates.svh':'Saved 24-feature templates trained from user-supplied H95 recorded vowels; see rtl/templates_training.json. The earlier course classifier ZIP contains only synthetic 8-feature test templates.'
+ 'rtl/templates.svh':'Saved 24-feature templates trained from the group WAV recordings in data/recordings; see rtl/templates_training.json. The earlier course classifier ZIP contains only synthetic 8-feature test templates.'
 }},indent=2)+'\n')
 print('Audited',len(records),'course-derived files; originals retained unchanged.')

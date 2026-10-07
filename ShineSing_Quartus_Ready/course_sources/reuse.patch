@@ -16,16 +16,17 @@
  
      input  logic x_valid,
      output logic x_ready,
-@@ -25,7 +27,7 @@
+@@ -25,7 +27,8 @@
      input  logic y_ready,
      output logic [W-1:0] y_data
  );
 -    assign x_ready = y_ready;
++    logic running = 1'b0, prod_valid = 1'b0, done = 1'b0;
 +    assign x_ready = y_ready && !running && !reset;
  
      localparam int N  = 41;
      localparam int XW = W - W_FRAC;          // integer bits of the sample (16)
-@@ -35,7 +37,9 @@
+@@ -35,17 +38,21 @@
  
      // the last N samples (integer part only)
      logic signed [XW-1:0] shift_reg [0:N-1];
@@ -36,7 +37,10 @@
          shift_reg[0] <= signed'(x_data[W-1 -: XW]);
          for (int i = 1; i < N; i++) shift_reg[i] <= shift_reg[i-1];
      end
-@@ -46,6 +50,9 @@
+ 
+     // walk the taps: one product per clock, accumulated; the sum is published after the last tap
+     logic [$clog2(N)-1:0] tap = '0, tap_q = '0;
+-    logic running = 1'b0, prod_valid = 1'b0, done = 1'b0;
      logic signed [XW+CW-1:0] prod;
      logic signed [XW+CW+$clog2(N)-1:0] acc;
      always_ff @(posedge clk) begin
@@ -72,7 +76,51 @@
  endmodule
 --- course_sources/video/rtl/conv3x3.sv
 +++ rtl/reuse/conv3x3.sv
-@@ -90,7 +90,13 @@
+@@ -43,22 +43,30 @@
+     output logic [$clog2(W)-1:0]  out_x,
+     output logic [$clog2(H)-1:0]  out_y
+ );
+-    // ---- two line buffers: lb1 holds row y-1, lb2 holds row y-2 (indexed by column) -------
+-    logic [DW-1:0] lb1 [0:W-1];
+-    logic [DW-1:0] lb2 [0:W-1];
+-    logic [DW-1:0] lb1_q, lb2_q;            // the values at column in_x, read as the pixel arrives
++    // ---- two line buffers, explicitly mapped to M10K -------------------------------
++    // Quartus 18.1 can fail to infer RAM from the compact read-before-write array style,
++    // turning these 320x8 buffers into thousands of registers/LABs.  Use the project's
++    // sync_ram primitive instead so each row buffer is guaranteed to use block RAM.
++    logic [DW-1:0] lb1_q, lb2_q;
++    logic          lb2_we;
++    logic [$clog2(W)-1:0] lb2_waddr;
+ 
+-    // Read-before-write on the same address in the same cycle: the read returns the OLD value
+-    // (rows y-1 and y-2 at this column) and the write stores the new one (row y moves to lb1,
+-    // row y-1 moves to lb2). Quartus infers a dual-port M10K for each buffer.
++    // lb1 contains the most recently completed pixel for each column.  Reading and
++    // writing the same address returns OLD_DATA, i.e. the pixel from row y-1.
++    sync_ram #(.WIDTH(DW), .DEPTH(W), .AW($clog2(W))) linebuf1 (
++        .clk(clk), .we(in_valid),
++        .waddr(in_x), .raddr(in_x), .wdata(in_pixel), .rdata(lb1_q));
++
++    // One clock later lb1_q is the old row-y-1 value.  Move it into lb2 at the
++    // delayed column address; lb2's read port still reads the current input column
++    // and therefore returns row y-2 in parallel.
+     always_ff @(posedge clk) begin
+-        if (in_valid) begin
+-            lb1_q   <= lb1[in_x];
+-            lb2_q   <= lb2[in_x];
+-            lb1[in_x] <= in_pixel;
+-            lb2[in_x] <= lb1[in_x];
+-        end
++        lb2_we    <= in_valid & ~reset;
++        lb2_waddr <= in_x;
+     end
++    sync_ram #(.WIDTH(DW), .DEPTH(W), .AW($clog2(W))) linebuf2 (
++        .clk(clk), .we(lb2_we),
++        .waddr(lb2_waddr), .raddr(in_x), .wdata(lb1_q), .rdata(lb2_q));
+ 
+     // ---- stage 1: the column triple for column in_x, one cycle after the pixel arrived -----
+     logic                  s1_valid;
+@@ -90,7 +98,13 @@
              // TODO 1: slide the window one column to the left (col 0 <= col 1, col 1 <= col 2 for all three
              //         rows) and put the new column triple (c_top, c_mid, c_bot) into column 2.
              //         This is the Lesson 4 shift register, three of them side by side.
@@ -87,7 +135,7 @@
          end
      end
  
-@@ -101,15 +107,17 @@
+@@ -101,15 +115,17 @@
          // TODO 2: acc = sum over r, c of K[r][c] * w[r][c].  Pixels are UNSIGNED 8-bit and the weights are
          //         SIGNED: cast each pixel with $signed({1'b0, w[r][c]}) and widen both to OW bits before the
          //         multiply (see the note on signed'() in 2.3).
@@ -332,7 +380,7 @@
      output logic [$clog2(NCLASS)-1:0] result,      // voted class
      output logic [7:0]               confidence,
      output logic                     reject,          // this frame's raw answer was rejected
-@@ -41,12 +29,15 @@
+@@ -41,12 +29,18 @@
  );
      localparam int NTT = NCLASS * NT;
      localparam int DW  = FW + $clog2(D) + 1;          // distance width
@@ -343,9 +391,12 @@
 +    // Use constant examples in the board build, or writable examples for capture tests.
 +    wire [D-1:0][FW-1:0] templ [0:NTT-1];
 +    logic [D-1:0][FW-1:0] enrolled [0:NTT-1];
-+    generate for(genvar n=0;n<NTT;n++) begin: template_source
-+        assign templ[n] = PRETRAINED ? SAVED_TEMPLATES[n] : enrolled[n];
-+    end endgenerate
++    genvar n;
++    generate
++        for (n = 0; n < NTT; n = n + 1) begin : template_source
++            assign templ[n] = PRETRAINED ? SAVED_TEMPLATES[n] : enrolled[n];
++        end
++    endgenerate
 +    integer enrol_count[0:NCLASS-1];
  
 -    typedef enum logic [1:0] {IDLE, DIST, DECIDE, VOTE} st_t;
@@ -353,7 +404,7 @@
      st_t st;
      logic [$clog2(NTT)-1:0] t;
      logic [D-1:0][FW-1:0] f_q;
-@@ -55,6 +46,10 @@
+@@ -55,6 +49,10 @@
      logic [$clog2(NCLASS)-1:0] votes [0:M-1];
      logic [M-1:0] vote_ok;
      logic [$clog2(M):0] vptr;
@@ -364,7 +415,7 @@
  
      // distance to template t (combinational over D words: D subtract/abs/add = fine for D <= 32)
      always_comb begin
-@@ -80,16 +75,30 @@
+@@ -80,16 +78,30 @@
      end
  
      logic rej_c;
@@ -399,7 +450,7 @@
                  vote_ok <= '0;                                 // gate closed: forget the vote
                  result_valid <= 1'b1; confidence <= '0; reject <= 1'b1;
              end
-@@ -106,8 +115,16 @@
+@@ -106,8 +118,16 @@
                      votes[vidx] <= best_class; vote_ok[vidx] <= 1'b1;
                      vptr <= (vptr == M-1) ? '0 : vptr + 1'b1;
                  end
@@ -419,7 +470,7 @@
              VOTE: begin                                        // one cycle later: the tally includes this frame's vote
                  result <= winner;
 --- course_sources/audio/fft_ip_r22sdf/DelayBuffer.v
-+++ rtl/fft/DelayBuffer.v
++++ rtl\fft\DelayBuffer.v
 @@ -12,21 +12,25 @@
      output  [WIDTH-1:0] do_im   //  Data Output (Imag)
  );

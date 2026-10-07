@@ -27,6 +27,7 @@ module low_pass_conv #(parameter W = 32, W_FRAC = 16, OUTPUT_SHIFT = 2) (
     input  logic y_ready,
     output logic [W-1:0] y_data
 );
+    logic running = 1'b0, prod_valid = 1'b0, done = 1'b0;
     assign x_ready = y_ready && !running && !reset;
 
     localparam int N  = 41;
@@ -46,7 +47,6 @@ module low_pass_conv #(parameter W = 32, W_FRAC = 16, OUTPUT_SHIFT = 2) (
 
     // walk the taps: one product per clock, accumulated; the sum is published after the last tap
     logic [$clog2(N)-1:0] tap = '0, tap_q = '0;
-    logic running = 1'b0, prod_valid = 1'b0, done = 1'b0;
     logic signed [XW+CW-1:0] prod;
     logic signed [XW+CW+$clog2(N)-1:0] acc;
     always_ff @(posedge clk) begin

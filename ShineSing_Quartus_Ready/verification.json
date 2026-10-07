@@ -1,5 +1,7 @@
 {
-  "simulator": "Verilator 5.050 (official v5.050 source build)",
+  "baseline": "V8x MTRX3700_Assignment2_Group13-main_fit_fixed.zip",
+  "date": "2026-10-08T00:29:53.031749",
+  "simulator": "ModelSim Intel FPGA Edition 10.5b",
   "rtl_tests_passed": [
     "tb_audio_features",
     "tb_audio_features_hd",
@@ -23,43 +25,103 @@
     "tb_piano_detector_hd",
     "tb_piano_thresholds",
     "tb_reaction_time_fsm",
+    "tb_recording_classifier",
     "tb_sync_ram",
     "tb_system",
-    "tb_video_profile_ram",
     "tb_video_source"
   ],
-  "top_lint": "passed with supplied ADC PLL black box; not a physical PLL or timing test",
-  "mutation_tests_caught": [
-    "gate_stuck",
-    "no_spacing",
-    "lost_smoothing",
-    "lost_saved_classes"
+  "recorded_pcm_extraction": "8 original group WAV recordings -> 63 full RTL frames; 51 selected by the documented energy rule",
+  "template_regression": "63 frames: exact agreement of RTL class/reject/confidence with independent integer Python distance calculation; reset and write protection passed",
+  "python_recording_tests_passed": 5,
+  "python_saved_template_tests_passed": 2,
+  "intel_ram_primitive": "passed: registered read latency and OLD_DATA on same-address read/write",
+  "local_verilator_lint": "passed for final board top and both recording benches; binary reports rev vUNKNOWN-built20260516-4e853d8 (pip package 5.48.0)",
+  "ed_verilator_5_050": "Not run in Ed; commands supplied in README.md",
+  "training_confusion": [
+    [
+      15,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      12,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      14,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      10,
+      0
+    ]
   ],
-  "python_saved_template_tests": 2,
-  "course_source_hashes": "passed",
-  "quartus_fit": "not run: Quartus is not installed on this Mac",
-  "live_microphone_accuracy": "Not measured on hardware. H95 speaker-held-out test: 144 correct accepts, 64 rejects, 0 wrong accepts in 208 frames.",
-  "tutor_photo": "not supplied; image slot 2 still contains the previous placeholder image",
-  "demo_ready": false,
-  "saved_templates": "Enabled at startup from real H95 recordings; reset keeps all four classes ready.",
-  "supplied_classifier_dataset": "templates.svh equals templates_test.svh; explicitly synthetic D=8",
-  "stale_bitstream": "removed; rebuild with Quartus after training and the tutor image swap",
-  "recorded_audio_extraction": "556 H95 recordings, 1108 frames, passed through actual RTL frontend/FFT/HD features in Verilator 5.050",
-  "remaining_demo_checks": [
-    "Quartus fitting and timing",
-    "Live microphone/room test",
-    "Tutor photograph"
+  "held_out_confusion": [
+    [
+      0,
+      0,
+      3,
+      0,
+      12
+    ],
+    [
+      0,
+      5,
+      0,
+      0,
+      7
+    ],
+    [
+      0,
+      0,
+      1,
+      0,
+      13
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      10
+    ]
   ],
-  "mutation_tests_note": "Historical results from the saved-template revision; mutation tests were not rerun for this RAM change.",
-  "resource_reduction": {
-    "reported_failing_labs": 3410,
-    "available_labs": 3207,
-    "old_video_mailbox_bits": 5291,
-    "new_video_mailbox_bits": 172,
-    "profile_ram_bits": 16384,
-    "profile_ram_m10k_blocks": 2,
-    "disabled_packed_detector_output_bits": 5120,
-    "tests": "All 26 RTL tests passed with Verilator 5.050. Streamed course/HD profiles match references; RAM video pixels match independent expectations across stalls and an asynchronous frame-bank swap.",
-    "limitations": "Intel altsyncram synthesis branch and fitted LAB usage require Quartus 18.1; behavioral RAM simulation is not proof of fit or timing."
-  }
+  "matrix_columns": [
+    "ee",
+    "ah",
+    "oo",
+    "aw",
+    "reject"
+  ],
+  "video_demo": "passed: demo_visual assertions, 18 complete 640x480 RTL frames, game_steps.gif; synthetic feature stimulus, not live recording recognition",
+  "quartus_full_compile": "PASS: Quartus Prime Lite 18.1.0 Build 625; 0 errors, 105 warnings; new shine_sing.sof generated",
+  "live_microphone": "Not tested on physical hardware",
+  "limitations": [
+    "Two speakers per vowel, one supplied take each; new takes and microphone/room transfer still need testing",
+    "Train-set success is not held-out accuracy",
+    "VGA stream simulation does not verify physical VGA pins or a monitor"
+  ],
+  "quartus_resources": {
+    "ALMs": "23591/32070 (74%)",
+    "RAM_blocks": "322/397 (81%)",
+    "DSP_blocks": "31/87 (36%)"
+  },
+  "timing_under_existing_SDC": {
+    "all_reported_summary_checks_nonnegative": true,
+    "worst_setup_slack_ns": 2.56,
+    "worst_hold_slack_ns": 0.119,
+    "scope": "Existing V8x SDC; physical board operation and unconstrained external I/O are not established by this result"
+  },
+  "sof_sha256": "39d27cd06e736b275e5126ac83c0742a85a990f35c6a8d0d4fdd0bde33956341"
 }

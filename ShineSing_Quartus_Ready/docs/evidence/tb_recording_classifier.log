@@ -1,0 +1,22 @@
+Reading E:/intelFPGA_lite/18.1/modelsim_ase/tcl/vsim/pref.tcl
+
+# 10.5b
+
+# vsim -c -onfinish stop -lib E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim tb_recording_classifier -do "onbreak {quit -code 1}; onerror {quit -code 1}; run -all; quit -code 0" 
+# Start time: 00:16:36 on Oct 08,2026
+# Loading sv_std.std
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim.tb_recording_classifier
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim.classifier
+# onbreak {quit -code 1}
+#  Warning: onbreak command for use within macro
+#  onerror {quit -code 1}
+#  Warning: onerror command for use within macro
+#  run -all
+# ALL TESTS PASSED: tb_recording_classifier
+# ** Note: $finish    : tb/tb_recording_classifier.sv(35)
+#    Time: 18770 ns  Iteration: 1  Instance: /tb_recording_classifier
+# Break in Module tb_recording_classifier at tb/tb_recording_classifier.sv line 35
+# Stopped at tb/tb_recording_classifier.sv line 35
+#  quit -code 0
+# End time: 00:16:37 on Oct 08,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0

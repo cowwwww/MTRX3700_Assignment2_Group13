@@ -1,0 +1,22 @@
+Reading E:/intelFPGA_lite/18.1/modelsim_ase/tcl/vsim/pref.tcl
+
+# 10.5b
+
+# vsim -c -onfinish stop -lib E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim tb_audio_features -do "onbreak {quit -code 1}; onerror {quit -code 1}; run -all; quit -code 0" 
+# Start time: 00:11:50 on Oct 08,2026
+# Loading sv_std.std
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim.tb_audio_features
+# Loading E:\USYD\USYD_2-2\MTRX3700\ASSIGNMENT2\WORK\V9_Sample_Trained\build\msim.audio_features
+# onbreak {quit -code 1}
+#  Warning: onbreak command for use within macro
+#  onerror {quit -code 1}
+#  Warning: onerror command for use within macro
+#  run -all
+# ALL TESTS PASSED: tb_audio_features
+# ** Note: $finish    : tb/tb_audio_features.sv(32)
+#    Time: 35936 ns  Iteration: 0  Instance: /tb_audio_features
+# Break in Module tb_audio_features at tb/tb_audio_features.sv line 32
+# Stopped at tb/tb_audio_features.sv line 32
+#  quit -code 0
+# End time: 00:11:50 on Oct 08,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0

@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 // Check real held-out H95 frames against independent Python distance results.
 module tb_h95_classifier;
- `include "rtl/templates.svh"
+ `include "assets/h95/templates.svh"
  `include "assets/h95/test_dimensions.svh"
  logic clk=0;always #5 clk=~clk;
  logic reset=1,enable=0,feature_valid=0,enrol=0;
