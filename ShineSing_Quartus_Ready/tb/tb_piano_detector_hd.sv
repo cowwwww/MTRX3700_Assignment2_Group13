@@ -71,8 +71,8 @@ module tb_piano_detector_hd;
         .edge_value
     );
 
-    // Use the production image ROM.
-    // Slot 2 is the tutor photograph during the demo.
+    // Read the image ROM used on the board.
+    // Use slot 2 for the tutor photo in the demo.
     image_store #(.W(W), .H(H)) rom (
         .analysis_clk(clk),
         .pixel_clk(clk),
@@ -84,7 +84,7 @@ module tb_piano_detector_hd;
         .display_pixel()
     );
 
-    // Independent behavioural reference made directly from piano2.hex.
+    // Calculate expected results separately from piano2.hex.
     logic [7:0] ref_image [0:PIXELS-1];
     logic [7:0] blur_ref  [0:PIXELS-1];
     logic [7:0] edge_ref  [0:PIXELS-1];
@@ -143,7 +143,7 @@ module tb_piano_detector_hd;
             end
             key_count_ref = 0;
 
-            // R-V4 smoothing:
+            // Smooth with these 3x3 weights:
             // [1 2 1; 2 4 2; 1 2 1] / 16
             for (y = 1; y < H-1; y = y + 1) begin
                 for (x = 1; x < W-1; x = x + 1) begin
@@ -162,8 +162,8 @@ module tb_piano_detector_hd;
                 end
             end
 
-            // Sobel after smoothing.
-            // Two 3x3 stages mean the valid centre is x=2..W-3, y=2..H-3.
+            // Find Sobel edges after smoothing.
+            // Check only x=2..W-3 and y=2..H-3 after both 3x3 filters.
             for (y = 2; y < H-2; y = y + 1) begin
                 for (x = 2; x < W-2; x = x + 1) begin
                     gx =
@@ -193,7 +193,7 @@ module tb_piano_detector_hd;
                 end
             end
 
-            // Profile normalisation to 0..255.
+            // Scale the column totals to 0..255.
             maximum = 0;
             for (x = 0; x < W; x = x + 1)
                 if (raw_ref[x] > maximum)
@@ -208,7 +208,7 @@ module tb_piano_detector_hd;
                     norm_ref[x] = (raw_ref[x] * 256) / maximum;
             end
 
-            // Same forward/backward local-average estimator as the RTL.
+            // Average in both directions, as in the design.
             acc = norm_ref[0] << 8;
             fwd_ref[0] = norm_ref[0];
 
@@ -228,7 +228,7 @@ module tb_piano_detector_hd;
                 acc = (mix >> 5) & 16'hffff;
             end
 
-            // Adaptive hysteresis + NMS + minimum spacing.
+            // Use local thresholds and keep peaks with enough space between them.
             scan = 0;
             while (scan < W) begin
                 hi = avg_ref[scan] + high_threshold;
@@ -332,7 +332,7 @@ module tb_piano_detector_hd;
         repeat (8) @(negedge clk);
         reset = 0;
 
-        // Run twice without reset. The second pass catches stale profiles/state.
+        // Run twice without reset to catch old data left behind.
         for (pass = 0; pass < 2; pass = pass + 1) begin
             writes = 0;
             for (p = 0; p < PIXELS; p = p + 1)
@@ -348,7 +348,7 @@ module tb_piano_detector_hd;
                 selected_low !== low_threshold)
                 $fatal(1, "R-V4 threshold metadata mismatch");
 
-            // Check every profile column.
+            // Check each column total.
             for (x = 0; x < W; x = x + 1) begin
                 if (profile[x*8 +: 8] !== norm_ref[x][7:0])
                     $fatal(1,
@@ -356,7 +356,7 @@ module tb_piano_detector_hd;
                            x, norm_ref[x], profile[x*8 +: 8]);
             end
 
-            // Check detected boundaries.
+            // Check the key edge positions.
             if (boundary_count !== key_count_ref)
                 $fatal(1,
                        "R-V4 boundary count: expected %0d, got %0d",
@@ -372,7 +372,7 @@ module tb_piano_detector_hd;
                            k, key_ref[k], boundaries[k*XW +: XW]);
             end
 
-            // Every valid smoothed+Sobel pixel must have been written exactly once.
+            // Check that each valid filtered pixel was written once.
             if (writes != EXPECTED_WRITES)
                 $fatal(1,
                        "R-V4 incomplete edge map: expected %0d writes, got %0d",
@@ -387,7 +387,7 @@ module tb_piano_detector_hd;
                 end
             end
 
-            // Acknowledge the published frame.
+            // Tell the detector the frame was received.
             @(negedge clk);
             publish_busy = 1;
             repeat (12) @(negedge clk);

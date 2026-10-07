@@ -1,4 +1,4 @@
-// A1 lane FSMs + score controller, with equal countdowns to keep windows disjoint.
+// Use A1 lane states and scoring; equal countdowns keep hit times separate.
 module game #(parameter BEAT_CLKS=25000000)(
  input logic clk, reset, enable,
  input logic decision_valid, reject,

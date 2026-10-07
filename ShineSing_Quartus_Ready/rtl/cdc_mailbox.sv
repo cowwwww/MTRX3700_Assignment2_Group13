@@ -1,5 +1,5 @@
-// Bundled-data request/acknowledge crossing. Source holds payload until ack.
-// Both resets must be asserted together; each deasserts in its own clock domain.
+// Send data between clocks and hold it until the receiver replies.
+// Start both resets together; release each on its own clock.
 module cdc_mailbox #(parameter WIDTH=16)(
  input logic src_clk, src_reset, src_valid,
  input logic [WIDTH-1:0] src_data,

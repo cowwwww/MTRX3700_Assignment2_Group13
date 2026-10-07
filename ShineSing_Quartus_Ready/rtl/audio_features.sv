@@ -1,8 +1,8 @@
-// Bit-reversed FFT magnitude stream -> feature vector for the classifier.
-// MODE 1: peak bin (R-A1).  MODE 2: raw band energies (R-A2).
-// MODE 3: band energies / total, Q0.16 (R-A3).
-// MODE 4: 24 log2-Mel energies minus their mean (R-A4). Set D=24 for MODE 4.
-// Edges for MODES 1-3 in bins at 12 kHz/1024: 94,375,750,1172,1641,2344,3281,4453,6000 Hz.
+// Turn FFT power values in bit-reversed order into sound features.
+// Mode 1 finds the peak bin; mode 2 adds power in each band.
+// Mode 3 divides each band by total power, stored as Q0.16.
+// Mode 4 uses 24 log2 Mel bands and removes their mean. Set D=24.
+// Modes 1-3 band edges (Hz): 94,375,750,1172,1641,2344,3281,4453,6000.
 module audio_features #(parameter MODE=3, D=8, RAW_SHIFT=8, LOG_SCALE=64)(
  input logic clk, reset, mag_valid,
  input logic [32:0] mag,
@@ -21,24 +21,24 @@ module audio_features #(parameter MODE=3, D=8, RAW_SHIFT=8, LOG_SCALE=64)(
  logic [48:0] remainder, doubled;
  logic [15:0] quotient;
  logic [4:0] divide_bit;
- // ---------------- R-A4 Mel state ----------------
- // 24 triangles, narrow low and wide high. Each bin falls in at most two
- // adjacent triangles whose weights sum to 1, so the complement of the upper
- // weight is the lower one: ONE multiplier per bin serves both accumulators.
+ // Store values for the 24 Mel bands.
+ // Mel bands are narrow at low frequencies and wider at high frequencies.
+ // Each bin feeds up to two bands with weights that add to 1.
+ // Share one multiplier by using w for one band and 1-w for the other.
  `include "rtl/mel_weights.svh"
- logic [40:0] mel[0:NMEL-1];       // 33-bit |X|^2 summed over <=89 bins
+ logic [40:0] mel[0:NMEL-1];       // Add 33-bit FFT power values from up to 89 bins.
  logic [4:0] mel_up;
  logic [8:0] mel_w;
  logic [41:0] mel_prod;
  logic [32:0] mel_part;
- logic [9:0] logmel[0:NMEL-1];     // log2 in Q6.4 (sixteenths of an octave)
+ logic [9:0] logmel[0:NMEL-1];     // Store log2 values with 6 whole bits and 4 fraction bits.
  logic [13:0] log_sum;
  logic [9:0] log_mean;
  logic [5:0] lead;
  logic [3:0] lead_frac;
  logic [9:0] log_value;
  logic signed [17:0] centred;
- // One divider shared across all eight bands; ample time between frames.
+ // Share one divider across the eight bands.
  typedef enum logic [2:0] {COLLECT, CONVERT, DIVIDE, LOGS, MEANCALC, EMIT} state_t;
  state_t state;
  always_comb for(int j=0;j<10;j++) bin[j]=index[9-j];
@@ -47,20 +47,20 @@ module audio_features #(parameter MODE=3, D=8, RAW_SHIFT=8, LOG_SCALE=64)(
   if(MODE==1) scaled=peak_bin;
   else if(MODE==2) scaled=energy[band_index] >> RAW_SHIFT;
   doubled=remainder<<1;
-  // Mel weight lookup and the single multiply for this bin.
+  // Look up the Mel weight and multiply this bin by it.
   mel_up   = MEL_UP[bin];
   mel_w    = MEL_W[bin];
   mel_prod = 42'(mag) * 42'(mel_w);
-  mel_part = mel_prod[41:8];                 // mag * w, Q0.8 removed
-  // log2 of the current accumulator: the leading-one position is the integer
-  // part, the four bits below it are the fraction. No logarithm is computed.
+  mel_part = mel_prod[41:8];                 // Drop the 8 fraction bits from the weighted power.
+  // Estimate log2 from the highest set bit.
+  // Use the next four bits for the fraction.
   lead = 0; lead_frac = 0;
   for(int b=40;b>=0;b--) if(mel[band_index][b]) begin lead=6'(b); break; end
   if(lead>=4) lead_frac = 4'(mel[band_index] >> (lead-4));
   else        lead_frac = 4'(mel[band_index] << (4-lead));
   log_value = (mel[band_index]==0) ? 10'd0 : 10'(lead)*10'd16 + 10'(lead_frac);
-  // Loudness only shifts every log2 band by the same amount, so removing the
-  // mean removes the microphone gain. This is what makes R-A4 level-robust.
+  // Changing volume shifts every log2 band by the same amount.
+  // Subtract the mean to reduce the effect of microphone gain.
   centred = 18'sd32768 + 18'sd(LOG_SCALE) * (18'sd(logmel[band_index]) - 18'sd(log_mean));
  end
  always_ff @(posedge clk) begin
@@ -75,7 +75,7 @@ module audio_features #(parameter MODE=3, D=8, RAW_SHIFT=8, LOG_SCALE=64)(
    COLLECT: if(mag_valid) begin
     if(bin>0 && bin<512 && mag>peak) begin peak<=mag;peak_work<=bin[8:0];end
     if(MODE==4) begin
-     // Upper triangle gets w*mag, lower triangle the complement (1-w)*mag.
+     // Add w*mag to the upper band and (1-w)*mag to the lower band.
      if(mel_up<NMEL)               mel[mel_up]   <= mel[mel_up]   + 41'(mel_part);
      if(mel_up>=1 && mel_up<=NMEL) mel[mel_up-1] <= mel[mel_up-1] + 41'(mag) - 41'(mel_part);
     end else begin
@@ -109,14 +109,14 @@ module audio_features #(parameter MODE=3, D=8, RAW_SHIFT=8, LOG_SCALE=64)(
      end else begin band_index<=band_index+1;state<=CONVERT;end
     end else divide_bit<=divide_bit+1;
    end
-   // One band per clock: 24 clocks for the logs, one for the mean, 24 to emit.
+   // Use 24 clocks for logs, one for the mean and 24 for output.
    LOGS: begin
     logmel[band_index]<=log_value;
     log_sum<=log_sum+14'(log_value);
     if(band_index==NMEL-1) begin band_index<=0;state<=MEANCALC;end
     else band_index<=band_index+1;
    end
-   // Mean of 24 without a divider: x/24 = (x*2731)>>16.
+   // Estimate the mean without division: x/24 ~= (x*2731)>>16.
    MEANCALC: begin log_mean<=10'((26'(log_sum)*26'd2731)>>16);state<=EMIT;end
    EMIT: begin
     feature[band_index]<= centred<0 ? 16'd0 : (centred>18'sd65535 ? 16'hffff : 16'(centred));

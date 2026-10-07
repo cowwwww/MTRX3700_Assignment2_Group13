@@ -1,4 +1,4 @@
-"""Catch stretched/resampled images, stale HEX/MIF, and a bypassed course converter."""
+"""Check image size, matching HEX/MIF files and use of the course converter."""
 from pathlib import Path
 import shutil
 import subprocess
@@ -21,8 +21,8 @@ class ImageAssetsTest(unittest.TestCase):
                 prefix = Path(tmp)/f'piano{slot}'
                 subprocess.run([sys.executable, str(ROOT/'tools/image_to_mif.py'),
                                 str(source), str(prefix)], check=True, capture_output=True)
-                # Text mode normalizes Windows CRLF vs Ed/Linux LF. PNG encoders
-                # may differ between Pillow/zlib builds; compare actual pixels.
+                # Read text with matching line endings. PNG files
+                # may use different compression, so compare their pixels.
                 for suffix in ('.mif', '.hex'):
                     with self.subTest(slot=slot, suffix=suffix):
                         self.assertTrue(prefix.with_suffix(suffix).read_text() ==
@@ -45,7 +45,7 @@ class ImageAssetsTest(unittest.TestCase):
             self.assertEqual(mif, hex_pixels)
 
     def test_import_keeps_small_image_size_and_centres_on_grey(self):
-        # thumbnail must not upscale: a 2x2 input occupies exactly the centre 2x2.
+        # Keep a 2x2 image at its original size in the centre.
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             shutil.copytree(ROOT/'tools', root/'tools', ignore=shutil.ignore_patterns('__pycache__'))

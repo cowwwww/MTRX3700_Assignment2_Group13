@@ -1,4 +1,4 @@
-"""Prove the gate unit test kills a never-closing gate; original RTL is untouched."""
+"""Check that the gate test fails when the gate cannot close; keep the source unchanged."""
 from pathlib import Path
 import subprocess,sys,os,shutil
 ROOT=Path(__file__).resolve().parents[1];os.chdir(ROOT)

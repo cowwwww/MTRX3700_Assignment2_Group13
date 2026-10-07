@@ -1,4 +1,4 @@
-"""Verify image benches reject missing pixels, disabled spacing and swapped ROMs."""
+"""Check that tests catch missing pixels, bad peak spacing and swapped images."""
 from pathlib import Path
 import os
 import shutil

@@ -1,6 +1,5 @@
-"""Self-checking RTL suite: python tools/run_tests.py --sim modelsim|verilator.
-No upload, network access or board programming. Each bench has a watchdog.
-"""
+"""Run RTL tests: python tools/run_tests.py --sim modelsim|verilator.
+Each test has a timeout; no board connection is needed."""
 import argparse, pathlib, shutil, subprocess, os, sys
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 os.chdir(ROOT)

@@ -14,7 +14,7 @@ module game_controller (
     logic [1:0] lane_select;
     logic [6:0] hit_count;
 
-    // Count how many lanes were hit on the same clock cycle.
+    // Count lanes hit in this clock cycle.
     always_comb begin
         hit_count = {6'b0, hit_pulse[0]} +
                     {6'b0, hit_pulse[1]} +
@@ -31,10 +31,10 @@ module game_controller (
             score <= 7'd0;
         end
         else begin
-            // Spawn is a one clock pulse.
+            // Keep spawn high for one clock.
             spawn <= 4'b0000;
 
-            // One new note every two beats.
+            // Start one note every two beats.
             if (beat_tick) begin
                 beat_phase <= ~beat_phase;
 
@@ -48,7 +48,7 @@ module game_controller (
                 end
             end
 
-            // Score saturates at 99.
+            // Stop the score at 99.
             if (hit_count != 0) begin
                 if (score + hit_count >= 7'd99)
                     score <= 7'd99;

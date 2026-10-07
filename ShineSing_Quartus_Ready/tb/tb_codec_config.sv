@@ -8,7 +8,7 @@ module tb_codec_config;
  localparam logic [15:0] CMD[0:10]='{16'h1e00,16'h00ff,16'h02ff,16'h04fd,16'h06fd,16'h083d,16'h0a00,16'h0c00,16'h0e41,16'h1002,16'h1201};
  integer bits=0,transaction=0;logic [23:0] packet=0;
  logic started=0;
- // Independent bus decoder, acknowledges every byte on falling SCL.
+ // Decode the bus separately and send ACK on falling SCL after each byte.
  always @(negedge sda) if(scl && !reset && !ack_low) begin started=1;bits=0;packet=0;end
  always @(negedge scl) if(started) ack_low=(bits%9==8);
  always @(posedge scl) if(started) begin

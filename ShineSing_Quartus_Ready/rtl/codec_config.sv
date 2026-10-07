@@ -1,6 +1,6 @@
-// Lesson 3 WM8731 register sequence, implemented with a 50 MHz clock enable
-// instead of creating a fifth fabric clock. Left-justified 16-bit, 48 kHz,
-// codec master, MCLK=18.432 MHz. Retries a transaction on NACK.
+// Set up the WM8731 using Lesson 3 settings and a 50 MHz clock enable.
+// Use left-justified 16-bit audio at 48 kHz.
+// The codec drives the audio clocks; MCLK is 18.432 MHz. Retry on NACK.
 module codec_config #(parameter HALF_PERIOD=1250)(
  input logic clk, reset,
  output logic scl,
@@ -14,7 +14,7 @@ module codec_config #(parameter HALF_PERIOD=1250)(
  logic release_sda, nack;
  logic [23:0] packet;
  assign sda=release_sda ? 1'bz : 1'b0;
- // step 0=start setup, 1=start, 2..55=27 bits (24 data + 3 ACK), 56..58=stop.
+ // Steps: 0 setup, 1 start, 2..55 send 24 bits and read 3 ACKs, 56..58 stop.
  logic [4:0] bit_number;
  logic [1:0] byte_number;
  logic [3:0] in_byte;
@@ -33,7 +33,7 @@ module codec_config #(parameter HALF_PERIOD=1250)(
       scl<=0;
       release_sda <= (in_byte==8) ? 1'b1 : packet[23-byte_number*8-in_byte];
      end else scl<=1;
-     // ACK is sampled at end of its high phase, at the next low transition.
+     // Read ACK when SCL falls after its high phase.
      if(step==20 || step==38) nack<=nack | sda;
      step<=step+1;
     end else if(step==56) begin nack<=nack|sda;scl<=0;release_sda<=0;step<=57;end

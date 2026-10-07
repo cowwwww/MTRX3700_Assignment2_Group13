@@ -1,4 +1,4 @@
-"""Capture actual RTL RGB frames and build portable demonstration evidence."""
+"""Capture video frames from the design for the demo."""
 from pathlib import Path
 import argparse
 import csv

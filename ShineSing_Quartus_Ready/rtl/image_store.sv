@@ -4,8 +4,8 @@ module image_store #(parameter W=320,H=240)(
  input logic [$clog2(W*H)-1:0] analysis_address, display_address,
  output logic [7:0] analysis_pixel, display_pixel
 );
- // Hardware consumes the separate MIFs, so the tutor image is a direct file swap.
- // Simulation uses equivalent readmemh files (portable across ModelSim/Verilator).
+ // Use MIF files on the board; replace one to change the tutor image.
+ // Use matching HEX files for ModelSim and Verilator.
  (* ram_init_file="assets/piano0.mif" *) logic [7:0] image0[0:W*H-1];
  (* ram_init_file="assets/piano1.mif" *) logic [7:0] image1[0:W*H-1];
  (* ram_init_file="assets/piano2.mif" *) logic [7:0] image2[0:W*H-1];

@@ -1,5 +1,5 @@
-// Lesson 4 FIR/decimator, resettable and time-multiplexed at FFT clock.
-// Coefficients from Mini-Project 2 low_pass_conv (Q16); input signed PCM16.
+// Filter and downsample audio using Lesson 4 logic on the FFT clock.
+// Use Mini-Project 2 Q16 filter weights with signed 16-bit PCM input.
 module audio_frontend #(parameter N=1024)(
  input logic clk, reset, sample_valid,
  input logic signed [15:0] sample,
@@ -25,8 +25,8 @@ module audio_frontend #(parameter N=1024)(
  initial $readmemh("assets/hamming.hex",window_rom);
  assign sum_next=sum + history[tap]*H[tap];
  always_comb begin
-  // The supplied FIR taps have DC gain 3.149, not unity. Two guard bits
-  // prevent ordinary 2x loudness changes from clipping before normalisation.
+  // The supplied filter gain is 3.149. Keep two extra bits
+  // so doubling the volume does not clip before scaling.
   if(sum_next > 40'sd8589672448) filtered=32767;
   else if(sum_next < -40'sd8589934592) filtered=-32768;
   else filtered=16'(sum_next >>> 18);

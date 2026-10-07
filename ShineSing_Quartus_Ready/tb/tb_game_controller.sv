@@ -61,7 +61,7 @@ module tb_game_controller;
         tick;
         if (spawn !== 0) $fatal(1, "spawn was not a one clock pulse");
 
-        // The controller skips a busy selected lane, then advances round-robin.
+        // Skip busy lanes and try each lane in turn.
         lane_active = 4'b0010;
         beat;
         beat_tick = 1;
@@ -78,13 +78,13 @@ module tb_game_controller;
         beat_tick = 0;
         tick;
 
-        // Two hits in one cycle should add two points.
+        // Check that two hits add two points.
         hit_pulse = 4'b0011;
         tick;
         hit_pulse = 0;
         if (score !== 2) $fatal(1, "two simultaneous hits were scored incorrectly");
 
-        // Check the defined overflow behaviour: saturate at 99.
+        // Check that the score stops at 99.
         for (i = 0; i < 60; i = i + 1) begin
             hit_pulse = 4'b0011;
             tick;

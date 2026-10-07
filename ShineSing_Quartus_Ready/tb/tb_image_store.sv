@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-// Catch swapped/stale ROM slots, wrong address order and non-synchronous reads.
+// Check image slots, address order and clocked reads.
 module tb_image_store;
  logic analysis_clk=0,pixel_clk=0;
  always #5 analysis_clk=~analysis_clk;

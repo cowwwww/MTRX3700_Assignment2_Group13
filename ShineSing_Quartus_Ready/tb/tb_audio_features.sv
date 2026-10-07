@@ -14,7 +14,7 @@ module tb_audio_features;
    power=(bin==77 ? 9000 : (bin+1))*scale;
    for(int b=0;b<8;b++) if(bin>=EDGE[b] && bin<EDGE[b+1]) begin expected[b]+=power;total+=power;end
    @(negedge clk);mag_valid=1;mag=power;
-   // Deliberate bubbles must not reset the FFT index or drop a bin.
+   // Add gaps and check that no FFT bins are lost or reset.
    if(i%19==0) begin @(negedge clk);mag_valid=0;end
   end
   @(negedge clk);mag_valid=0;
@@ -25,7 +25,7 @@ module tb_audio_features;
  endtask
  initial begin
   repeat(3) @(negedge clk);reset=0;frame(1);frame(4);
-  // Silence clears every accumulator and never divides by zero.
+  // Check that silence clears the sums and avoids division by zero.
   for(int i=0;i<1024;i++) begin @(negedge clk);mag_valid=1;mag=0;end
   @(negedge clk);mag_valid=0;wait(feature_valid);#1;
   if(feature!==0 || peak_bin!==0) $fatal(1,"silence did not clear features");

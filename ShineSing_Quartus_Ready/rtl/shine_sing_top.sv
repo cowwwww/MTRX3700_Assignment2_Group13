@@ -60,7 +60,7 @@ wire [23:0][15:0] feature;
  wire [3:0] trained;
  classifier #(.D(24),.M(3),.DMAX(65000)) recognizer(.clk(fft_clk),.reset(rf),.enable(voice),.feature_valid,.feature,
   .enrol(training[2]),.enrol_class(training[1:0]),.trained,.result(vowel),.confidence,.reject,.result_valid);
- // HEX/LEDR registers remain in FFT domain; only game events cross to 50 MHz.
+ // Keep HEX and LEDs on the FFT clock; send game events to 50 MHz.
  hex_seg h0(.d(4'(db%10)),.blank(1'b0),.seg(HEX0));
  hex_seg h1(.d(4'(db/10)),.blank(1'b0),.seg(HEX1));
  hex_seg h2(.d({2'b0,vowel}),.blank(!voice || reject || training[2]),.seg(HEX2));
@@ -92,7 +92,7 @@ wire [23:0][15:0] feature;
  wire [7:0] edge_value,selected_high,selected_low;
  wire [W*8-1:0] profile;
  wire [NMAX*XW-1:0] boundaries;
- // SW8 = smoothing before Sobel, SW9 = adaptive (local-average) thresholds.
+ // SW8 smooths the image; SW9 uses local thresholds.
  piano_detector detector(.clk(CLOCK_50),.reset(r50),.image_select(switches[4:3]),.use_sobel(switches[5]),
   .use_smoothing(switches[8]),.use_adaptive(switches[9]),
   .high_threshold(hi),.low_threshold(lo),.rom_addr(analysis_address),.rom_pixel(analysis_pixel),.publish_busy,.publish,
@@ -110,7 +110,7 @@ wire [23:0][15:0] feature;
  wire [NMAX*XW-1:0] display_boundaries;
  wire [W*8-1:0] display_profile;
  assign {display_bank,display_image,display_high,display_low,display_count,display_boundaries,display_profile}=visual;
- // 4-bit display cache saves 75 M10Ks; full 12-bit Gx still feeds detection.
+ // Store 4-bit display pixels to save 75 M10Ks; detect edges with 12-bit Gx.
  logic [3:0] edges[0:2*W*H-1],edge_nibble;
  wire [7:0] edge_pixel={edge_nibble,edge_nibble};
  always_ff @(posedge CLOCK_50) if(edge_write) edges[edge_address]<=edge_value[7:4];

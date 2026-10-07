@@ -1,5 +1,5 @@
-// Lesson 3 Avalon-ST source, with lookahead ROM address conditioned on handshake.
-// State, profile, image, game and view are committed ONLY between video packets.
+// Send Lesson 3 Avalon-ST video; look up the next pixel when accepted.
+// Update the image, profile, game and view only between video packets.
 module video_source #(parameter W=320,H=240,H_RES=640,V_RES=480,NMAX=16)(
  input logic clk,reset,
  input logic [1:0] view,
@@ -78,7 +78,7 @@ module video_source #(parameter W=320,H=240,H_RES=640,V_RES=480,NMAX=16)(
    end
   end
   if(frame_view==1) begin
-   // Convolution borders have no valid output; never display unwritten RAM.
+   // Hide border pixels because the edge filter does not write them.
    r=(cx>0 && cx<W-1 && cy>0 && cy<H-1) ? edge_pixel : 0;g=r;b=r;
   end
   height=profile[cx*8+:8]*(V_RES-1)/255;
@@ -97,7 +97,7 @@ module video_source #(parameter W=320,H=240,H_RES=640,V_RES=480,NMAX=16)(
     default:begin end
    endcase
   end
-  // Two large score digits and four training status squares, on the game view.
+  // Draw two score digits and four training boxes in the game view.
   digit=(x<40) ? frame_score/10 : frame_score%10;
   dx=(x<40) ? x-8:x-44;dy=y-8;seg=digit_segments(digit);digit_on=0;
   if(dx>=0 && dx<24 && dy>=0 && dy<40) begin

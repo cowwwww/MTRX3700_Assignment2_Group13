@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
-// Integration at the FFT magnitude interface; tb_audio_pipeline independently
-// checks PCM -> FIR -> Hamming -> actual 1024-point FFT -> this same interface.
+// Test the system from FFT power values onward.
+// tb_audio_pipeline checks the PCM, filter, window and FFT stages.
 module tb_system;
  logic clk=0,pclk=0;always #5 clk=~clk;always #8 pclk=~pclk;
  logic reset=1,mag_valid=0;logic [32:0] mag=0;
@@ -23,7 +23,7 @@ module tb_system;
   .dst_clk(pclk),.dst_reset(reset),.dst_accept(update_ok),.dst_data(visual),.dst_valid(updated));
  wire [10:0] address;logic [7:0] grey=240;
  wire [29:0] data;wire valid,sop,eop;
- // Image/game pipelines run concurrently; gameplay CDC is checked separately.
+ // Run image and game logic together; test clock crossings separately.
  video_source #(.W(W),.H(H),.H_RES(128),.V_RES(48)) video(.clk(pclk),.reset,.view(2'd3),.grey,.edge_pixel(8'd0),.address,
   .profile(visual[511:0]),.boundaries(visual[607:512]),.boundary_count(visual[612:608]),.high_threshold(8'd96),.low_threshold(8'd32),
   .score(7'd0),.active(4'd0),.hit_window(4'd0),.hit_led(4'd0),.trained(4'd0),.countdown(16'd0),.update_ok,.data,.valid,.startofpacket(sop),.endofpacket(eop),.ready(1'b1));

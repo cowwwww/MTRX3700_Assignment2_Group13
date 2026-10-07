@@ -1,4 +1,4 @@
-"""Generate a clean Quartus 18.1 project using only ports present on the A2 top."""
+"""Create a Quartus 18.1 project for the A2 top-level ports."""
 from pathlib import Path
 import re
 ROOT=Path(__file__).resolve().parents[1]

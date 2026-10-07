@@ -14,7 +14,7 @@ module reaction_time_fsm #(
     output logic       led_on
 );
 
-    // Positive edge detection from the Reaction Time Game lesson.
+    // Detect a new button press using the Reaction Time Game method.
     logic button_q0;
     logic button_edge;
 
@@ -27,7 +27,7 @@ module reaction_time_fsm #(
 
     assign button_edge = button_pressed & ~button_q0;
 
-    // One lane has three states.
+    // Track the three lane states.
     typedef enum logic [1:0] {
         IDLE       = 2'b00,
         COUNTDOWN  = 2'b01,
@@ -35,7 +35,7 @@ module reaction_time_fsm #(
     } state_type;
     state_type current_state, next_state;
 
-    // Next state logic.
+    // Choose the next lane state.
     always_comb begin
         next_state = current_state;
 
@@ -46,7 +46,7 @@ module reaction_time_fsm #(
             end
 
             COUNTDOWN: begin
-                // Pressing early forfeits the note.
+                // Remove the note if pressed too early.
                 if (button_edge)
                     next_state = IDLE;
                 else if (beat_tick && lane_value == 4'd1)
@@ -54,7 +54,7 @@ module reaction_time_fsm #(
             end
 
             HIT_WINDOW: begin
-                // A correct press scores. No press means the note expires next beat.
+                // Score a correct press; otherwise remove the note on the next beat.
                 if (button_edge)
                     next_state = IDLE;
                 else if (beat_tick)
@@ -67,7 +67,7 @@ module reaction_time_fsm #(
         endcase
     end
 
-    // State and countdown registers.
+    // Store the lane state and countdown.
     always_ff @(posedge clk) begin
         if (reset) begin
             current_state <= IDLE;
@@ -104,10 +104,10 @@ module reaction_time_fsm #(
     end
 
     assign lane_active = (current_state != IDLE);
-    // A2: closing beat is excluded from this half-open hit window.
+    // Do not count a hit on the closing beat.
     assign hit_pulse = (current_state == HIT_WINDOW) && button_edge && !beat_tick;
 
-    // Keep the hit LED on for about 300 ms.
+    // Show the hit LED for about 300 ms.
     localparam LED_FLASH_CLKS = CLKS_PER_MS * LED_FLASH_MS;
     localparam LED_COUNT_WIDTH = (LED_FLASH_CLKS <= 1) ? 1 : $clog2(LED_FLASH_CLKS + 1);
     logic [LED_COUNT_WIDTH-1:0] led_count;

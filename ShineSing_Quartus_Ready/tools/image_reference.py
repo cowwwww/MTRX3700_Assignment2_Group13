@@ -1,4 +1,4 @@
-"""Independent numpy reference for on-FPGA edges, profiles, NMS and hysteresis."""
+"""Calculate expected image edges, column totals and peaks with numpy."""
 from pathlib import Path
 import json
 import numpy as np
@@ -19,7 +19,7 @@ def analyse(image, sobel, high=96, low=32, gap=12):
     maximum=int(raw.max())
     norm=np.minimum(255,raw*256//maximum) if maximum else raw*0
     candidates=[x for x in range(1,w-1) if norm[x]>norm[x-1] and norm[x]>=norm[x+1]]
-    # Connected runs of low-threshold columns are retained only with a high seed.
+    # Keep each low-threshold group only if one column passes the high threshold.
     keep=[];x=0
     while x<w:
         if norm[x]<low or norm[x]==0: x+=1;continue

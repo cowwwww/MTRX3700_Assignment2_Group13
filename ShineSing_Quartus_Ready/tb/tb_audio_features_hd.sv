@@ -27,8 +27,8 @@ module tb_audio_features_hd;
         .peak_bin
     );
 
-    // Same generated Mel table used by the design.
-    // The expected feature arithmetic below is calculated independently in this TB.
+    // Use the same Mel weight table as the design.
+    // Calculate expected features separately below.
     `include "rtl/mel_weights.svh"
 
     longint unsigned mel_expected [0:NMEL-1];
@@ -46,9 +46,9 @@ module tb_audio_features_hd;
         end
     endfunction
 
-    // A simple synthetic vowel-like spectrum.
-    // 'fundamental' changes harmonic spacing (pitch).
-    // 'scale' changes only loudness.
+    // Make test data shaped like a vowel sound.
+    // Change harmonic spacing with fundamental to set pitch.
+    // Change volume with scale.
     function automatic longint unsigned spectrum_power(
         input integer b,
         input integer fundamental,
@@ -61,14 +61,14 @@ module tb_audio_features_hd;
                 spectrum_power = 0;
             end
             else begin
-                // Small floor so all useful Mel bands remain defined.
+                // Keep a small power value so useful Mel bands are not empty.
                 v = 40;
 
-                // Harmonic comb.
+                // Add peaks at multiples of the base frequency.
                 if ((b % fundamental) == 0) begin
                     v = v + 500;
 
-                    // Three broad formant-like regions.
+                    // Add three broad peaks like those in a vowel.
                     d = (b > 45) ? (b - 45) : (45 - b);
                     if (d < 30)
                         v = v + (20000 * (30-d)) / 30;
@@ -114,7 +114,7 @@ module tb_audio_features_hd;
             peak_power = 0;
             expected_peak = 0;
 
-            // Only bins 0..512 are positive-frequency Mel inputs.
+            // Use bins 0..512 for the positive-frequency Mel bands.
             for (b = 0; b <= 512; b = b + 1) begin
                 p = spectrum_power(b, fundamental, scale);
 
@@ -134,8 +134,8 @@ module tb_audio_features_hd;
                     mel_expected[up-1] = mel_expected[up-1] + p - part;
             end
 
-            // Same fixed-point definition as the RTL:
-            // log2 in Q6.4, then subtract the mean.
+            // Match the number format used in the design:
+            // Store log2 with 4 fraction bits, then remove the mean.
             log_sum = 0;
             for (m = 0; m < NMEL; m = m + 1) begin
                 if (mel_expected[m] == 0) begin
@@ -157,7 +157,7 @@ module tb_audio_features_hd;
                 log_sum = log_sum + log_value[m];
             end
 
-            // RTL uses x/24 ~= (x*2731)>>16.
+            // Match the design estimate: x/24 ~= (x*2731)>>16.
             log_mean = (log_sum * 2731) >> 16;
 
             for (m = 0; m < NMEL; m = m + 1) begin
@@ -185,12 +185,12 @@ module tb_audio_features_hd;
         begin
             build_expected(fundamental, scale);
 
-            // The provided FFT produces bit-reversed output order.
+            // Send FFT bins in the supplied FFT order (bit-reversed).
             for (i = 0; i < 1024; i = i + 1) begin
                 b = reverse10(i);
 
-                // Mirror the positive spectrum into the negative-frequency half,
-                // as a real-input FFT would do.
+                // Copy positive-frequency values into the negative half,
+                // as an FFT of real samples would do.
                 if (b <= 512)
                     source_bin = b;
                 else
@@ -202,7 +202,7 @@ module tb_audio_features_hd;
                 mag_valid = 1;
                 mag = p[32:0];
 
-                // Valid bubbles must not advance the internal FFT index.
+                // Check that gaps do not move the FFT bin index.
                 if ((i % 37) == 0) begin
                     @(negedge clk);
                     mag_valid = 0;
@@ -240,13 +240,13 @@ module tb_audio_features_hd;
         repeat (4) @(negedge clk);
         reset = 0;
 
-        // 1) Baseline vowel-like spectrum.
+        // Test the starting vowel data.
         drive_and_check(10, 1);
         for (m = 0; m < NMEL; m = m + 1)
             reference_feature[m] = feature[m];
 
-        // 2) Same vowel, 4x power.
-        // Log + mean removal should make this exactly invariant.
+        // Test the same vowel with four times the power.
+        // Check that log2 and mean removal give the same features.
         drive_and_check(10, 4);
         for (m = 0; m < NMEL; m = m + 1) begin
             if (feature[m] !== reference_feature[m])
@@ -255,9 +255,9 @@ module tb_audio_features_hd;
                        m, reference_feature[m], feature[m]);
         end
 
-        // 3) Higher pitch: harmonic spacing changes from 10 bins to 15 bins.
-        // The feature is not required to be identical, but the broad log-Mel
-        // envelope should remain close.
+        // Raise pitch by changing peak spacing from 10 to 15 bins.
+        // The features may change, but the overall Mel band shape
+        // should stay close to the original.
         drive_and_check(15, 1);
 
         diff_sum = 0;

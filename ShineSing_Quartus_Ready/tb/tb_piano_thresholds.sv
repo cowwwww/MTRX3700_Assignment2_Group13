@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-// Directed checks: MIN_GAP merging, high/low thresholds, trailing run, blank image.
+// Test peak spacing, both thresholds, the last peak and a blank image.
 module tb_piano_thresholds;
  localparam W=64,H=8;
  logic clk=0;always #5 clk=~clk;
@@ -22,7 +22,7 @@ module tb_piano_thresholds;
   else if(rom_addr%W<40) rom_pixel<=0;
   else if(rom_addr%W<43) rom_pixel<=60;
   else if(rom_addr%W<60) rom_pixel<=0;
-  // The final high run reaches column 63 and must be flushed.
+  // Save the final peak when it reaches column 63.
   else rom_pixel<=8'((rom_addr%W-59)*60);
  end
  task check(input int count,input int a,input int b);
@@ -37,11 +37,11 @@ module tb_piano_thresholds;
  endtask
  initial begin
   repeat(5) @(negedge clk);reset=0;
-  // Peaks 10 (120) and 14 (135) merge to 14; 30 (255) survives.
-  // 40/43 and the final plateau (60 each) have no high seed.
+  // Keep peak 14 instead of nearby peak 10; also keep peak 30.
+  // Peaks 40/43 and the final flat peak stay below the high threshold.
   check(2,14,30);
   high_threshold=200;next_frame();check(1,30,0);
-  // Lower high threshold admits the weak pairs and trailing plateau.
+  // Lower the high threshold to accept the weaker peaks.
   high_threshold=50;next_frame();
   wait(publish);#1;
   if(boundary_count!==5'd4 || boundaries[0+:6]!==6'd14 ||

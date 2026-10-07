@@ -1,4 +1,4 @@
-"""Usage: python tools/import_image.py photograph.png --slot 2"""
+"""Load a photo: python tools/import_image.py photograph.png --slot 2"""
 import argparse
 from prepare_assets import ROOT, convert_image
 p=argparse.ArgumentParser()

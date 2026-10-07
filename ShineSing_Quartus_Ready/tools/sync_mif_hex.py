@@ -1,4 +1,4 @@
-"""After a direct MIF swap, synchronize portable simulation HEX: --slot 2."""
+"""Update simulation HEX files after replacing a MIF file; use --slot 2."""
 from pathlib import Path
 import argparse, re
 

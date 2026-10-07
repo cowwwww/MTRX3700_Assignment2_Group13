@@ -1,4 +1,4 @@
-"""Make code-only and full handoff ZIPs, with per-file SHA-256 manifests."""
+"""Create code and full-project ZIPs with a hash for each file."""
 from pathlib import Path
 import zipfile,hashlib,json
 ROOT=Path(__file__).resolve().parents[1]
@@ -9,7 +9,7 @@ def build(name,full):
  files=[ROOT/n for n in rootfiles]
  for folder in folders+(['reference_materials'] if full else []):
   files.extend(p for p in (ROOT/folder).rglob('*') if p.is_file() and '__pycache__' not in p.parts and p.suffix not in ['.pyc','.bak','.log'])
- # Preserve actual validation logs deliberately, not compiler/simulator caches.
+ # Keep test logs; leave out build caches.
  files.extend(p for p in (ROOT/'docs/evidence').glob('*.log') if p not in files)
  sof=ROOT/'output_files/shine_sing.sof'
  inputs=[p for folder in ['rtl','assets','quartus'] for p in (ROOT/folder).rglob('*') if p.is_file()]

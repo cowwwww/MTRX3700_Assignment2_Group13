@@ -1,4 +1,4 @@
-"""Extract the full bundle to a fresh directory and test without original paths."""
+"""Unpack the project in a new folder and test it there."""
 from pathlib import Path
 import zipfile, tempfile, subprocess, sys
 

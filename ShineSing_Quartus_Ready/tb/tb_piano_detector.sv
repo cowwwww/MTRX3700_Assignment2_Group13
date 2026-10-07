@@ -13,7 +13,7 @@ module tb_piano_detector;
  logic [8:0] expected_keys[0:16];integer writes;
  logic [7:0] captured[0:76799];integer capture_file;
  piano_detector dut(.*);
- // Exercise the production image selection and synchronous ROM, not a TB copy.
+ // Test the real image selection and clocked ROM.
  image_store rom(.analysis_clk(clk),.pixel_clk(clk),.analysis_image(selected_image),
   .display_image(2'd0),.analysis_address(rom_addr),.display_address(17'd0),
   .analysis_pixel(rom_pixel),.display_pixel());
@@ -32,7 +32,7 @@ module tb_piano_detector;
    $readmemh($sformatf("assets/expected_%0d_%0d_edges.hex",picture,mode),expected_edge);
    $readmemh($sformatf("assets/expected_%0d_%0d_keys.hex",picture,mode),expected_keys);
    image_select=picture;use_sobel=mode;writes=0;reset=0;
-   // Two passes without reset detect a column profile that was never cleared.
+   // Run twice without reset to catch column totals left uncleared.
    repeat(2) begin
     writes=0;
     for(int p=0;p<76800;p++) begin captured[p]=0;seen[p]=0;end

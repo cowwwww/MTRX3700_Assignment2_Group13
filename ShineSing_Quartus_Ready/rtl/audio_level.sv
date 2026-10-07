@@ -1,5 +1,5 @@
-// Mean absolute level over 256 PCM samples. dB = round(20log10(max(level,1)))
-// referenced to one ADC count, NOT calibrated sound-pressure level (SPL).
+// Average the size of 256 PCM samples. dB = round(20log10(max(level,1))).
+// Measure dB from one ADC count, not sound pressure.
 module audio_level #(parameter BLOCK=256, CAL_BLOCKS=188, MARGIN=64)(
  input logic clk, reset, sample_valid,
  input logic signed [15:0] sample,

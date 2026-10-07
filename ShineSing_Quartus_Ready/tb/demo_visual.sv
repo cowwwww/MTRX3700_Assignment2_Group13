@@ -1,8 +1,8 @@
 `timescale 1ns/1ps
-// Functional step-through, not a board/PLL/analogue microphone simulation.
-// Real image/edge/CDC/video RTL emits every captured RGB pixel.
-// Synthetic FFT spectra train and exercise the real features/classifier/game.
-// Game clock pauses at each state while a complete VGA frame is captured.
+// Step through the digital design; board clocks and the microphone are not simulated.
+// Capture pixels from the real image, edge, clock-crossing and video logic.
+// Use made-up FFT data to test features, training and the game.
+// Pause the game clock while capturing each video frame.
 module demo_visual;
  logic clk=0,pclk=0;
  always #10 clk=~clk;
@@ -97,7 +97,7 @@ module demo_visual;
  endtask
  task capture(input string name,input integer selected_view);
   @(negedge clk);view=2'(selected_view);
-  // Two packet ends allow the real CDC + between-packet latch to settle.
+  // Wait two packet ends for the clock crossing and display data to settle.
   repeat(2) begin
    do @(posedge pclk); while(!(valid && eop));
   end
@@ -145,7 +145,7 @@ module demo_visual;
   repeat(3) spectrum(0);
   if(score!==7'd1) $fatal(1,"duplicate score");
   capture("08_duplicate_ignored",0);
-  // Lane 1 was spawned on the same beat as lane 0's hit window.
+  // Lane 1 started when lane 0 became ready to hit.
   step_game(4000);
   if(!hit_window[1]) $fatal(1,"second lane window missing");
   capture("09_second_window",0);

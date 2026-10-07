@@ -46,8 +46,8 @@ module classifier #(
     localparam int DW  = FW + $clog2(D) + 1;          // distance width
     // The templates: a constant array from templates.svh, written by tools/train_templates.py
     // (an include file rather than $readmemh, so Quartus and the simulators see the same ROM).
-    // A2 extension: enrol the supplied nearest-template classifier on the board.
-    // No synthetic template is presented as a recording. Reset forgets enrolment.
+    // Train the supplied classifier with samples from the board.
+    // Reset clears the saved training samples.
     logic [D-1:0][FW-1:0] templ [0:NTT-1];
     integer enrol_count[0:NCLASS-1];
 

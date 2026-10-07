@@ -1,6 +1,6 @@
-# Run after a successful fit: quartus_sta -t tools/report_timing.tcl
-# Detailed paths at the default slow corner; the normal compile STA report
-# remains the authority for the complete multi-corner setup/hold summary.
+# Run after fitting the design: quartus_sta -t tools/report_timing.tcl
+# Show paths for the default slow timing case. Use the normal STA report
+# for setup and hold results across all timing cases.
 project_open shine_sing
 create_timing_netlist -model slow
 read_sdc

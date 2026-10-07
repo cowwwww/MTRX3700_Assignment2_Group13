@@ -1,4 +1,4 @@
-"""Convert actual RTL edge-map captures to portable PNGs for visual inspection."""
+"""Turn captured edge pixels into PNG images for checking."""
 from pathlib import Path
 from PIL import Image
 ROOT=Path(__file__).resolve().parents[1]

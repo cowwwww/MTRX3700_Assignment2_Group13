@@ -1,6 +1,6 @@
-// Single-clock 1R/1W RAM, one-clock read latency and OLD_DATA on collision.
-// Explicit M10K mapping avoids Quartus 18.1 converting large circular buffers
-// into registers. Portable behavioural model has exactly the same semantics.
+// Read and write RAM on one clock. Reads take one clock and return old data.
+// Use M10K memory so Quartus 18.1 does not turn large buffers into registers.
+// The simulation model uses the same read and write rules.
 module sync_ram #(parameter WIDTH=16,DEPTH=2048,AW=$clog2(DEPTH))(
  input wire clk,we,
  input wire [AW-1:0] waddr,raddr,

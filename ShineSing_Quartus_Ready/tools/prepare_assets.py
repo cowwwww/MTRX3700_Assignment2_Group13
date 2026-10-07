@@ -1,4 +1,4 @@
-"""Reproducible ROMs from the two Canvas examples (no key coordinates baked in)."""
+"""Build image ROMs from the two Canvas examples without saved key positions."""
 from pathlib import Path
 import math
 import subprocess
@@ -7,7 +7,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 
 def convert_image(source, destination):
-    """Run the unmodified Barcode Reader converter, including its MIF writer."""
+    """Run the original Barcode Reader image and MIF converter."""
     destination.parent.mkdir(parents=True, exist_ok=True)
     subprocess.run([sys.executable, str(ROOT/'tools'/'image_to_mif.py'),
                     str(source), str(destination)], check=True)
@@ -24,8 +24,8 @@ def main():
     for i,name in enumerate(('ParallelPiano.png','ParallelPiano2.png')):
         source=ROOT/'reference_materials'/'piano_examples'/name
         convert_image(source, assets/f'piano{i}')
-    # Slot 2 is explicitly a duplicate until a tutor photo is supplied.
-    # tools/import_image.py replaces it; no inferred boundaries stored in ROM.
+    # Use a copy in slot 2 until the tutor photo is available.
+    # tools/import_image.py replaces it; the ROM stores pixels, not key edges.
     for suffix in ('.hex','.mif','.png'):
         (assets/('piano2'+suffix)).write_bytes((assets/('piano1'+suffix)).read_bytes())
     write_memory(assets/'hamming',[round((.54-.46*math.cos(2*math.pi*n/1023))*32767) for n in range(1024)],16)

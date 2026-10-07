@@ -1,5 +1,5 @@
-# Generates rtl/mel_weights.svh for audio_features (R-A4).
-# Mel definition as the course notebook: hz2mel(f) = 2595*log10(1+f/700).
+# Write the Mel weights for audio_features to rtl/mel_weights.svh.
+# Use the course Mel formula: hz2mel(f) = 2595*log10(1+f/700).
 import math
 SR, FRAME, NMEL, FMIN, FMAX, WBITS = 12000, 1024, 24, 100.0, 6000.0, 8
 NB = FRAME//2 + 1                      # 513 positive bins
@@ -8,8 +8,8 @@ mel2hz = lambda m: 700.0*(10.0**(m/2595.0) - 1.0)
 m0, m1 = hz2mel(FMIN), hz2mel(FMAX)
 ctr = [mel2hz(m0 + (m1-m0)*i/(NMEL+1))*FRAME/SR for i in range(NMEL+2)]
 
-# Each bin falls in at most two adjacent triangles whose weights sum to 1.
-# Store the UPPER triangle's index and weight; the lower one is the complement.
+# Split each bin across up to two nearby bands with weights that add to 1.
+# Save the upper band and weight; the lower weight is 1 minus that weight.
 rom = []
 for b in range(NB):
     up, w = 31, 0                      # 31 = outside the bank, skip

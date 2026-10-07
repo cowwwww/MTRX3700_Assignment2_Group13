@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 module tb_audio_pipeline;
  logic clk=0;always #5 clk=~clk;
- // Accelerated independent clocks, with the real LJ serial receiver and CDC.
+ // Use faster separate clocks with the real audio receiver and clock crossing.
  logic reset=1,bclk=0,adclrc=0,adcdat=0;
  always #11 bclk=~bclk;
  wire sample_valid;wire signed [15:0] sample;

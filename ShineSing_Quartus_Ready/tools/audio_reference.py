@@ -1,9 +1,9 @@
-"""Generate exact FIR/window fixtures plus an independent floating FFT reference."""
+"""Create expected filter and window samples and a separate FFT result."""
 import numpy as np
 from prepare_assets import ROOT
 H=np.array([0,20,63,80,0,-245,-682,-1272,-1887,-2322,-2317,-1611,0,2605,6132,10336,14819,19083,22603,24925,25736,24925,22603,19083,14819,10336,6132,2605,0,-1611,-2317,-2322,-1887,-1272,-682,-245,0,80,63,20,0],dtype=np.int64)
 window=np.array([int(s,16) for s in (ROOT/'assets'/'hamming.hex').read_text().split()],dtype=np.int64)
-# Bin 80 at fs=12k; input sampled at fs=48k. Three consecutive frames, last twice as loud.
+# Make three frames at 48 kHz for bin 80 at 12 kHz; double the last frame volume.
 n=np.arange(3*4096);amp=np.where(n>=2*4096,12000,6000)
 pcm=np.rint(amp*np.sin(2*np.pi*80*n/4096)).astype(np.int64)
 fir=np.clip(np.convolve(pcm,H)[:len(pcm)]>>18,-32768,32767)

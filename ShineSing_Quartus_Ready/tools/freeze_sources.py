@@ -1,6 +1,5 @@
-"""One-time local provenance capture. Never edits the user's source directories.
-The handoff archive contains the captured files; recipients need not run this.
-"""
+"""Save source copies once without changing the originals.
+The project ZIP includes these copies, so recipients do not need to run this."""
 from pathlib import Path
 import shutil, hashlib, json
 ROOT=Path(__file__).resolve().parents[1]
@@ -22,7 +21,7 @@ manifest=[]
 for src,dst in mapping.items():
  manifest.append({'file':dst.relative_to(ROOT).as_posix(),'original_path':str(src),'bytes':dst.stat().st_size,'sha256':hashlib.sha256(dst.read_bytes()).hexdigest()})
 (dest/'MANIFEST.json').write_text(json.dumps(manifest,indent=2),encoding='utf-8')
-# Pin list becomes a portable, independently retained build input.
+# Save the pin list so the project can build on another computer.
 qsf=(ROOT/'shine_sing.qsf').read_text()
 (ROOT/'quartus'/'de1_soc_pins.qsf').write_text('\n'.join(s for s in qsf.splitlines() if s.startswith(('set_location_assignment','set_instance_assignment')))+'\n')
 print(f'Frozen {len(manifest)} original materials with SHA-256 hashes.')

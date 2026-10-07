@@ -1,4 +1,4 @@
-"""Extract precise reused originals from frozen snapshots and create reviewable diffs."""
+"""Copy reused source files from saved ZIPs and compare changes."""
 from pathlib import Path
 import zipfile,hashlib,difflib
 ROOT=Path(__file__).resolve().parents[1]
@@ -34,7 +34,7 @@ for current,(archive,path) in mapping.items():
  delta=''.join(difflib.unified_diff([s.rstrip('\r\n')+'\n' for s in old_text],[s.rstrip('\r\n')+'\n' for s in new_text],fromfile=path,tofile=current))
  lines.extend([f'## {current}',f'- Source: `{archive}/{path}`',f'- Source SHA-256: `{hashlib.sha256(old).hexdigest()}`',f'- Current SHA-256: `{hashlib.sha256(new).hexdigest()}`',f'- Status: {"modified" if delta else "identical apart from possible line endings"}',''])
  if delta: lines.extend(['```diff',delta.rstrip(),'```',''])
-# Rewritten adapters retain their input source alongside the exact direct copies.
+# Keep source copies for rewritten modules too.
 for path in ['PitchDetection/02_771076/Completed/low_pass_conv.sv','PitchDetection/02_771076/Completed/decimate.sv','PitchDetection/02_771076/Completed/fft_input_buffer.sv','PitchDetection/02_771076/Completed/window_function.sv','PitchDetection/02_771076/Completed/fft_find_peak.sv','PitchDetection/02_771076/Completed/mic/set_audio_encoder.sv','BarcodeReader/07_820062/Completed/rtl/col_profile.sv','BarcodeReader/07_820062/Completed/rtl/peak_pick.sv','BarcodeReader/07_820062/Completed/rtl/cdc_latch.sv','BarcodeReader/07_820062/Completed/rtl/display.sv','BarcodeReader/07_820062/Completed/rtl/image_rom.sv']:
  match=[n for n in ed.namelist() if n.endswith('/'+path)]
  if len(match)!=1: raise RuntimeError(path)

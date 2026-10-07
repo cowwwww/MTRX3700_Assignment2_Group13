@@ -1,4 +1,4 @@
-"""Validate the synthesis RAM implementation against Intel's simulation library."""
+"""Check the board RAM model using Intel's simulation library."""
 from pathlib import Path
 import subprocess,os,shutil
 ROOT=Path(__file__).resolve().parents[1];os.chdir(ROOT)

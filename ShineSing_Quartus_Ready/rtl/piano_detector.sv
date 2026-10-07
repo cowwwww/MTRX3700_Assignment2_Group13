@@ -1,8 +1,8 @@
-// Mini-project raster -> 1-D/Sobel -> column profile -> refined peak picker.
-// Profile uses lower white-key region. All key coordinates are measured, never stored.
-// The finished profile/boundaries stay frozen until the display acknowledges them.
-// R-V4: optional 3x3 smoothing before Sobel, and thresholds that follow the
-// profile's local average (same leaky-average estimator as the audio gate).
+// Find piano key edges, add each column and pick the peaks.
+// Use the lower white-key area to measure key positions from the image.
+// Hold the profile and key edges until the display accepts them.
+// Optionally smooth the image with a 3x3 filter before Sobel.
+// Set thresholds from the local average, like the audio gate.
 module piano_detector #(parameter W=320,H=240,Y0=H*7/10,Y1=H*17/20,MIN_GAP=12,NMAX=16,
                         BLUR_SHIFT=4,AVG_SHIFT=5)(
  input logic clk, reset,
@@ -35,7 +35,7 @@ module piano_detector #(parameter W=320,H=240,Y0=H*7/10,Y1=H*17/20,MIN_GAP=12,NM
  logic [19:0] raw_profile[0:W-1];
  logic [7:0] norm[0:W-1];
  logic [7:0] local_avg[0:W-1];
- logic [15:0] avg_acc;          // local average, 8 integer + 8 fraction bits
+ logic [15:0] avg_acc;          // Store the local average: 8 whole bits and 8 fraction bits.
  logic [21:0] avg_mix;
  logic [7:0] hi_col, lo_col;
  logic [8:0] hi_sum, lo_sum;
@@ -58,9 +58,9 @@ module piano_detector #(parameter W=320,H=240,Y0=H*7/10,Y1=H*17/20,MIN_GAP=12,NM
  logic is_maximum;
  assign rom_addr=($clog2(W*H))'(y*W+x);
  assign px_valid=state==FEED;
- // R-V4 smoothing: the same conv3x3 as Sobel with a 1-2-1 table. The weights
- // sum to 16, so the divide is >>4 and every multiply is a shift: no DSP block.
- // Max output 16*255 = 4080, so 14 signed bits never overflow or go negative.
+ // Smooth with the Sobel 3x3 module and 1-2-1 weights.
+ // Weights add to 16; bit shifts do the multiply and divide without a DSP.
+ // The largest sum is 4080, which fits in 14 signed bits.
  logic blur_valid;
  logic signed [13:0] blur_val;
  logic [XW-1:0] blur_x;
@@ -70,7 +70,7 @@ module piano_detector #(parameter W=320,H=240,Y0=H*7/10,Y1=H*17/20,MIN_GAP=12,NM
   .clk,.reset,.in_valid(px_valid),.in_pixel(rom_pixel),.in_x(x),.in_y(y),
   .out_valid(blur_valid),.out_val(blur_val),.out_x(blur_x),.out_y(blur_y));
  wire [7:0] blur_pixel = blur_val[BLUR_SHIFT+7:BLUR_SHIFT];
- // One mux chooses what Sobel sees. 'smooth' is latched for a whole sweep.
+ // Choose raw or smoothed pixels for Sobel; keep the choice for the scan.
  wire sob_valid = smooth ? blur_valid : px_valid;
  wire [7:0] sob_pixel = smooth ? blur_pixel : rom_pixel;
  wire [XW-1:0] sob_x = smooth ? blur_x : x;
@@ -85,12 +85,12 @@ module piano_detector #(parameter W=320,H=240,Y0=H*7/10,Y1=H*17/20,MIN_GAP=12,NM
   doubled=remainder<<1;
   is_maximum=0;
   if(scan>0 && scan<W-1) is_maximum=norm[scan]>norm[scan-1] && norm[scan]>=norm[scan+1];
-  // Chaining two conv3x3 stages loses one more pixel of border: the first
-  // Sobel centre would be computed from a smoothed column that does not exist.
+  // Two 3x3 filters need a two-pixel border.
+  // Skip centres that need smoothing data outside the image.
   accept_edge = ev && (!smooth || (ex>=2 && ey>=2));
-  // Leaky average, as audio_level tracks its noise floor: a<=((2^k-1)a+x)/2^k.
+  // Update the running average: a<=((2^k-1)a+x)/2^k.
   avg_mix = 22'd31*22'(avg_acc) + 22'({norm[scan],8'd0});
-  // Per-column thresholds: the local average plus the KEY1/KEY2 offsets.
+  // Add KEY1/KEY2 offsets to each column average to set thresholds.
   hi_sum = 9'(local_avg[scan]) + 9'(selected_high);
   lo_sum = 9'(local_avg[scan]) + 9'(selected_low);
   hi_col = !adaptive ? selected_high : (hi_sum>255 ? 8'd255 : hi_sum[7:0]);
@@ -112,7 +112,7 @@ module piano_detector #(parameter W=320,H=240,Y0=H*7/10,Y1=H*17/20,MIN_GAP=12,NM
     WAIT_READY: if(!publish_busy) begin
      edge_bank<=~edge_bank; selected_image<=image_select==3 ? 2'd0:image_select;
      selected_high<=high_threshold;selected_low<=low_threshold;mode<=use_sobel;
-     // Smoothing only means anything in front of Sobel.
+     // Enable smoothing only when using Sobel.
      smooth<=use_smoothing && use_sobel; adaptive<=use_adaptive;
      scan<=0;x<=0;y<=0;maximum<=0;state<=CLEAR;
     end
@@ -129,7 +129,7 @@ module piano_detector #(parameter W=320,H=240,Y0=H*7/10,Y1=H*17/20,MIN_GAP=12,NM
       else begin y<=y+1'b1;state<=FETCH;end
      end else begin x<=x+1'b1;state<=FETCH;end
     end
-    // Two chained conv3x3 stages plus Sobel's output register: 24 clocks is ample.
+    // Wait 24 clocks for both filters and the Sobel output to finish.
     DRAIN: if(drain==24) begin scan<=0;state<=MAXIMUM;end else drain<=drain+1;
     MAXIMUM: begin
      if(raw_profile[scan]>maximum) maximum<=raw_profile[scan];
@@ -146,14 +146,14 @@ module piano_detector #(parameter W=320,H=240,Y0=H*7/10,Y1=H*17/20,MIN_GAP=12,NM
       else begin scan<=scan+1;state<=NORM_INIT;end
      end else bit_count<=bit_count+1;
     end
-    // Forward pass: a running average of the normalised profile, left to right.
+    // Find the running average from left to right.
     AVG_FWD: begin
      if(scan==0) begin avg_acc<={norm[0],8'd0};local_avg[0]<=norm[0];end
      else begin avg_acc<=16'(avg_mix>>AVG_SHIFT);local_avg[scan]<=avg_mix[AVG_SHIFT+15:AVG_SHIFT+8];end
      if(scan==W-1) begin scan<=W-1;state<=AVG_BWD;end else scan<=scan+1;
     end
-    // Backward pass: the same average right to left, then the mean of the two
-    // directions, so the estimate does not lag behind the data it describes.
+    // Find the running average from right to left.
+    // Average both directions to reduce delay in the estimate.
     AVG_BWD: begin
      if(scan==W-1) begin
       avg_acc<={norm[W-1],8'd0};
@@ -190,7 +190,7 @@ module piano_detector #(parameter W=320,H=240,Y0=H*7/10,Y1=H*17/20,MIN_GAP=12,NM
      if(scan==W-1) state<=FLUSH;else scan<=scan+1;
     end
     FLUSH: begin
-     // Trailing region: same spacing rule, even at the final image column.
+     // Apply the same peak spacing rule at the last column.
      if(in_region && strong_region && have_candidate) begin
       if(boundary_count!=0 && best_position-last_position<MIN_GAP) begin
        if(best_value>last_value) boundaries[(boundary_count-1)*XW+:XW]<=best_position;
