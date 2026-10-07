@@ -1,0 +1,3 @@
+I opened the project in Quartus 18.1 and fixed one syntax issue, but compilation failed because the design exceeds the FPGA’s capacity: 3,410 LABs required; 3,207 available. Area optimization did not resolve it, so no .sof was generated.
+[Quartus project](C:/Users/21232/Documents/Codex/2026-10-07/co/outputs/Quartus/MTRX3700_Assignment2_Group13-main/ShineSing_Quartus_Ready/shine_sing.qpf)
+The RTL needs resource reduction before it can fit.
