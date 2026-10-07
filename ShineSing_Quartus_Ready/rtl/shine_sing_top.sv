@@ -92,7 +92,9 @@ module shine_sing_top(
  wire [7:0] edge_value,selected_high,selected_low;
  wire [W*8-1:0] profile;
  wire [NMAX*XW-1:0] boundaries;
+ // SW8 = smoothing before Sobel, SW9 = adaptive (local-average) thresholds.
  piano_detector detector(.clk(CLOCK_50),.reset(r50),.image_select(switches[4:3]),.use_sobel(switches[5]),
+  .use_smoothing(switches[8]),.use_adaptive(switches[9]),
   .high_threshold(hi),.low_threshold(lo),.rom_addr(analysis_address),.rom_pixel(analysis_pixel),.publish_busy,.publish,
   .profile,.boundaries,.boundary_count(nbound),.edge_bank(bank),.selected_image,.selected_high,.selected_low,
   .edge_write,.edge_address,.edge_value);
