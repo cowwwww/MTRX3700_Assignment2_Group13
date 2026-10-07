@@ -1,0 +1,79 @@
+name: Apply V9 Group Recordings snapshot
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  apply:
+    if: contains(github.event.head_commit.message, '[V9 payload]')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore V9 snapshot
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, lzma, pathlib, shutil, tarfile
+          root = pathlib.Path(".")
+          project = root / "ShineSing_Quartus_Ready"
+          payload_dir = root / ".v9_payload"
+          text = "".join(p.read_text(encoding="utf-8") for p in sorted(payload_dir.glob("part_*.txt")))
+          base = 0x4E00
+          buf = 0
+          nbits = 0
+          raw = bytearray()
+          for ch in text:
+              v = ord(ch) - base
+              if not 0 <= v < 16384:
+                  raise RuntimeError("bad payload character")
+              buf = (buf << 14) | v
+              nbits += 14
+              while nbits >= 8:
+                  nbits -= 8
+                  raw.append((buf >> nbits) & 0xff)
+                  buf &= (1 << nbits) - 1 if nbits else 0
+          raw = raw[:1671088]
+          if hashlib.sha256(raw).hexdigest() != "6b77640973eda170fa2c2b83b009b730a5d74b8d4c55842e731a796d9cfa39ba":
+              raise RuntimeError("payload checksum mismatch")
+          archive = root / ".v9_delta.tar.xz"
+          archive.write_bytes(raw)
+          with tarfile.open(archive, "r:xz") as tf:
+              tf.extractall(project)
+          archive.unlink()
+          manifest = json.loads((project / "BUNDLE_MANIFEST.json").read_text(encoding="utf-8"))
+          allowed = {item["path"] for item in manifest} | {"BUNDLE_MANIFEST.json"}
+          # Quartus output is generated after compilation and is intentionally not versioned here.
+          allowed.discard("output_files/shine_sing.sof")
+          for p in sorted(project.rglob("*"), reverse=True):
+              if p.is_file():
+                  rel = p.relative_to(project).as_posix()
+                  if rel not in allowed:
+                      p.unlink()
+          for p in sorted(project.rglob("*"), reverse=True):
+              if p.is_dir() and not any(p.iterdir()):
+                  p.rmdir()
+          for p in project.rglob("*"):
+              if p.is_file():
+                  p.chmod(0o644)
+          actual = {p.relative_to(project).as_posix() for p in project.rglob("*") if p.is_file()}
+          if actual != allowed:
+              raise RuntimeError(f"file set mismatch: missing={sorted(allowed-actual)} extra={sorted(actual-allowed)}")
+          by_path = {item["path"]: item for item in manifest}
+          for rel in sorted(allowed - {"BUNDLE_MANIFEST.json"}):
+              expected = by_path[rel].get("sha256")
+              if expected:
+                  got = hashlib.sha256((project / rel).read_bytes()).hexdigest()
+                  if got != expected:
+                      raise RuntimeError(f"sha256 mismatch: {rel}")
+          shutil.rmtree(payload_dir)
+          (root / ".github/workflows/apply-v9.yml").unlink()
+          PY
+      - name: Commit V9
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Upload ShineSing V9 group recordings snapshot"
+          git push
