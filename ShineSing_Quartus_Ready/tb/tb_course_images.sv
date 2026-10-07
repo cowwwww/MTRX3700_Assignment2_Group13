@@ -12,9 +12,16 @@ module tb_course_images;
  bit seen[0:76799];
  logic [8:0] expected_keys[0:16];integer writes;
  logic [7:0] captured[0:76799];integer capture_file;
+ integer profile_writes=0;
+ wire profile_write;wire [8:0] profile_column;wire [15:0] profile_values;
  wire [2559:0] local_average;wire selected_adaptive,selected_smoothing;
  logic use_smoothing=0,use_adaptive=0;
- piano_detector #(.MIN_GAP(3)) dut(.*);
+ piano_detector #(.MIN_GAP(3),.PACKED_OUTPUT(0)) dut(.*);
+ always @(posedge clk) if(!reset && profile_write) begin
+  if(profile_column!=profile_writes) $fatal(1,"profile column order");
+  if(profile_values[7:0]!==expected_profile[profile_column]) $fatal(1,"streamed profile mismatch");
+  profile_writes++;
+ end
  // Feed the original mini-project barcode images through the assignment detector.
  logic [7:0] image0[0:76799],image1[0:76799];
  initial begin
@@ -39,10 +46,10 @@ module tb_course_images;
    image_select=picture;use_sobel=mode;writes=0;reset=0;
    // Run twice without reset to catch column totals left uncleared.
    repeat(2) begin
-    writes=0;
+    writes=0;profile_writes=0;
     for(int p=0;p<76800;p++) begin captured[p]=0;seen[p]=0;end
     wait(publish);#1;
-    for(int x=0;x<320;x++) if(profile[x*8+:8]!==expected_profile[x]) $fatal(1,"profile column %0d expected %0d got %0d",x,expected_profile[x],profile[x*8+:8]);
+    if(profile_writes!=320 || profile!==0 || local_average!==0) $fatal(1,"stream count or unused packed outputs");
     if(boundary_count!==expected_keys[0][4:0]) $fatal(1,"boundary count %0d expected %0d",boundary_count,expected_keys[0]);
     for(int k=0;k<boundary_count;k++) if(boundaries[k*9+:9]!==expected_keys[k+1]) $fatal(1,"boundary %0d",k);
     // Barcode tests check measured edges, not playable piano lanes.

@@ -24,7 +24,7 @@ module tb_system;
  wire [10:0] address;logic [7:0] grey=240;
  wire [29:0] data;wire valid,sop,eop;
  // Run image and game logic together; test clock crossings separately.
- video_source #(.W(W),.H(H),.H_RES(128),.V_RES(48)) video(.local_average('0),.adaptive(1'b0),.smoothing(1'b0),.clk(pclk),.reset,.view(2'd3),.grey,.edge_pixel(8'd0),.address,
+ video_source #(.W(W),.H(H),.H_RES(128),.V_RES(48)) video(.local_average('0),.profile_value(8'd0),.average_value_ram(8'd0),.profile_column(),.adaptive(1'b0),.smoothing(1'b0),.clk(pclk),.reset,.view(2'd3),.grey,.edge_pixel(8'd0),.address,
   .profile(visual[511:0]),.boundaries(visual[607:512]),.boundary_count(visual[612:608]),.high_threshold(8'd96),.low_threshold(8'd32),
   .score(7'd0),.active(4'd0),.hit_window(4'd0),.hit_led(4'd0),.trained(4'd0),.countdown(16'd0),.update_ok,.data,.valid,.startofpacket(sop),.endofpacket(eop),.ready(1'b1));
  integer frames=0,coloured=0;

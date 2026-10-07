@@ -1,11 +1,13 @@
 // Send Lesson 3 Avalon-ST video; look up the next pixel when accepted.
 // Update the image, profile, game and view only between video packets.
-module video_source #(parameter W=320,H=240,H_RES=640,V_RES=480,NMAX=16)(
+module video_source #(parameter W=320,H=240,H_RES=640,V_RES=480,NMAX=16,RAM_PROFILE=0)(
  input logic clk,reset,
  input logic [1:0] view,
  input logic [7:0] grey,edge_pixel,
  output logic [$clog2(W*H)-1:0] address,
  input logic [W*8-1:0] profile, local_average,
+ input logic [7:0] profile_value, average_value_ram,
+ output wire [$clog2(W)-1:0] profile_column,
  input logic adaptive, smoothing,
  input logic [NMAX*$clog2(W)-1:0] boundaries,
  input logic [$clog2(NMAX):0] boundary_count,
@@ -39,6 +41,8 @@ module video_source #(parameter W=320,H=240,H_RES=640,V_RES=480,NMAX=16)(
    8:digit_segments=7'b1111111;default:digit_segments=7'b1101111;
   endcase
  endfunction
+ // Look up the next column only when the current pixel is accepted.
+ assign profile_column=XW'(H_RES==2*W ? (nx>>1):(nx*W/H_RES));
  assign valid=!reset && blank_count==0;
  assign update_ok=!reset && blank_count>=3;
  assign startofpacket=x==0 && y==0;
@@ -83,12 +87,12 @@ module video_source #(parameter W=320,H=240,H_RES=640,V_RES=480,NMAX=16)(
    // Hide border pixels because the edge filter does not write them.
    r=(cx>=border && cx<W-border && cy>=border && cy<H-border) ? edge_pixel : 0;g=r;b=r;
   end
-  average_value=local_average[cx*8+:8];
+  average_value=RAM_PROFILE ? average_value_ram : local_average[cx*8+:8];
   high_value=high_threshold+(adaptive ? average_value:0);
   low_value=low_threshold+(adaptive ? average_value:0);
   if(high_value>255) high_value=255;
   if(low_value>255) low_value=255;
-  height=profile[cx*8+:8]*(V_RES-1)/255;
+  height=(RAM_PROFILE ? profile_value : profile[cx*8+:8])*(V_RES-1)/255;
   if(frame_view==2) begin
    r=0;g=0;b=0;
    if(V_RES-1-y<=height) begin r=210;g=190;b=24;end

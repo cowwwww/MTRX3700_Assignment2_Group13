@@ -92,28 +92,33 @@ wire [23:0][15:0] feature;
   .analysis_address,.display_address,.analysis_pixel,.display_pixel);
  wire [17:0] edge_address;
  wire [7:0] edge_value,selected_high,selected_low;
- wire [W*8-1:0] profile,local_average;
+ wire profile_write;
+ wire [XW-1:0] profile_column,display_column;
+ wire [15:0] profile_values,display_values;
  wire selected_adaptive,selected_smoothing;
  wire [NMAX*XW-1:0] boundaries;
  // SW8 smooths the image; SW9 uses local thresholds.
- piano_detector detector(.clk(CLOCK_50),.reset(r50),.image_select(switches[4:3]),.use_sobel(switches[5]),
+ piano_detector #(.PACKED_OUTPUT(0)) detector(.clk(CLOCK_50),.reset(r50),.image_select(switches[4:3]),.use_sobel(switches[5]),
   .use_smoothing(switches[8]),.use_adaptive(switches[9]),
   .high_threshold(hi),.low_threshold(lo),.rom_addr(analysis_address),.rom_pixel(analysis_pixel),.publish_busy,.publish,
-  .profile,.local_average,.selected_adaptive,.selected_smoothing,.boundaries,.boundary_count(nbound),.edge_bank(bank),.selected_image,.selected_high,.selected_low,
+  .profile(),.local_average(),.profile_write,.profile_column,.profile_values,.selected_adaptive,.selected_smoothing,.boundaries,.boundary_count(nbound),.edge_bank(bank),.selected_image,.selected_high,.selected_low,
   .edge_write,.edge_address,.edge_value);
- localparam VW=3+2+16+CW+NMAX*XW+W*16;
+ localparam VW=4+2+16+CW+NMAX*XW;
  wire [VW-1:0] visual;
  wire update_ok;
  cdc_mailbox #(.WIDTH(VW)) video_cdc(.src_clk(CLOCK_50),.src_reset(r50),.src_valid(publish),
-  .src_data({selected_adaptive,selected_smoothing,local_average,bank,selected_image,selected_high,selected_low,nbound,boundaries,profile}),.src_busy(publish_busy),
+  .src_data({1'b1,selected_adaptive,selected_smoothing,bank,selected_image,selected_high,selected_low,nbound,boundaries}),.src_busy(publish_busy),
   .dst_clk(pixel_clk),.dst_reset(rp),.dst_accept(update_ok),.dst_data(visual),.dst_valid());
- wire display_bank,display_adaptive,display_smoothing;
- wire [W*8-1:0] display_average;
+ wire display_ready,display_bank,display_adaptive,display_smoothing;
  wire [7:0] display_high,display_low;
  wire [CW-1:0] display_count;
  wire [NMAX*XW-1:0] display_boundaries;
- wire [W*8-1:0] display_profile;
- assign {display_adaptive,display_smoothing,display_average,display_bank,display_image,display_high,display_low,display_count,display_boundaries,display_profile}=visual;
+ assign {display_ready,display_adaptive,display_smoothing,display_bank,display_image,display_high,display_low,display_count,display_boundaries}=visual;
+ // The detector writes the hidden bank; the mailbox swaps banks between frames.
+ video_profile_ram #(.W(W)) profile_ram(
+  .write_clk(CLOCK_50),.write_enable(profile_write),.write_bank(bank),
+  .write_column(profile_column),.write_data(profile_values),
+  .read_clk(pixel_clk),.read_bank(display_bank),.read_column(display_column),.read_data(display_values));
  // Store 4-bit display pixels to save 75 M10Ks; detect edges with 12-bit Gx.
  logic [3:0] edges[0:2*W*H-1],edge_nibble;
  wire [7:0] edge_pixel={edge_nibble,edge_nibble};
@@ -126,8 +131,9 @@ wire [23:0][15:0] feature;
   .dst_clk(pixel_clk),.dst_reset(rp),.dst_accept(update_ok),.dst_data(game_display),.dst_valid());
  wire [29:0] st_data;
  wire st_valid,st_sop,st_eop,st_ready;
- video_source source(.clk(pixel_clk),.reset(rp),.view(game_display[40:39]),.grey(display_pixel),.edge_pixel,.address(display_address),
-  .profile(display_profile),.local_average(display_average),.adaptive(display_adaptive),.smoothing(display_smoothing),.boundaries(display_boundaries),.boundary_count(display_count),.high_threshold(display_high),.low_threshold(display_low),
+ video_source #(.RAM_PROFILE(1)) source(.clk(pixel_clk),.reset(rp),.view(game_display[40:39]),.grey(display_pixel),.edge_pixel,.address(display_address),
+  .profile('0),.local_average('0),.profile_column(display_column),
+  .profile_value(display_ready ? display_values[7:0] : 8'd0),.average_value_ram(display_ready ? display_values[15:8] : 8'd0),.adaptive(display_adaptive),.smoothing(display_smoothing),.boundaries(display_boundaries),.boundary_count(display_count),.high_threshold(display_high),.low_threshold(display_low),
   .score(game_display[38:32]),.active(game_display[31:28]),.hit_window(game_display[27:24]),.hit_led(game_display[23:20]),
   .countdown(game_display[19:4]),.trained(game_display[3:0]),.update_ok,.data(st_data),.valid(st_valid),.startofpacket(st_sop),.endofpacket(st_eop),.ready(st_ready));
  vga_sink vga(.clk_clk(pixel_clk),.reset_reset_n(~rp),.video_in_data(st_data),.video_in_startofpacket(st_sop),

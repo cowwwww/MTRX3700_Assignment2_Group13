@@ -4,7 +4,7 @@
 // Optionally smooth the image with a 3x3 filter before Sobel.
 // Set thresholds from the local average, like the audio gate.
 module piano_detector #(parameter W=320,H=240,Y0=H*7/10,Y1=H*17/20,MIN_GAP=12,NMAX=16,
-                        BLUR_SHIFT=4,AVG_SHIFT=5)(
+                        BLUR_SHIFT=4,AVG_SHIFT=5,PACKED_OUTPUT=1)(
  input logic clk, reset,
  input logic [1:0] image_select,
  input logic use_sobel,
@@ -16,6 +16,9 @@ module piano_detector #(parameter W=320,H=240,Y0=H*7/10,Y1=H*17/20,MIN_GAP=12,NM
  input logic publish_busy,
  output logic publish,
  output logic [W*8-1:0] profile, local_average,
+ output wire profile_write,
+ output wire [$clog2(W)-1:0] profile_column,
+ output wire [15:0] profile_values,
  output logic selected_adaptive, selected_smoothing,
  output logic [NMAX*$clog2(W)-1:0] boundaries,
  output logic [$clog2(NMAX):0] boundary_count,
@@ -57,6 +60,10 @@ module piano_detector #(parameter W=320,H=240,Y0=H*7/10,Y1=H*17/20,MIN_GAP=12,NM
  logic [XW-1:0] best_position, last_position;
  logic in_region, strong_region, have_candidate;
  logic is_maximum;
+ // Write one column to display RAM instead of copying two whole arrays.
+ assign profile_write=!reset && state==PICK;
+ assign profile_column=XW'(scan);
+ assign profile_values={local_avg[scan],norm[scan]};
  assign rom_addr=($clog2(W*H))'(y*W+x);
  assign px_valid=state==FEED;
  // Smooth with the Sobel 3x3 module and 1-2-1 weights.
@@ -143,7 +150,7 @@ module piano_detector #(parameter W=320,H=240,Y0=H*7/10,Y1=H*17/20,MIN_GAP=12,NM
      quotient<={quotient[6:0],doubled>=maximum};
      if(bit_count==7) begin
       norm[scan]<=maximum==0 ? 0 : (raw_profile[scan]==maximum ? 255 : {quotient[6:0],doubled>=maximum});
-      profile[scan*8+:8]<=maximum==0 ? 0 : (raw_profile[scan]==maximum ? 255 : {quotient[6:0],doubled>=maximum});
+      if(PACKED_OUTPUT) profile[scan*8+:8]<=maximum==0 ? 0 : (raw_profile[scan]==maximum ? 255 : {quotient[6:0],doubled>=maximum});
       if(scan==W-1) begin scan<=0;state<=AVG_FWD;end
       else begin scan<=scan+1;state<=NORM_INIT;end
      end else bit_count<=bit_count+1;
@@ -170,7 +177,7 @@ module piano_detector #(parameter W=320,H=240,Y0=H*7/10,Y1=H*17/20,MIN_GAP=12,NM
      end else scan<=scan-1;
     end
     PICK: begin
-     local_average[scan*8+:8]<=local_avg[scan];
+     if(PACKED_OUTPUT) local_average[scan*8+:8]<=local_avg[scan];
      if(norm[scan]>=lo_col && norm[scan]!=0) begin
       in_region<=1;
       if(norm[scan]>=hi_col) strong_region<=1;
