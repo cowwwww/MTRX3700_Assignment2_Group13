@@ -3,7 +3,13 @@ module tb_audio_level;
  logic clk=0;always #5 clk=~clk;
  logic reset=1,sample_valid=0;logic signed [15:0] sample=0;
  wire voice;wire [6:0] db;wire [9:0] bar;wire [15:0] level,noise;
- audio_level #(.BLOCK(16),.CAL_BLOCKS(4),.MARGIN(64)) dut(.*);
+ audio_level #(
+    .BLOCK(16),
+    .CAL_BLOCKS(4),
+    .MARGIN(64),
+    .DB_HOLD_BLOCKS(1)
+) dut(.*);
+ 
  task block(input integer amplitude,input integer expected_db);
   for(int i=0;i<16;i++) begin @(negedge clk);sample_valid=1;sample=i%2 ? -amplitude:amplitude;end
   @(negedge clk);sample_valid=0;#1;
