@@ -45,10 +45,10 @@ module shine_sing_top(
  wire [32:0] mag;
  FFT #(.WIDTH(16)) fft(.clock(fft_clk),.reset(rf),.di_en(fft_input_valid),.di_re(fft_input),.di_im(16'd0),.do_en(fft_output_valid),.do_re(re),.do_im(im));
  fft_mag_sq #(.W(16)) power_stage(.clk(fft_clk),.reset(rf),.fft_valid(fft_output_valid),.fft_real(re),.fft_imag(im),.mag_sq(mag),.mag_valid);
- wire [7:0][15:0] feature;
+wire [23:0][15:0] feature;
  wire feature_valid;
  wire [8:0] peak;
- audio_features features(.clk(fft_clk),.reset(rf),.mag_valid,.mag,.feature,.feature_valid,.peak_bin(peak));
+  audio_features #(.MODE(4),.D(24)) features(.clk(fft_clk),.reset(rf),.mag_valid,.mag,.feature,.feature_valid,.peak_bin(peak));
  wire voice;
  wire [6:0] db;
  wire [9:0] bar;
@@ -58,7 +58,7 @@ module shine_sing_top(
  wire [7:0] confidence;
  wire reject,result_valid;
  wire [3:0] trained;
- classifier #(.M(3),.DMAX(50000)) recognizer(.clk(fft_clk),.reset(rf),.enable(voice),.feature_valid,.feature,
+ classifier #(.D(24),.M(3),.DMAX(65000)) recognizer(.clk(fft_clk),.reset(rf),.enable(voice),.feature_valid,.feature,
   .enrol(training[2]),.enrol_class(training[1:0]),.trained,.result(vowel),.confidence,.reject,.result_valid);
  // HEX/LEDR registers remain in FFT domain; only game events cross to 50 MHz.
  hex_seg h0(.d(4'(db%10)),.blank(1'b0),.seg(HEX0));
