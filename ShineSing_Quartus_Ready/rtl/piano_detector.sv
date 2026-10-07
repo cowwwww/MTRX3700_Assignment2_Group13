@@ -1,10 +1,15 @@
 // Mini-project raster -> 1-D/Sobel -> column profile -> refined peak picker.
 // Profile uses lower white-key region. All key coordinates are measured, never stored.
 // The finished profile/boundaries stay frozen until the display acknowledges them.
-module piano_detector #(parameter W=320,H=240,Y0=H*7/10,Y1=H*17/20,MIN_GAP=12,NMAX=16)(
+// R-V4: optional 3x3 smoothing before Sobel, and thresholds that follow the
+// profile's local average (same leaky-average estimator as the audio gate).
+module piano_detector #(parameter W=320,H=240,Y0=H*7/10,Y1=H*17/20,MIN_GAP=12,NMAX=16,
+                        BLUR_SHIFT=4,AVG_SHIFT=5)(
  input logic clk, reset,
  input logic [1:0] image_select,
  input logic use_sobel,
+ input logic use_smoothing,
+ input logic use_adaptive,
  input logic [7:0] high_threshold, low_threshold,
  output logic [$clog2(W*H)-1:0] rom_addr,
  input logic [7:0] rom_pixel,
@@ -21,14 +26,20 @@ module piano_detector #(parameter W=320,H=240,Y0=H*7/10,Y1=H*17/20,MIN_GAP=12,NM
  output logic [7:0] edge_value
 );
  localparam XW=$clog2(W),YW=$clog2(H);
- typedef enum logic [3:0] {WAIT_READY,CLEAR,FETCH,WAIT_ROM,FEED,DRAIN,MAXIMUM,NORM_INIT,NORM_STEP,PICK,FLUSH,PUBLISH,ACK_WAIT} state_t;
+ typedef enum logic [3:0] {WAIT_READY,CLEAR,FETCH,WAIT_ROM,FEED,DRAIN,MAXIMUM,NORM_INIT,NORM_STEP,AVG_FWD,AVG_BWD,PICK,FLUSH,PUBLISH,ACK_WAIT} state_t;
  state_t state;
  logic [XW-1:0] x;
  logic [YW-1:0] y;
  integer scan, drain, bit_count;
- logic mode;
+ logic mode, smooth, adaptive;
  logic [19:0] raw_profile[0:W-1];
  logic [7:0] norm[0:W-1];
+ logic [7:0] local_avg[0:W-1];
+ logic [15:0] avg_acc;          // local average, 8 integer + 8 fraction bits
+ logic [21:0] avg_mix;
+ logic [7:0] hi_col, lo_col;
+ logic [8:0] hi_sum, lo_sum;
+ logic accept_edge;
  logic [19:0] maximum;
  logic [20:0] remainder, doubled;
  logic [7:0] quotient;
@@ -47,7 +58,24 @@ module piano_detector #(parameter W=320,H=240,Y0=H*7/10,Y1=H*17/20,MIN_GAP=12,NM
  logic is_maximum;
  assign rom_addr=($clog2(W*H))'(y*W+x);
  assign px_valid=state==FEED;
- sobel #(.W(W),.H(H)) sobel_filter(.clk,.reset,.in_valid(px_valid),.in_pixel(rom_pixel),.in_x(x),.in_y(y),
+ // R-V4 smoothing: the same conv3x3 as Sobel with a 1-2-1 table. The weights
+ // sum to 16, so the divide is >>4 and every multiply is a shift: no DSP block.
+ // Max output 16*255 = 4080, so 14 signed bits never overflow or go negative.
+ logic blur_valid;
+ logic signed [13:0] blur_val;
+ logic [XW-1:0] blur_x;
+ logic [YW-1:0] blur_y;
+ conv3x3 #(.W(W),.H(H),.DW(8),.OW(14),
+           .K('{'{1,2,1},'{2,4,2},'{1,2,1}})) blur_filter(
+  .clk,.reset,.in_valid(px_valid),.in_pixel(rom_pixel),.in_x(x),.in_y(y),
+  .out_valid(blur_valid),.out_val(blur_val),.out_x(blur_x),.out_y(blur_y));
+ wire [7:0] blur_pixel = blur_val[BLUR_SHIFT+7:BLUR_SHIFT];
+ // One mux chooses what Sobel sees. 'smooth' is latched for a whole sweep.
+ wire sob_valid = smooth ? blur_valid : px_valid;
+ wire [7:0] sob_pixel = smooth ? blur_pixel : rom_pixel;
+ wire [XW-1:0] sob_x = smooth ? blur_x : x;
+ wire [YW-1:0] sob_y = smooth ? blur_y : y;
+ sobel #(.W(W),.H(H)) sobel_filter(.clk,.reset,.in_valid(sob_valid),.in_pixel(sob_pixel),.in_x(sob_x),.in_y(sob_y),
   .out_valid(sv),.out_gx(gx),.out_gy(gy),.out_mag(magnitude),.out_x(sx),.out_y(sy));
  always_comb begin
   ev=mode ? sv : (px_valid && x>0);
@@ -57,15 +85,25 @@ module piano_detector #(parameter W=320,H=240,Y0=H*7/10,Y1=H*17/20,MIN_GAP=12,NM
   doubled=remainder<<1;
   is_maximum=0;
   if(scan>0 && scan<W-1) is_maximum=norm[scan]>norm[scan-1] && norm[scan]>=norm[scan+1];
+  // Chaining two conv3x3 stages loses one more pixel of border: the first
+  // Sobel centre would be computed from a smoothed column that does not exist.
+  accept_edge = ev && (!smooth || (ex>=2 && ey>=2));
+  // Leaky average, as audio_level tracks its noise floor: a<=((2^k-1)a+x)/2^k.
+  avg_mix = 22'd31*22'(avg_acc) + 22'({norm[scan],8'd0});
+  // Per-column thresholds: the local average plus the KEY1/KEY2 offsets.
+  hi_sum = 9'(local_avg[scan]) + 9'(selected_high);
+  lo_sum = 9'(local_avg[scan]) + 9'(selected_low);
+  hi_col = !adaptive ? selected_high : (hi_sum>255 ? 8'd255 : hi_sum[7:0]);
+  lo_col = !adaptive ? selected_low  : (lo_sum>255 ? 8'd255 : lo_sum[7:0]);
  end
  always_ff @(posedge clk) begin
   publish<=0;edge_write<=0;
   if(reset) begin
    state<=WAIT_READY;x<=0;y<=0;scan<=0;edge_bank<=0;boundaries<=0;boundary_count<=0;
    profile<=0;selected_image<=0;selected_high<=96;selected_low<=32;
-   previous_pixel<=0;maximum<=0;drain<=0;mode<=0;
+   previous_pixel<=0;maximum<=0;drain<=0;mode<=0;smooth<=0;adaptive<=0;avg_acc<=0;
   end else begin
-   if(ev) begin
+   if(accept_edge) begin
     edge_write<=1;edge_address<=($clog2(2*W*H))'(edge_bank*W*H+ey*W+ex);edge_value<=display_strength;
     if(ey>=Y0 && ey<=Y1) raw_profile[ex]<=raw_profile[ex]+strength;
    end
@@ -74,6 +112,8 @@ module piano_detector #(parameter W=320,H=240,Y0=H*7/10,Y1=H*17/20,MIN_GAP=12,NM
     WAIT_READY: if(!publish_busy) begin
      edge_bank<=~edge_bank; selected_image<=image_select==3 ? 2'd0:image_select;
      selected_high<=high_threshold;selected_low<=low_threshold;mode<=use_sobel;
+     // Smoothing only means anything in front of Sobel.
+     smooth<=use_smoothing && use_sobel; adaptive<=use_adaptive;
      scan<=0;x<=0;y<=0;maximum<=0;state<=CLEAR;
     end
     CLEAR: begin
@@ -89,7 +129,8 @@ module piano_detector #(parameter W=320,H=240,Y0=H*7/10,Y1=H*17/20,MIN_GAP=12,NM
       else begin y<=y+1'b1;state<=FETCH;end
      end else begin x<=x+1'b1;state<=FETCH;end
     end
-    DRAIN: if(drain==8) begin scan<=0;state<=MAXIMUM;end else drain<=drain+1;
+    // Two chained conv3x3 stages plus Sobel's output register: 24 clocks is ample.
+    DRAIN: if(drain==24) begin scan<=0;state<=MAXIMUM;end else drain<=drain+1;
     MAXIMUM: begin
      if(raw_profile[scan]>maximum) maximum<=raw_profile[scan];
      if(scan==W-1) begin scan<=0;state<=NORM_INIT;end else scan<=scan+1;
@@ -101,16 +142,35 @@ module piano_detector #(parameter W=320,H=240,Y0=H*7/10,Y1=H*17/20,MIN_GAP=12,NM
      if(bit_count==7) begin
       norm[scan]<=maximum==0 ? 0 : (raw_profile[scan]==maximum ? 255 : {quotient[6:0],doubled>=maximum});
       profile[scan*8+:8]<=maximum==0 ? 0 : (raw_profile[scan]==maximum ? 255 : {quotient[6:0],doubled>=maximum});
-      if(scan==W-1) begin
-       scan<=0;boundary_count<=0;boundaries<=0;in_region<=0;strong_region<=0;
-       have_candidate<=0;best_value<=0;last_value<=0;last_position<=0;state<=PICK;
-      end else begin scan<=scan+1;state<=NORM_INIT;end
+      if(scan==W-1) begin scan<=0;state<=AVG_FWD;end
+      else begin scan<=scan+1;state<=NORM_INIT;end
      end else bit_count<=bit_count+1;
     end
+    // Forward pass: a running average of the normalised profile, left to right.
+    AVG_FWD: begin
+     if(scan==0) begin avg_acc<={norm[0],8'd0};local_avg[0]<=norm[0];end
+     else begin avg_acc<=16'(avg_mix>>AVG_SHIFT);local_avg[scan]<=avg_mix[AVG_SHIFT+15:AVG_SHIFT+8];end
+     if(scan==W-1) begin scan<=W-1;state<=AVG_BWD;end else scan<=scan+1;
+    end
+    // Backward pass: the same average right to left, then the mean of the two
+    // directions, so the estimate does not lag behind the data it describes.
+    AVG_BWD: begin
+     if(scan==W-1) begin
+      avg_acc<={norm[W-1],8'd0};
+      local_avg[W-1]<=8'((9'(local_avg[W-1])+9'(norm[W-1]))>>1);
+     end else begin
+      avg_acc<=16'(avg_mix>>AVG_SHIFT);
+      local_avg[scan]<=8'((9'(local_avg[scan])+9'(avg_mix[AVG_SHIFT+15:AVG_SHIFT+8]))>>1);
+     end
+     if(scan==0) begin
+      scan<=0;boundary_count<=0;boundaries<=0;in_region<=0;strong_region<=0;
+      have_candidate<=0;best_value<=0;last_value<=0;last_position<=0;state<=PICK;
+     end else scan<=scan-1;
+    end
     PICK: begin
-     if(norm[scan]>=selected_low && norm[scan]!=0) begin
+     if(norm[scan]>=lo_col && norm[scan]!=0) begin
       in_region<=1;
-      if(norm[scan]>=selected_high) strong_region<=1;
+      if(norm[scan]>=hi_col) strong_region<=1;
       if(is_maximum && (!have_candidate || norm[scan]>best_value)) begin
        best_value<=norm[scan];best_position<=XW'(scan);have_candidate<=1;
       end
