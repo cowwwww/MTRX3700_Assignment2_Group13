@@ -32,9 +32,12 @@ module classifier #(
     // Use constant examples in the board build, or writable examples for capture tests.
     wire [D-1:0][FW-1:0] templ [0:NTT-1];
     logic [D-1:0][FW-1:0] enrolled [0:NTT-1];
-    generate for(genvar n=0;n<NTT;n++) begin: template_source
-        assign templ[n] = PRETRAINED ? SAVED_TEMPLATES[n] : enrolled[n];
-    end endgenerate
+    genvar n;
+    generate
+        for (n = 0; n < NTT; n = n + 1) begin : template_source
+            assign templ[n] = PRETRAINED ? SAVED_TEMPLATES[n] : enrolled[n];
+        end
+    endgenerate
     integer enrol_count[0:NCLASS-1];
 
     typedef enum logic [2:0] {IDLE, DIST, DECIDE, CONFIDENCE, VOTE} st_t;
