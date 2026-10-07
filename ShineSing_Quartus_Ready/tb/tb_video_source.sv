@@ -9,7 +9,6 @@ module tb_video_source;
  logic [319:0] profile=0;logic [95:0] boundaries=0;logic [4:0] boundary_count=5;
  logic [7:0] high_threshold=96,low_threshold=32;logic [6:0] score=42;
  logic [3:0] active=0,hit_window=0,hit_led=0,trained=15;logic [3:0][3:0] countdown=0;
- logic [7:0] profile_value=0,average_value_ram=0;wire [$clog2(W)-1:0] profile_column;
  wire update_ok;wire [29:0] data;wire valid,startofpacket,endofpacket;
  video_source #(.W(W),.H(H),.H_RES(80),.V_RES(64)) dut(.*);
  always @(posedge clk) begin grey<=8'(address*3);edge_pixel<=8'(address*7);end

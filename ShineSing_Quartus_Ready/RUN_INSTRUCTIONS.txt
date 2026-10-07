@@ -44,14 +44,6 @@ Quartus 18.1:
     quartus_sta -t tools/report_timing.tcl
   Or open shine_sing.qpf in Quartus after the input check passes.
   The checked-in project includes the FIR, Mel table, VGA IP and pin assignments.
-  Pull the complete updated project, including rtl/video_profile_ram.sv and the QSF.
-  The profile display now uses two M10K blocks instead of sending 5,120 bits
-  through registers in the video mailbox. Its payload shrinks from 5,291 to
-  172 bits. Detector output copies are also disabled in the board build.
-  This addresses the reported 3,410 / 3,207 LAB overflow without reducing image
-  size, smoothing, adaptive thresholds or the recorded H95 vowel templates.
-  The new fitted LAB count is not measured here: run a full compilation, then
-  check the Fitter report and timing before using the newly generated SOF.
   The old SOF was removed because it does not match this source.
   Quartus fitting, resource usage and all four clock timing results must be checked
   on a Quartus machine. Verilator tests do not prove hardware timing.

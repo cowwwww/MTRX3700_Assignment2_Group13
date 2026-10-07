@@ -25,7 +25,6 @@
     "tb_reaction_time_fsm",
     "tb_sync_ram",
     "tb_system",
-    "tb_video_profile_ram",
     "tb_video_source"
   ],
   "top_lint": "passed with supplied ADC PLL black box; not a physical PLL or timing test",
@@ -49,17 +48,5 @@
     "Quartus fitting and timing",
     "Live microphone/room test",
     "Tutor photograph"
-  ],
-  "mutation_tests_note": "Historical results from the saved-template revision; mutation tests were not rerun for this RAM change.",
-  "resource_reduction": {
-    "reported_failing_labs": 3410,
-    "available_labs": 3207,
-    "old_video_mailbox_bits": 5291,
-    "new_video_mailbox_bits": 172,
-    "profile_ram_bits": 16384,
-    "profile_ram_m10k_blocks": 2,
-    "disabled_packed_detector_output_bits": 5120,
-    "tests": "All 26 RTL tests passed with Verilator 5.050. Streamed course/HD profiles match references; RAM video pixels match independent expectations across stalls and an asynchronous frame-bank swap.",
-    "limitations": "Intel altsyncram synthesis branch and fitted LAB usage require Quartus 18.1; behavioral RAM simulation is not proof of fit or timing."
-  }
+  ]
 }
