@@ -1,0 +1,34 @@
+Shine & Sing — Quartus 18.1 可烧录工程
+目标开发板: DE1-SoC
+FPGA Device: 5CSEMA5F31C6
+Top-level entity: shine_sing_top
+
+【最快烧录方法：直接使用已经生成的 SOF】
+1. 用 USB-Blaster 连接 DE1-SoC 与电脑，并给开发板上电。
+2. 打开 Quartus Prime Lite 18.1。
+3. Tools -> Programmer。
+4. Hardware Setup 选择 DE-SoC / USB-Blaster。
+5. 如果列表为空，点击 Add File，选择：
+   output_files/shine_sing.sof
+6. 确认 SOF 对应 FPGA（Cyclone V）那一行，不要选 HPS。
+7. 勾选 Program/Configure。
+8. 点击 Start。
+9. Progress 到 100%，并出现 Configuration succeeded 即完成。
+
+【如果要重新编译代码后再烧录】
+1. File -> Open Project，打开根目录 shine_sing.qpf。
+2. Processing -> Start Compilation。
+3. 编译完成后 Tools -> Programmer。
+4. 选择新生成的 output_files/shine_sing.sof。
+5. 勾选 Program/Configure -> Start。
+
+【工程检查结果】
+- QSF Device = 5CSEMA5F31C6。
+- Top-level = shine_sing_top。
+- QSF 中所有 RTL / MIF / SDC / QIP 引用文件均存在。
+- 随包 SOF SHA-256:
+  98eea57ed448a60ec2aef303adb36be6976692d736e65d712efffb944e0db135
+- 原工程记录显示 Quartus Assembler、Fitter、Timing Analyzer、Programmer 均 0 errors。
+- 原记录显示该 SOF 已成功下载到 DE1-SoC。
+
+注意：SOF 是易失配置，开发板断电后需要重新烧录。
