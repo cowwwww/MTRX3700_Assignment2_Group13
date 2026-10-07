@@ -1,0 +1,91 @@
+{
+  "source": "data/h95/h95.zip",
+  "archive_sha256": "2560548591e3a726c88549b6dc9d226995616c26874d601c69fee8b9eee9d730",
+  "feature_mode": 4,
+  "dimensions": 24,
+  "log_scale": 64,
+  "templates_per_class": 4,
+  "rho": "7/10",
+  "dmax": 65000,
+  "labels": [
+    "ee",
+    "ah",
+    "oo",
+    "aw"
+  ],
+  "vowel_mapping": {
+    "ee": "iy (heed)",
+    "ah": "ah (hod/cot)",
+    "oo": "uw (who'd)",
+    "aw": "aw (hawed)"
+  },
+  "training_frames": [
+    224,
+    225,
+    225,
+    226
+  ],
+  "held_out_confusion_columns": [
+    "ee",
+    "ah",
+    "oo",
+    "aw",
+    "reject"
+  ],
+  "held_out_confusion": [
+    [
+      52,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      26,
+      0,
+      0,
+      26
+    ],
+    [
+      0,
+      0,
+      44,
+      0,
+      8
+    ],
+    [
+      0,
+      0,
+      0,
+      22,
+      30
+    ]
+  ],
+  "held_out_frames": 208,
+  "accepted_accuracy": 1.0,
+  "overall_correct_fraction": 0.6923076923076923,
+  "rejection_fraction": 0.3076923076923077,
+  "split": "All tokens of speakers whose number is divisible by 5 are held out; never used for training.",
+  "feature_extraction": "Actual audio_frontend -> course FFT -> fft_mag_sq -> audio_features MODE=4 RTL in Verilator 5.050",
+  "template_sha256": "a555f8aaf0662c5067781b8ba8ea9309985a16f8dc312a97e7bb9c80f07e3d3d",
+  "feature_source_hashes": {
+    "rtl/audio_frontend.sv": "c2b4fe73e90add2a3f68c55b52aa1d51308219d02ff2430ba726e53d7d6f2ac1",
+    "rtl/reuse/low_pass_conv.sv": "43c7d0ebfac9490a623b9f1d58e0cf57f235591b5f6695c07b9e0893a4442b61",
+    "rtl/reuse/fft_mag_sq.sv": "7c8564632904e194e6fe8684772f89e283d1d73e710d04753497da8cde26b9fa",
+    "rtl/audio_features.sv": "bd12caab8d2a3c741574e45d241b2afd049f6d19f8c3d9ff0cf3d0d26da643b3",
+    "rtl/mel_weights.svh": "4df35476a13376a29cc542aa212e8dff33d26fec88becca74732b3b5947f9911",
+    "assets/hamming.hex": "e7a72d6368798b6f2ad4481ef576a6ed3d71ad292f815ee1410b2dab7a3a06e3",
+    "rtl/fft/Butterfly.v": "82c7b18da61d728fd64df3eee9150b120716916ec41756e9bec5df6ddc9ed3d3",
+    "rtl/fft/DelayBuffer.v": "e46f42cbc55bcddb71120f171c394f5cd17eb9d08739604dc93320bba5e1de9c",
+    "rtl/fft/FFT.v": "f49c6e23117e8fbadca155b7bda1f74ad52e65052fd01c27c287acc65274f035",
+    "rtl/fft/Multiply.v": "d5fda5b3f7e3762a62e7ba0fbdfabf5acab53e9fba0010a76f07baa5948c1a7b",
+    "rtl/fft/SdfUnit.v": "2e66d792173d339e4f1998d19f093a1febd0ad38b732f4d7e16716e3d7656276",
+    "rtl/fft/SdfUnit2.v": "a52f23fc8b2c80309529e48dff235b1ae449988efbb2b0fe92c903b5d8fa570c",
+    "rtl/fft/SdfUnit_TC.v": "6f6a3d6ce834a1bb27cb748c6da9be38851822dfd92a4834736c0de0af21b02b",
+    "rtl/fft/Twiddle.v": "4d82703d2878ee9f780840cf6e424f8ac8557a18822a14cfda0a17c468485bb0",
+    "rtl/fft/TwiddleConvert4.v": "3361f25856aed7acf903a9919fcb559cee9425306a27902a434324decd928aa4",
+    "rtl/fft/TwiddleConvert8.v": "6ea2b3709c32220e69d6d1c7769bf13d5f066d2f4a95e05c0a4e078cf60b4bf3"
+  },
+  "note": "Real H95 dataset recordings, not the group members. Frame metrics before voting; microphone/accent/room performance still needs hardware testing."
+}

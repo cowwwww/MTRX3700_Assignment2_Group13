@@ -10,20 +10,31 @@ Original uploaded sources and datasets:
   course_sources/reuse.patch shows adaptations and completed exercise TODOs.
   Course originals are reference files; do not add their duplicate modules to Quartus.
 
-Saved HD vowel training:
-  python3 -m pip install -r requirements.txt
-  python3 tools/train_saved_templates.py ee.csv ah.csv oo.csv aw.csv
-  Use MODE=4, D=24, LOG_SCALE=64 feature captures from this design.
-  The output is rtl/templates.svh plus a held-out confusion matrix in JSON.
-  The FPGA loads these constant examples at startup and keeps them through KEY0 reset.
-  It still listens to live microphone audio during gameplay.
-  CAPTURE_MODE=1 is an optional capture/debug build; normal operation uses saved examples.
+Saved HD vowel templates (already included and enabled):
+  The default FPGA build uses real H95 recordings from data/h95/h95.zip.
+  No group recording, KEY3 enrolment or training during the demo is needed.
+  KEY0 reset keeps the saved templates. Gameplay still uses the live microphone.
+  Vowel mapping: iy -> ee, ah -> ah, uw -> oo, aw -> aw.
+  H95 ah is the vowel in hod/cot; accents can differ from the assignment's car example.
+  Do not use H95 oo (hood) for the assignment's oo (boot); use uw.
 
-The uploaded classifier templates are synthetic D=8 TEST DATA.
-They cannot be used as recorded D=24 HD vowel examples. No real vowel captures
-were supplied. The default build therefore keeps the classifier untrained.
-The supplied tone and barcode datasets are used in tb_course_audio and tb_course_images.
-Additional controlled test inputs check edge cases; they are not recordings.
+Rebuild the included templates (optional; not needed for Quartus or Ed):
+  python3 -m pip install -r requirements.txt
+  sh tools/build_h95_templates.sh
+  Requires Verilator 5.050. Extraction uses the actual FIR, window, FFT and
+  24-band log-Mel RTL, after 16-to-48 kHz resampling of marked vowel segments.
+  Outputs: rtl/templates.svh, rtl/templates.hex, rtl/templates_training.json.
+  data/h95/segments.json and features.csv record the source and speaker split.
+  900 frames train the templates. 208 frames from different speakers test them:
+  144 correct accepted frames, 64 rejects, zero wrong accepted frames.
+  These are frame results before voting, not a claim of live microphone accuracy.
+
+Alternative saved feature captures can still be imported with:
+  python3 tools/train_saved_templates.py ee.csv ah.csv oo.csv aw.csv
+  Captures must use MODE=4, D=24, LOG_SCALE=64 from this design.
+
+The earlier course classifier ZIP's synthetic D=8 templates remain test-only.
+The supplied tone and barcode datasets are used in the course regression tests.
 
 Quartus 18.1:
   python3 tools/check_project.py --require-trained

@@ -29,6 +29,12 @@ if a.require_trained:
     report=json.loads((ROOT/'rtl/templates_training.json').read_text())
     if report['dimensions']!=24 or report['labels']!=['ee','ah','oo','aw']:
         raise SystemExit('Wrong template dimensions or vowel order.')
+    expected_hash=report.get('template_sha256')
+    if expected_hash and hashlib.sha256((ROOT/'rtl/templates.svh').read_bytes()).hexdigest()!=expected_hash:
+        raise SystemExit('Template header does not match the training report. Regenerate templates.')
+    for name,expected in report.get('feature_source_hashes',{}).items():
+        if hashlib.sha256((ROOT/name).read_bytes()).hexdigest()!=expected:
+            raise SystemExit('Audio feature pipeline changed; rebuild the H95 templates: '+name)
     print('PASS: saved HD template metadata (live accuracy still needs board testing)')
 elif not ready:
     print('NOT DEMO READY: recorded HD vowel templates are not supplied; classifier stays disabled.')

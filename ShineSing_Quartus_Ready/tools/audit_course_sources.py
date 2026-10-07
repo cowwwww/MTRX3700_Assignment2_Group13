@@ -37,6 +37,6 @@ patch=''.join(''.join(difflib.unified_diff((ROOT/r['course_source']).read_text()
  'rtl/video_source.sv':'Assignment VGA views, score and game masks built around the course Avalon-ST interface.',
  'rtl/cdc_mailbox.sv':'Held-data request/acknowledge transfer for independent clock domains.',
  'rtl/game.sv':'Assignment 1 game integration with classifier decisions.',
- 'rtl/templates.svh':'Disabled until actual recorded 24-feature vowel captures are trained. The ZIP contains only synthetic 8-feature templates.'
+ 'rtl/templates.svh':'Saved 24-feature templates trained from user-supplied H95 recorded vowels; see rtl/templates_training.json. The earlier course classifier ZIP contains only synthetic 8-feature test templates.'
 }},indent=2)+'\n')
 print('Audited',len(records),'course-derived files; originals retained unchanged.')
