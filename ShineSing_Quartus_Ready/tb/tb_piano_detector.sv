@@ -12,6 +12,8 @@ module tb_piano_detector;
  bit seen[0:76799];
  logic [8:0] expected_keys[0:16];integer writes;
  logic [7:0] captured[0:76799];integer capture_file;
+ wire [2559:0] local_average;wire selected_adaptive,selected_smoothing;
+ logic use_smoothing=0,use_adaptive=0;
  piano_detector dut(.*);
  // Test the real image selection and clocked ROM.
  image_store rom(.analysis_clk(clk),.pixel_clk(clk),.analysis_image(selected_image),

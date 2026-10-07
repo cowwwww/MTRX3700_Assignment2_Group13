@@ -19,7 +19,7 @@ module demo_visual;
  wire [1:0] selected_image;
  wire [7:0] selected_high,selected_low,edge_value;
  wire [17:0] edge_address;
- piano_detector detector(.clk,.reset(det_reset),.image_select,.use_sobel,
+ piano_detector detector(.clk,.reset(det_reset),.image_select,.use_sobel,.use_smoothing(1'b0),.use_adaptive(1'b0),
   .high_threshold(8'd96),.low_threshold(8'd32),.rom_addr,.rom_pixel,
   .publish_busy(visual_busy || hold_analysis),.publish,.profile,.boundaries,
   .boundary_count,.edge_bank,.selected_image,.selected_high,.selected_low,
@@ -61,7 +61,7 @@ module demo_visual;
   .src_data({view,score,active,hit_window,hit_led,countdown,trained}),.src_busy(game_busy),
   .dst_clk(pclk),.dst_reset(reset),.dst_accept(update_ok),.dst_data(game_display),.dst_valid());
  wire [29:0] data;wire valid,sop,eop;
- video_source video(.clk(pclk),.reset,.view(game_display[40:39]),.grey,
+ video_source video(.local_average('0),.adaptive(1'b0),.smoothing(1'b0),.clk(pclk),.reset,.view(game_display[40:39]),.grey,
   .edge_pixel({edge_nibble,edge_nibble}),.address(display_address),.profile(display_profile),
   .boundaries(display_boundaries),.boundary_count(display_count),.high_threshold(display_high),.low_threshold(display_low),
   .score(game_display[38:32]),.active(game_display[31:28]),.hit_window(game_display[27:24]),

@@ -1,0 +1,619 @@
+{
+  "archives": [
+    {
+      "name": "home.zip",
+      "sha256": "c017d1d893b806153a325bfa99a5ea9f43e5eb501d9b4f3295e0674d3e5de915",
+      "folder": "video"
+    },
+    {
+      "name": "home (1).zip",
+      "sha256": "1b6b035e5f598809dbe8a4314f36b3c2f8bda2bc186c3e225f78301d4f60b72e",
+      "folder": "fir"
+    },
+    {
+      "name": "home (2).zip",
+      "sha256": "86c3e350defd60d0b6834a03cada4df5ad83e2e871550fd57610db6d0a5f010d",
+      "folder": "audio"
+    },
+    {
+      "name": "home (3).zip",
+      "sha256": "aa8e3475520bb857260b9f8c493339e2df440ad73e14a86eaffd1e0ad4dc85fb",
+      "folder": "rc_filter"
+    },
+    {
+      "name": "home (4).zip",
+      "sha256": "f76bb4d3b4386858f1cf1ffc2bd95f590e81023dc936c3c98445de17d40d4404",
+      "folder": "classifier"
+    }
+  ],
+  "files": [
+    {
+      "path": "course_sources/video/images/barcode.hex",
+      "archive": "home.zip",
+      "member": "images/barcode.hex",
+      "sha256": "83f42bdb973a45780a020a5ed4d64ad2cc6bbdb0097fbd3838ddcc9b29822b69"
+    },
+    {
+      "path": "course_sources/video/images/barcode.mif",
+      "archive": "home.zip",
+      "member": "images/barcode.mif",
+      "sha256": "3df2c6a910bdb875f2e34a825601707f3c8c30ec8b495cd20968dd8201e4df0d"
+    },
+    {
+      "path": "course_sources/video/images/barcode.png",
+      "archive": "home.zip",
+      "member": "images/barcode.png",
+      "sha256": "ac9fc4081cab11432de61d36601c4573b8620c7b88094e2013ffce3ad038a473"
+    },
+    {
+      "path": "course_sources/video/images/barcode.txt",
+      "archive": "home.zip",
+      "member": "images/barcode.txt",
+      "sha256": "406439566d01307813a353acd1fffcc628095a9a5e5f9455c5604e7b213a9f71"
+    },
+    {
+      "path": "course_sources/video/images/barcode2.hex",
+      "archive": "home.zip",
+      "member": "images/barcode2.hex",
+      "sha256": "0a4f128f109001df39ceff370096b1d0e2de209b780ab48a224ca3671a044cc4"
+    },
+    {
+      "path": "course_sources/video/images/barcode2.mif",
+      "archive": "home.zip",
+      "member": "images/barcode2.mif",
+      "sha256": "28654abfe943b21969d0020e461e7c8e49ec3f924b79830ac0da8eeae38ad8e5"
+    },
+    {
+      "path": "course_sources/video/images/barcode2.png",
+      "archive": "home.zip",
+      "member": "images/barcode2.png",
+      "sha256": "9d49dad91e0ff688819ce0cdb33616ace8ee9001e1c3660fcfad808036bf9cb9"
+    },
+    {
+      "path": "course_sources/video/images/barcode2.txt",
+      "archive": "home.zip",
+      "member": "images/barcode2.txt",
+      "sha256": "9be7dc4117ad74ba3df76996b4a8c058bba18bfd3be2a014ecd81429a489e8d1"
+    },
+    {
+      "path": "course_sources/video/quartus/barcode.qpf",
+      "archive": "home.zip",
+      "member": "quartus/barcode.qpf",
+      "sha256": "1fba232c69f487fe7f3004c4cfcf27b65e4aa23578d26183e5d238f12622cdff"
+    },
+    {
+      "path": "course_sources/video/quartus/barcode.qsf",
+      "archive": "home.zip",
+      "member": "quartus/barcode.qsf",
+      "sha256": "89f83af6f811a66ac1cb043067d43cb0cf049f174e33ff13fc43927cbe51f476"
+    },
+    {
+      "path": "course_sources/video/quartus/barcode.sdc",
+      "archive": "home.zip",
+      "member": "quartus/barcode.sdc",
+      "sha256": "0e055bb832f2639fc970cf3812c4e6b3a05010330914bcf0d946d4303d43fb2e"
+    },
+    {
+      "path": "course_sources/video/quartus/build_on_vm.sh",
+      "archive": "home.zip",
+      "member": "quartus/build_on_vm.sh",
+      "sha256": "c8eb992f3b442a43025f589d18ee17a7d9543dff026c32f9fba9183b98420c90"
+    },
+    {
+      "path": "course_sources/video/quartus/make_vga_sink_qsys.tcl",
+      "archive": "home.zip",
+      "member": "quartus/make_vga_sink_qsys.tcl",
+      "sha256": "23647e15931dfff340411ba813732b3a793b9172efeae861025998ec8828a717"
+    },
+    {
+      "path": "course_sources/video/quartus/vga_sink.qsys",
+      "archive": "home.zip",
+      "member": "quartus/vga_sink.qsys",
+      "sha256": "5942928415e94927c7d0521c50e837ca0e6e9fd0f036a0ef103ba8e7cefdf16d"
+    },
+    {
+      "path": "course_sources/video/rtl/bar_decode.sv",
+      "archive": "home.zip",
+      "member": "rtl/bar_decode.sv",
+      "sha256": "18dfd1303ac15a60007a2d1b084351ef4aa67bda06befba6a121322061650404"
+    },
+    {
+      "path": "course_sources/video/rtl/barcode_reader.sv",
+      "archive": "home.zip",
+      "member": "rtl/barcode_reader.sv",
+      "sha256": "4793ec9d89f924be19ea09aecfab74be7d34c8d740a51d1858901041a0653315"
+    },
+    {
+      "path": "course_sources/video/rtl/cdc_latch.sv",
+      "archive": "home.zip",
+      "member": "rtl/cdc_latch.sv",
+      "sha256": "3d6657fe25e5d940196c992e5987293f237cb3a9c4773278ecf2d45ddf2ebd53"
+    },
+    {
+      "path": "course_sources/video/rtl/col_profile.sv",
+      "archive": "home.zip",
+      "member": "rtl/col_profile.sv",
+      "sha256": "870d42c875b8d625259ab1cab2bc4c5486963eb26ae486c0dd708405dcfb8b5e"
+    },
+    {
+      "path": "course_sources/video/rtl/conv3x3.sv",
+      "archive": "home.zip",
+      "member": "rtl/conv3x3.sv",
+      "sha256": "e90b56a6118f3342409cd71642945ca0abb93526bae36711f206c590dbe83d96"
+    },
+    {
+      "path": "course_sources/video/rtl/display.sv",
+      "archive": "home.zip",
+      "member": "rtl/display.sv",
+      "sha256": "9faed69b467cec604bc9b53d0056b4d5647d482ced2c77f00f718690d7a6531c"
+    },
+    {
+      "path": "course_sources/video/rtl/hex_seg.sv",
+      "archive": "home.zip",
+      "member": "rtl/hex_seg.sv",
+      "sha256": "54180bd51ac329b629dbeb85e748b99e68aa585c96febd49c573b236b09c1691"
+    },
+    {
+      "path": "course_sources/video/rtl/image_rom.sv",
+      "archive": "home.zip",
+      "member": "rtl/image_rom.sv",
+      "sha256": "1f57b6446ed9d1940568e8737b717dc34f74319173f3ae888cdcdabba26d1287"
+    },
+    {
+      "path": "course_sources/video/rtl/peak_pick.sv",
+      "archive": "home.zip",
+      "member": "rtl/peak_pick.sv",
+      "sha256": "39c2d419b08ad79a7d2fa53b0ff58dc0ed9efce67d4a3a9687df49ed2b32362a"
+    },
+    {
+      "path": "course_sources/video/rtl/raster_source.sv",
+      "archive": "home.zip",
+      "member": "rtl/raster_source.sv",
+      "sha256": "aa0f61765ad638876194b35ef5bb8c2b29ee6cf055092a6c7f2afa2ebff994a4"
+    },
+    {
+      "path": "course_sources/video/rtl/seven_seg.v",
+      "archive": "home.zip",
+      "member": "rtl/seven_seg.v",
+      "sha256": "4b9e650c3abc4cafb7cb98fd95a9e20dcecdef816da0f449f33440e9252eaf63"
+    },
+    {
+      "path": "course_sources/video/rtl/sobel.sv",
+      "archive": "home.zip",
+      "member": "rtl/sobel.sv",
+      "sha256": "af52dea7421cb44c84e434df277ac251e9d80df1aea3b13eeed168a351712351"
+    },
+    {
+      "path": "course_sources/video/rtl/top_level.sv",
+      "archive": "home.zip",
+      "member": "rtl/top_level.sv",
+      "sha256": "22dfe7ada22d8a6acb834ce4748081d552d82e1bd9088b6df9f5813084d29196"
+    },
+    {
+      "path": "course_sources/video/rtl/video_pll.sv",
+      "archive": "home.zip",
+      "member": "rtl/video_pll.sv",
+      "sha256": "3217b94521544e0830db9c13e308ee42bc090bfc86181dba012f620079cfa13d"
+    },
+    {
+      "path": "course_sources/video/run_msim.sh",
+      "archive": "home.zip",
+      "member": "run_msim.sh",
+      "sha256": "f4a50d60e591f0ed52b43bd7e4d0d3a19d953eb55fb0ffd619f18f9c919ec766"
+    },
+    {
+      "path": "course_sources/video/simulate.sh",
+      "archive": "home.zip",
+      "member": "simulate.sh",
+      "sha256": "338ffc3631e952e38599eb4e82e1e614dc846e8bacd9c6c8cd8945816f8fbc1a"
+    },
+    {
+      "path": "course_sources/video/tb/barcode_system_tb.sv",
+      "archive": "home.zip",
+      "member": "tb/barcode_system_tb.sv",
+      "sha256": "abb0c85ca609fe4d974144c2e22f3e555ba0dacddba63cefcdb79e1666a61a11"
+    },
+    {
+      "path": "course_sources/video/tb/tb_bar_decode.sv",
+      "archive": "home.zip",
+      "member": "tb/tb_bar_decode.sv",
+      "sha256": "2349398f737ebbf2a22a0060b559c312ac9e8b2e344a6241b90bbaf429249760"
+    },
+    {
+      "path": "course_sources/video/tb/tb_col_profile.sv",
+      "archive": "home.zip",
+      "member": "tb/tb_col_profile.sv",
+      "sha256": "60eb265328af1369cd4911d05ca6401824f7d667dfcba800d117b4e292d09ce0"
+    },
+    {
+      "path": "course_sources/video/tb/tb_conv3x3.sv",
+      "archive": "home.zip",
+      "member": "tb/tb_conv3x3.sv",
+      "sha256": "90c57dd9ebda7b6115cee079bb3a195000a813e4c392f79a1514b64444c485ef"
+    },
+    {
+      "path": "course_sources/video/tb/tb_peak_pick.sv",
+      "archive": "home.zip",
+      "member": "tb/tb_peak_pick.sv",
+      "sha256": "5ef186be148461f3fceb5ed185b55a7889dc507be11ba0da3c9f3369fed7f6d5"
+    },
+    {
+      "path": "course_sources/video/tb/tb_reader_only.sv",
+      "archive": "home.zip",
+      "member": "tb/tb_reader_only.sv",
+      "sha256": "f2f8f48ff4f12003a74e3cf52b761a83be69d835e0bbab9d9de101241d4dbfbc"
+    },
+    {
+      "path": "course_sources/video/tb/vga_monitor_model.sv",
+      "archive": "home.zip",
+      "member": "tb/vga_monitor_model.sv",
+      "sha256": "963e48d7fdec3203258688c5516c0aacc7611ad7bfcf41d96ca5ecf5edb47513"
+    },
+    {
+      "path": "course_sources/video/tools/image_to_mif.py",
+      "archive": "home.zip",
+      "member": "tools/image_to_mif.py",
+      "sha256": "327ea0f9207842dabef09acb36caddc0324f20d2294b219e1819fff1fedb58f2"
+    },
+    {
+      "path": "course_sources/video/tools/make_barcode.py",
+      "archive": "home.zip",
+      "member": "tools/make_barcode.py",
+      "sha256": "3a55b2c7b02ff4a2cbf79dee73e0ed7a0da22688b9fa814f196290737f438be4"
+    },
+    {
+      "path": "course_sources/video/tools/mif_to_hex.py",
+      "archive": "home.zip",
+      "member": "tools/mif_to_hex.py",
+      "sha256": "f37e92c77a96570d06cfb8fa14d662e80d5382cf9589d0372a0344321da92a4e"
+    },
+    {
+      "path": "course_sources/video/tools/render_frames.py",
+      "archive": "home.zip",
+      "member": "tools/render_frames.py",
+      "sha256": "02d5144ce20ef5151060c1692ceab07406943d6d65f6424f7bfa1bb4255786ff"
+    },
+    {
+      "path": "course_sources/fir/fft_pitch_detect_tb.sv",
+      "archive": "home (1).zip",
+      "member": "fft_pitch_detect_tb.sv",
+      "sha256": "83203701d9872cb3aed7ae979dffe120e5a0bbeae451f85f88351f0a825eee5b"
+    },
+    {
+      "path": "course_sources/fir/low_pass_conv.sv",
+      "archive": "home (1).zip",
+      "member": "low_pass_conv.sv",
+      "sha256": "52a5e1b16d32f2fb09c78f88242fedc37b0324fa3855105e78bcd6506534d188"
+    },
+    {
+      "path": "course_sources/audio/FFT_stream.out.sdc",
+      "archive": "home (2).zip",
+      "member": "FFT_stream.out.sdc",
+      "sha256": "af9f1384c9d7ec8e5ae18f9277332cd1c982b46d42455b3889af768e4430543a"
+    },
+    {
+      "path": "course_sources/audio/FFT_stream.qpf",
+      "archive": "home (2).zip",
+      "member": "FFT_stream.qpf",
+      "sha256": "59b4935e8c69bc9a9fa8c34a2fe8a94dc31c8638aa53e9a1239951fe9b9c9e43"
+    },
+    {
+      "path": "course_sources/audio/FFT_stream.qsf",
+      "archive": "home (2).zip",
+      "member": "FFT_stream.qsf",
+      "sha256": "ecd415fdefb970e209527d0a41ca142c2ad802b17b47788cec0d07725bcfc16e"
+    },
+    {
+      "path": "course_sources/audio/async_fifo.qip",
+      "archive": "home (2).zip",
+      "member": "async_fifo.qip",
+      "sha256": "b6456c2ff3b1aced39faf5acf97812be22c4b284dd910ae3bc4417e34084e7c8"
+    },
+    {
+      "path": "course_sources/audio/async_fifo.v",
+      "archive": "home (2).zip",
+      "member": "async_fifo.v",
+      "sha256": "c118e0f8af7185750041177f45092f118615ca38dde54906e04a3ab8ac861789"
+    },
+    {
+      "path": "course_sources/audio/decimate.sv",
+      "archive": "home (2).zip",
+      "member": "decimate.sv",
+      "sha256": "a444e2df9e2b7a53017115f5fdfbd7b7acc37c42a1d77ec72db78a7a15bce0df"
+    },
+    {
+      "path": "course_sources/audio/display.sv",
+      "archive": "home (2).zip",
+      "member": "display.sv",
+      "sha256": "8cef6294ac2a4d9854d4b0b116d61a0290b7bcd2fbf566992a2437b340c7bc9b"
+    },
+    {
+      "path": "course_sources/audio/fft_find_peak.sv",
+      "archive": "home (2).zip",
+      "member": "fft_find_peak.sv",
+      "sha256": "fbe937859b1addf52db48b84f96cd12197f383a532213a07d4b8a558335df3b2"
+    },
+    {
+      "path": "course_sources/audio/fft_input_buffer.sv",
+      "archive": "home (2).zip",
+      "member": "fft_input_buffer.sv",
+      "sha256": "6113b6a165455944099cb0efb86a389b56b860ff604b3fa6f4be193153237386"
+    },
+    {
+      "path": "course_sources/audio/fft_ip_r22sdf/Butterfly.v",
+      "archive": "home (2).zip",
+      "member": "fft_ip_r22sdf/Butterfly.v",
+      "sha256": "82c7b18da61d728fd64df3eee9150b120716916ec41756e9bec5df6ddc9ed3d3"
+    },
+    {
+      "path": "course_sources/audio/fft_ip_r22sdf/DelayBuffer.v",
+      "archive": "home (2).zip",
+      "member": "fft_ip_r22sdf/DelayBuffer.v",
+      "sha256": "9bb52fc0fed7c0d37901bd783d9c3c2b91c840c6a6409a177b592dac3fff7104"
+    },
+    {
+      "path": "course_sources/audio/fft_ip_r22sdf/FFT.v",
+      "archive": "home (2).zip",
+      "member": "fft_ip_r22sdf/FFT.v",
+      "sha256": "f49c6e23117e8fbadca155b7bda1f74ad52e65052fd01c27c287acc65274f035"
+    },
+    {
+      "path": "course_sources/audio/fft_ip_r22sdf/Multiply.v",
+      "archive": "home (2).zip",
+      "member": "fft_ip_r22sdf/Multiply.v",
+      "sha256": "d5fda5b3f7e3762a62e7ba0fbdfabf5acab53e9fba0010a76f07baa5948c1a7b"
+    },
+    {
+      "path": "course_sources/audio/fft_ip_r22sdf/SdfUnit.v",
+      "archive": "home (2).zip",
+      "member": "fft_ip_r22sdf/SdfUnit.v",
+      "sha256": "2e66d792173d339e4f1998d19f093a1febd0ad38b732f4d7e16716e3d7656276"
+    },
+    {
+      "path": "course_sources/audio/fft_ip_r22sdf/SdfUnit2.v",
+      "archive": "home (2).zip",
+      "member": "fft_ip_r22sdf/SdfUnit2.v",
+      "sha256": "a52f23fc8b2c80309529e48dff235b1ae449988efbb2b0fe92c903b5d8fa570c"
+    },
+    {
+      "path": "course_sources/audio/fft_ip_r22sdf/SdfUnit_TC.v",
+      "archive": "home (2).zip",
+      "member": "fft_ip_r22sdf/SdfUnit_TC.v",
+      "sha256": "6f6a3d6ce834a1bb27cb748c6da9be38851822dfd92a4834736c0de0af21b02b"
+    },
+    {
+      "path": "course_sources/audio/fft_ip_r22sdf/Twiddle.v",
+      "archive": "home (2).zip",
+      "member": "fft_ip_r22sdf/Twiddle.v",
+      "sha256": "4d82703d2878ee9f780840cf6e424f8ac8557a18822a14cfda0a17c468485bb0"
+    },
+    {
+      "path": "course_sources/audio/fft_ip_r22sdf/TwiddleConvert4.v",
+      "archive": "home (2).zip",
+      "member": "fft_ip_r22sdf/TwiddleConvert4.v",
+      "sha256": "3361f25856aed7acf903a9919fcb559cee9425306a27902a434324decd928aa4"
+    },
+    {
+      "path": "course_sources/audio/fft_ip_r22sdf/TwiddleConvert8.v",
+      "archive": "home (2).zip",
+      "member": "fft_ip_r22sdf/TwiddleConvert8.v",
+      "sha256": "6ea2b3709c32220e69d6d1c7769bf13d5f066d2f4a95e05c0a4e078cf60b4bf3"
+    },
+    {
+      "path": "course_sources/audio/fft_ip_r22sdf/twiddle_gen.pl",
+      "archive": "home (2).zip",
+      "member": "fft_ip_r22sdf/twiddle_gen.pl",
+      "sha256": "f6e93fa694274193105c1c734b80e50545735d6722cfb518e94d73ce443c3c09"
+    },
+    {
+      "path": "course_sources/audio/fft_mag_sq.sv",
+      "archive": "home (2).zip",
+      "member": "fft_mag_sq.sv",
+      "sha256": "c04db784d3c915500f56e60a6392b93e64851c907406006c150744602fd1b53e"
+    },
+    {
+      "path": "course_sources/audio/fft_output_buffer.sv",
+      "archive": "home (2).zip",
+      "member": "fft_output_buffer.sv",
+      "sha256": "7ee54bb83cdcecb490e3f44fdafd90e16f7ce331326b22a0e08fdf1a46a2d51d"
+    },
+    {
+      "path": "course_sources/audio/fft_pitch_detect.sv",
+      "archive": "home (2).zip",
+      "member": "fft_pitch_detect.sv",
+      "sha256": "d4ff187e20a10c4517c21a6679a217b115f9ccdf86b834c8c696bc191475a35a"
+    },
+    {
+      "path": "course_sources/audio/fft_pitch_detect_tb.sv",
+      "archive": "home (2).zip",
+      "member": "fft_pitch_detect_tb.sv",
+      "sha256": "93e2e93efb1c2c4b82650eca1bfaf18d704e52d54a39a51a80d53853228ac230"
+    },
+    {
+      "path": "course_sources/audio/low_pass_conv.sv",
+      "archive": "home (2).zip",
+      "member": "low_pass_conv.sv",
+      "sha256": "9250c14c0ac1d0bfaead38a23be6703c1132cc93057f1852dbfda1d774eebdbc"
+    },
+    {
+      "path": "course_sources/audio/mic/adc_pll.ppf",
+      "archive": "home (2).zip",
+      "member": "mic/adc_pll.ppf",
+      "sha256": "0e30de9fb7788e787f403860dcb726f61c48ccae3ab85456d7586d378751034f"
+    },
+    {
+      "path": "course_sources/audio/mic/adc_pll.qip",
+      "archive": "home (2).zip",
+      "member": "mic/adc_pll.qip",
+      "sha256": "479344a936514e35529fb667342edc2eebc98a8f63d47b6389984767adfe3b83"
+    },
+    {
+      "path": "course_sources/audio/mic/adc_pll.v",
+      "archive": "home (2).zip",
+      "member": "mic/adc_pll.v",
+      "sha256": "aa829cc94f24765963e4809dda6b2b847ef94193d368f15901637c06def86012"
+    },
+    {
+      "path": "course_sources/audio/mic/adc_pll_bb.v",
+      "archive": "home (2).zip",
+      "member": "mic/adc_pll_bb.v",
+      "sha256": "9ea45575a9d81704ae7d76426a4883171936db617188f6e6dc81fcb2290a44af"
+    },
+    {
+      "path": "course_sources/audio/mic/i2c_master.sv",
+      "archive": "home (2).zip",
+      "member": "mic/i2c_master.sv",
+      "sha256": "dc253c1dc0f73b0a96867cf59550ea894a4c1e65884234098766533981c55af0"
+    },
+    {
+      "path": "course_sources/audio/mic/i2c_pll.ppf",
+      "archive": "home (2).zip",
+      "member": "mic/i2c_pll.ppf",
+      "sha256": "0d0c3418d92069cce2114f89d2eebcf65f32be09723612d6dca6d6e0151ed248"
+    },
+    {
+      "path": "course_sources/audio/mic/i2c_pll.qip",
+      "archive": "home (2).zip",
+      "member": "mic/i2c_pll.qip",
+      "sha256": "cd3fe8c1bf4468a57457be94f8309db9843c1797929002ebe34b9a3af6d9808a"
+    },
+    {
+      "path": "course_sources/audio/mic/i2c_pll.v",
+      "archive": "home (2).zip",
+      "member": "mic/i2c_pll.v",
+      "sha256": "9ad35401fffa3ec82238bbba19fca1e532c9091133a4dfae16e9e9c292329cb4"
+    },
+    {
+      "path": "course_sources/audio/mic/i2c_pll_bb.v",
+      "archive": "home (2).zip",
+      "member": "mic/i2c_pll_bb.v",
+      "sha256": "2e493487737ff96244f6aea4d6d9f5f7fcc7cd451c3e23c6f365aae822f87edd"
+    },
+    {
+      "path": "course_sources/audio/mic/mic_load.sv",
+      "archive": "home (2).zip",
+      "member": "mic/mic_load.sv",
+      "sha256": "de2795241328a2f9dc0af6cdfda7bc09ec1ad78a6fd1bbecc364b6c9cf1f9aa0"
+    },
+    {
+      "path": "course_sources/audio/mic/set_audio_encoder.sv",
+      "archive": "home (2).zip",
+      "member": "mic/set_audio_encoder.sv",
+      "sha256": "101101e604c4bf0c49a4f4240fe5aaaae63005328976d250bb66b7faa2669d79"
+    },
+    {
+      "path": "course_sources/audio/seven_seg.sv",
+      "archive": "home (2).zip",
+      "member": "seven_seg.sv",
+      "sha256": "dd2256e6c880dd5bd40127bd6eff38a7493bbc092750e23a09570dc61f4ced2e"
+    },
+    {
+      "path": "course_sources/audio/sim_models/dcfifo.v",
+      "archive": "home (2).zip",
+      "member": "sim_models/dcfifo.v",
+      "sha256": "22f277d9dbff4f7107163d97ee766a408a3170bf3c50d68e283dea0229712777"
+    },
+    {
+      "path": "course_sources/audio/sim_models/wm8731_model.sv",
+      "archive": "home (2).zip",
+      "member": "sim_models/wm8731_model.sv",
+      "sha256": "1f3ef9216bd9c2f90ea65bfbd10df3a4ce0b020ac7e7a4ddcfc856b7237a7468"
+    },
+    {
+      "path": "course_sources/audio/test_waveform.hex",
+      "archive": "home (2).zip",
+      "member": "test_waveform.hex",
+      "sha256": "6daf9eb5e98500a7a7c914353237d9e7754c6f67c614d169e3bc34665e4b2422"
+    },
+    {
+      "path": "course_sources/audio/top_level.sv",
+      "archive": "home (2).zip",
+      "member": "top_level.sv",
+      "sha256": "7a248f1312d066eef60c3990df2a651b69bbb80dfb3941d36d09349dfd35413f"
+    },
+    {
+      "path": "course_sources/audio/window_function.sv",
+      "archive": "home (2).zip",
+      "member": "window_function.sv",
+      "sha256": "2b81bf26225562726766caff8ebf0431cc22112bb978905a9a23fa5f47dc6104"
+    },
+    {
+      "path": "course_sources/rc_filter/create_vcd.sh",
+      "archive": "home (3).zip",
+      "member": "create_vcd.sh",
+      "sha256": "b0f690a9e02bd79bf879cbb208cbca4ce71c5819abfa6d2e93fc932b632a0490"
+    },
+    {
+      "path": "course_sources/rc_filter/rc_low_pass.sv",
+      "archive": "home (3).zip",
+      "member": "rc_low_pass.sv",
+      "sha256": "bec57ead072bf695ef63f945282f6277e021a26c4cc48d8091c6588c16f49141"
+    },
+    {
+      "path": "course_sources/rc_filter/rc_low_pass_tb1.sv",
+      "archive": "home (3).zip",
+      "member": "rc_low_pass_tb1.sv",
+      "sha256": "9a9a2c1fadde53859789e6ec9602c2c3904a8844f2279cd592e50413f0f4e7d6"
+    },
+    {
+      "path": "course_sources/rc_filter/rc_low_pass_tb2.sv",
+      "archive": "home (3).zip",
+      "member": "rc_low_pass_tb2.sv",
+      "sha256": "3608a27860511e18192d2775be32d39e41a389aebcc968c47cbb5b9a17febbd6"
+    },
+    {
+      "path": "course_sources/classifier/classifier.sv",
+      "archive": "home (4).zip",
+      "member": "classifier.sv",
+      "sha256": "4135d11f1ae1ba9dccbcc51c9ef42d1d321cfa38c4d7c29f4bfb59c6ca2975ae"
+    },
+    {
+      "path": "course_sources/classifier/make_test_templates.py",
+      "archive": "home (4).zip",
+      "member": "make_test_templates.py",
+      "sha256": "3342a84e469da5a567a31fdf84e55c2a5a22fd3ba14f234c79587d88aa98d7dc"
+    },
+    {
+      "path": "course_sources/classifier/simulate.sh",
+      "archive": "home (4).zip",
+      "member": "simulate.sh",
+      "sha256": "d441cf18e56d65b45b6c8731b71844ad98668d84b7fa64b90301f4240bc54123"
+    },
+    {
+      "path": "course_sources/classifier/tb_classifier.sv",
+      "archive": "home (4).zip",
+      "member": "tb_classifier.sv",
+      "sha256": "b68e6382fbe0b20682adb3e0d6c5405c5fb5a9250318907a39c13bc42485513d"
+    },
+    {
+      "path": "course_sources/classifier/templates.svh",
+      "archive": "home (4).zip",
+      "member": "templates.svh",
+      "sha256": "a24fb4546e3192d35b9ce4da7d90dc393aa739b523c21205134064f5da448857"
+    },
+    {
+      "path": "course_sources/classifier/templates_test.hex",
+      "archive": "home (4).zip",
+      "member": "templates_test.hex",
+      "sha256": "7de799870b289515d5b9c10f6c6d6ecfc2747449dc2c6e7c1a2e6eeed103c5af"
+    },
+    {
+      "path": "course_sources/classifier/templates_test.svh",
+      "archive": "home (4).zip",
+      "member": "templates_test.svh",
+      "sha256": "a24fb4546e3192d35b9ce4da7d90dc393aa739b523c21205134064f5da448857"
+    },
+    {
+      "path": "course_sources/classifier/train_templates.py",
+      "archive": "home (4).zip",
+      "member": "train_templates.py",
+      "sha256": "8bf6c369cb6ce9a8ebd39672ffd71e37691ca72a7ee2d40c059ad075f48a3d12"
+    }
+  ],
+  "notes": [
+    "The supplied classifier templates are synthetic D=8 unit-test data, not recorded HD vowels.",
+    "The audio waveform is a supplied test tone, not a vowel recording.",
+    "The supplied barcode images are used for regression tests, not substituted for assignment piano images.",
+    "Exercise stubs need completed logic; originals are kept separate from the build."
+  ]
+}

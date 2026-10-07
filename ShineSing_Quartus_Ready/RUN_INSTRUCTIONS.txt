@@ -1,0 +1,49 @@
+Work inside ShineSing_Quartus_Ready.
+
+Ed / Verilator 5.050:
+  sh run_ed.sh
+  python3 tools/test_course_mutations.py
+
+Original uploaded sources and datasets:
+  course_sources/manifest.json records each archive, member and SHA-256.
+  course_sources/reuse.json maps course modules to the assignment build.
+  course_sources/reuse.patch shows adaptations and completed exercise TODOs.
+  Course originals are reference files; do not add their duplicate modules to Quartus.
+
+Saved HD vowel training:
+  python3 -m pip install -r requirements.txt
+  python3 tools/train_saved_templates.py ee.csv ah.csv oo.csv aw.csv
+  Use MODE=4, D=24, LOG_SCALE=64 feature captures from this design.
+  The output is rtl/templates.svh plus a held-out confusion matrix in JSON.
+  The FPGA loads these constant examples at startup and keeps them through KEY0 reset.
+  It still listens to live microphone audio during gameplay.
+  CAPTURE_MODE=1 is an optional capture/debug build; normal operation uses saved examples.
+
+The uploaded classifier templates are synthetic D=8 TEST DATA.
+They cannot be used as recorded D=24 HD vowel examples. No real vowel captures
+were supplied. The default build therefore keeps the classifier untrained.
+The supplied tone and barcode datasets are used in tb_course_audio and tb_course_images.
+Additional controlled test inputs check edge cases; they are not recordings.
+
+Quartus 18.1:
+  python3 tools/check_project.py --require-trained
+  sh build_quartus.sh
+  On Windows, run the Python check, then:
+    quartus_sh --flow compile shine_sing
+    quartus_sta -t tools/report_timing.tcl
+  Or open shine_sing.qpf in Quartus after the input check passes.
+  The checked-in project includes the FIR, Mel table, VGA IP and pin assignments.
+  The old SOF was removed because it does not match this source.
+  Quartus fitting, resource usage and all four clock timing results must be checked
+  on a Quartus machine. Verilator tests do not prove hardware timing.
+
+HD image controls:
+  SW5 enables Sobel; SW8 enables smoothing; SW9 enables local thresholds.
+  SW2..SW1 selects game / edges / profile / masks.
+  The profile view draws the local-average curve and both local thresholds.
+  SW0 selects which threshold KEY1/KEY2 adjust.
+  SW4..SW3 selects the image. Put the tutor MIF in assets/piano2.mif, run
+    python3 tools/sync_mif_hex.py --slot 2
+  then test and recompile. Slot 2 is not yet the tutor photograph.
+
+See verification.json for exactly what was tested and what remains unverified.

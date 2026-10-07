@@ -4,7 +4,7 @@ import re
 ROOT=Path(__file__).resolve().parents[1]
 pins=(ROOT/'quartus'/'de1_soc_pins.qsf').read_text()
 ports={'CLOCK_50','SW','KEY','AUD_ADCDAT','AUD_ADCLRCK','AUD_BCLK','AUD_XCK','AUD_DACDAT','FPGA_I2C_SCLK','FPGA_I2C_SDAT','LEDR',*[f'HEX{i}' for i in range(6)],'VGA_CLK','VGA_HS','VGA_VS','VGA_BLANK_N','VGA_SYNC_N','VGA_R','VGA_G','VGA_B'}
-lines=['set_global_assignment -name FAMILY "Cyclone V"','set_global_assignment -name DEVICE 5CSEMA5F31C6','set_global_assignment -name TOP_LEVEL_ENTITY shine_sing_top','set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files','set_global_assignment -name SDC_FILE shine_sing.sdc','set_global_assignment -name QIP_FILE quartus/vga_sink/synthesis/vga_sink.qip','set_global_assignment -name NUM_PARALLEL_PROCESSORS 4','set_global_assignment -name VERILOG_MACRO "SYNTHESIS=1"']
+lines=['set_global_assignment -name FAMILY "Cyclone V"','set_global_assignment -name DEVICE 5CSEMA5F31C6','set_global_assignment -name SEARCH_PATH rtl','set_global_assignment -name TOP_LEVEL_ENTITY shine_sing_top','set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files','set_global_assignment -name SDC_FILE shine_sing.sdc','set_global_assignment -name QIP_FILE quartus/vga_sink/synthesis/vga_sink.qip','set_global_assignment -name NUM_PARALLEL_PROCESSORS 4','set_global_assignment -name VERILOG_MACRO "SYNTHESIS=1"']
 for slot in range(3):
  lines.append(f'set_global_assignment -name MIF_FILE assets/piano{slot}.mif')
 for folder in ['rtl','rtl/reuse','rtl/fft']:

@@ -15,7 +15,8 @@ module piano_detector #(parameter W=320,H=240,Y0=H*7/10,Y1=H*17/20,MIN_GAP=12,NM
  input logic [7:0] rom_pixel,
  input logic publish_busy,
  output logic publish,
- output logic [W*8-1:0] profile,
+ output logic [W*8-1:0] profile, local_average,
+ output logic selected_adaptive, selected_smoothing,
  output logic [NMAX*$clog2(W)-1:0] boundaries,
  output logic [$clog2(NMAX):0] boundary_count,
  output logic edge_bank,
@@ -89,7 +90,7 @@ module piano_detector #(parameter W=320,H=240,Y0=H*7/10,Y1=H*17/20,MIN_GAP=12,NM
   // Skip centres that need smoothing data outside the image.
   accept_edge = ev && (!smooth || (ex>=2 && ey>=2));
   // Update the running average: a<=((2^k-1)a+x)/2^k.
-  avg_mix = 22'd31*22'(avg_acc) + 22'({norm[scan],8'd0});
+  avg_mix = 22'((1<<AVG_SHIFT)-1)*22'(avg_acc) + 22'({norm[scan],8'd0});
   // Add KEY1/KEY2 offsets to each column average to set thresholds.
   hi_sum = 9'(local_avg[scan]) + 9'(selected_high);
   lo_sum = 9'(local_avg[scan]) + 9'(selected_low);
@@ -100,7 +101,7 @@ module piano_detector #(parameter W=320,H=240,Y0=H*7/10,Y1=H*17/20,MIN_GAP=12,NM
   publish<=0;edge_write<=0;
   if(reset) begin
    state<=WAIT_READY;x<=0;y<=0;scan<=0;edge_bank<=0;boundaries<=0;boundary_count<=0;
-   profile<=0;selected_image<=0;selected_high<=96;selected_low<=32;
+   profile<=0;local_average<=0;selected_adaptive<=0;selected_smoothing<=0;selected_image<=0;selected_high<=96;selected_low<=32;
    previous_pixel<=0;maximum<=0;drain<=0;mode<=0;smooth<=0;adaptive<=0;avg_acc<=0;
   end else begin
    if(accept_edge) begin
@@ -114,6 +115,7 @@ module piano_detector #(parameter W=320,H=240,Y0=H*7/10,Y1=H*17/20,MIN_GAP=12,NM
      selected_high<=high_threshold;selected_low<=low_threshold;mode<=use_sobel;
      // Enable smoothing only when using Sobel.
      smooth<=use_smoothing && use_sobel; adaptive<=use_adaptive;
+     selected_smoothing<=use_smoothing && use_sobel;selected_adaptive<=use_adaptive;
      scan<=0;x<=0;y<=0;maximum<=0;state<=CLEAR;
     end
     CLEAR: begin
@@ -168,6 +170,7 @@ module piano_detector #(parameter W=320,H=240,Y0=H*7/10,Y1=H*17/20,MIN_GAP=12,NM
      end else scan<=scan-1;
     end
     PICK: begin
+     local_average[scan*8+:8]<=local_avg[scan];
      if(norm[scan]>=lo_col && norm[scan]!=0) begin
       in_region<=1;
       if(norm[scan]>=hi_col) strong_region<=1;

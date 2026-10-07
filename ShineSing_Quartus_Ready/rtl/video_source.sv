@@ -5,7 +5,8 @@ module video_source #(parameter W=320,H=240,H_RES=640,V_RES=480,NMAX=16)(
  input logic [1:0] view,
  input logic [7:0] grey,edge_pixel,
  output logic [$clog2(W*H)-1:0] address,
- input logic [W*8-1:0] profile,
+ input logic [W*8-1:0] profile, local_average,
+ input logic adaptive, smoothing,
  input logic [NMAX*$clog2(W)-1:0] boundaries,
  input logic [$clog2(NMAX):0] boundary_count,
  input logic [7:0] high_threshold,low_threshold,
@@ -25,7 +26,7 @@ module video_source #(parameter W=320,H=240,H_RES=640,V_RES=480,NMAX=16)(
  logic [6:0] frame_score;
  logic [3:0] frame_active,frame_window,frame_hit,frame_trained;
  logic [3:0][3:0] frame_count;
- integer cx,cy,lane,height,dx,dy,digit;
+ integer cx,cy,lane,height,dx,dy,digit,average_value,high_value,low_value,border;
  logic [7:0] r,g,b,brightness;
  logic [6:0] seg;
  logic digit_on;
@@ -77,16 +78,23 @@ module video_source #(parameter W=320,H=240,H_RES=640,V_RES=480,NMAX=16)(
     r=grey>>2;g=brightness;b=brightness;
    end
   end
+  border=smoothing ? 2:1;
   if(frame_view==1) begin
    // Hide border pixels because the edge filter does not write them.
-   r=(cx>0 && cx<W-1 && cy>0 && cy<H-1) ? edge_pixel : 0;g=r;b=r;
+   r=(cx>=border && cx<W-border && cy>=border && cy<H-border) ? edge_pixel : 0;g=r;b=r;
   end
+  average_value=local_average[cx*8+:8];
+  high_value=high_threshold+(adaptive ? average_value:0);
+  low_value=low_threshold+(adaptive ? average_value:0);
+  if(high_value>255) high_value=255;
+  if(low_value>255) low_value=255;
   height=profile[cx*8+:8]*(V_RES-1)/255;
   if(frame_view==2) begin
    r=0;g=0;b=0;
    if(V_RES-1-y<=height) begin r=210;g=190;b=24;end
-   if(y==V_RES-1-high_threshold*(V_RES-1)/255) begin r=255;g=32;b=32;end
-   if(y==V_RES-1-low_threshold*(V_RES-1)/255) begin r=32;g=180;b=255;end
+   if(adaptive && y==V_RES-1-average_value*(V_RES-1)/255) begin r=220;g=80;b=255;end
+   if(y==V_RES-1-high_value*(V_RES-1)/255) begin r=255;g=32;b=32;end
+   if(y==V_RES-1-low_value*(V_RES-1)/255) begin r=32;g=180;b=255;end
    for(int i=0;i<NMAX;i++) if(i<boundary_count && cx==boundaries[i*XW+:XW]) begin r=64;g=255;b=64;end
   end
   if(frame_view==3) begin

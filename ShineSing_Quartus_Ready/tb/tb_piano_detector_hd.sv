@@ -28,7 +28,8 @@ module tb_piano_detector_hd;
     logic publish_busy = 0;
     wire publish;
 
-    wire [W*8-1:0] profile;
+    wire [W*8-1:0] profile,local_average;
+    wire selected_adaptive,selected_smoothing;
     wire [NMAX*XW-1:0] boundaries;
     wire [$clog2(NMAX):0] boundary_count;
 
@@ -59,7 +60,7 @@ module tb_piano_detector_hd;
         .rom_pixel,
         .publish_busy,
         .publish,
-        .profile,
+        .profile,.local_average,.selected_adaptive,.selected_smoothing,
         .boundaries,
         .boundary_count,
         .edge_bank,
@@ -119,7 +120,7 @@ module tb_piano_detector_hd;
         integer scan;
         integer hi;
         integer lo;
-        integer strong;
+        integer has_strong_peak;
         integer best;
         integer best_value;
         integer is_maximum;
@@ -240,7 +241,7 @@ module tb_piano_detector_hd;
                     scan = scan + 1;
                 end
                 else begin
-                    strong = 0;
+                    has_strong_peak = 0;
                     best = -1;
                     best_value = -1;
                     in_run = 1;
@@ -256,7 +257,7 @@ module tb_piano_detector_hd;
                         end
                         else begin
                             if (norm_ref[scan] >= hi)
-                                strong = 1;
+                                has_strong_peak = 1;
 
                             is_maximum = 0;
                             if (scan > 0 && scan < W-1)
@@ -274,7 +275,7 @@ module tb_piano_detector_hd;
                         end
                     end
 
-                    if (strong != 0 && best >= 0) begin
+                    if (has_strong_peak != 0 && best >= 0) begin
                         if (key_count_ref > 0 &&
                             (best - key_ref[key_count_ref-1]) < MIN_GAP) begin
 
@@ -356,6 +357,10 @@ module tb_piano_detector_hd;
                            x, norm_ref[x], profile[x*8 +: 8]);
             end
 
+            for (int col=0;col<W;col++)
+                if(local_average[col*8+:8] !== 8'(avg_ref[col]))
+                    $fatal(1,"local average mismatch at column %0d",col);
+            if(!selected_adaptive || !selected_smoothing) $fatal(1,"lost HD view settings");
             // Check the key edge positions.
             if (boundary_count !== key_count_ref)
                 $fatal(1,

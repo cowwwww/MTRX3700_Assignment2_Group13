@@ -15,7 +15,7 @@ module tb_system;
  wire [10:0] rom_addr;logic [7:0] rom_pixel;
  wire publish,busy;wire [511:0] profile;wire [95:0] boundaries;wire [4:0] boundary_count;
  wire edge_bank,edge_write;wire [1:0] selected_image;wire [7:0] selected_high,selected_low,edge_value;wire [11:0] edge_address;
- piano_detector #(.W(W),.H(H),.MIN_GAP(4)) detector(.clk,.reset,.image_select(2'd0),.use_sobel(1'b0),.high_threshold(8'd96),.low_threshold(8'd32),
+ piano_detector #(.W(W),.H(H),.MIN_GAP(4)) detector(.clk,.reset,.image_select(2'd0),.use_sobel(1'b0),.use_smoothing(1'b0),.use_adaptive(1'b0),.high_threshold(8'd96),.low_threshold(8'd32),
   .rom_addr,.rom_pixel,.publish_busy(busy),.publish,.profile,.boundaries,.boundary_count,.edge_bank,.selected_image,.selected_high,.selected_low,.edge_write,.edge_address,.edge_value);
  always @(posedge clk) rom_pixel <= (rom_addr%W>=4 && rom_addr%8==4) ? 8'd10:8'd240;
  wire [612:0] visual;wire updated,update_ok;
@@ -24,7 +24,7 @@ module tb_system;
  wire [10:0] address;logic [7:0] grey=240;
  wire [29:0] data;wire valid,sop,eop;
  // Run image and game logic together; test clock crossings separately.
- video_source #(.W(W),.H(H),.H_RES(128),.V_RES(48)) video(.clk(pclk),.reset,.view(2'd3),.grey,.edge_pixel(8'd0),.address,
+ video_source #(.W(W),.H(H),.H_RES(128),.V_RES(48)) video(.local_average('0),.adaptive(1'b0),.smoothing(1'b0),.clk(pclk),.reset,.view(2'd3),.grey,.edge_pixel(8'd0),.address,
   .profile(visual[511:0]),.boundaries(visual[607:512]),.boundary_count(visual[612:608]),.high_threshold(8'd96),.low_threshold(8'd32),
   .score(7'd0),.active(4'd0),.hit_window(4'd0),.hit_led(4'd0),.trained(4'd0),.countdown(16'd0),.update_ok,.data,.valid,.startofpacket(sop),.endofpacket(eop),.ready(1'b1));
  integer frames=0,coloured=0;

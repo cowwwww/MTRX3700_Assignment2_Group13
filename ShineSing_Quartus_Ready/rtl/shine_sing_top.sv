@@ -1,4 +1,4 @@
-module shine_sing_top(
+module shine_sing_top #(parameter bit CAPTURE_MODE=0)(
  input wire CLOCK_50,
  input wire [9:0] SW,
  input wire [3:0] KEY,
@@ -11,6 +11,7 @@ module shine_sing_top(
  output wire VGA_CLK,VGA_HS,VGA_VS,VGA_BLANK_N,VGA_SYNC_N,
  output wire [7:0] VGA_R,VGA_G,VGA_B
 );
+ `include "rtl/templates.svh"
  localparam W=320,H=240,XW=9,NMAX=16,CW=$clog2(NMAX)+1;
  wire fft_clk,pixel_clk,audio_locked,video_locked;
  adc_pll audio_pll(.areset(1'b0),.inclk0(CLOCK_50),.c0(fft_clk),.locked(audio_locked));
@@ -58,12 +59,13 @@ wire [23:0][15:0] feature;
  wire [7:0] confidence;
  wire reject,result_valid;
  wire [3:0] trained;
- classifier #(.D(24),.M(3),.DMAX(65000)) recognizer(.clk(fft_clk),.reset(rf),.enable(voice),.feature_valid,.feature,
-  .enrol(training[2]),.enrol_class(training[1:0]),.trained,.result(vowel),.confidence,.reject,.result_valid);
+ classifier #(.D(24),.M(3),.DMAX(65000),.PRETRAINED(!CAPTURE_MODE),
+  .SAVED_CLASSES({4{TEMPLATES_READY}}),.SAVED_TEMPLATES(TEMPLATES)) recognizer(.clk(fft_clk),.reset(rf),.enable(voice),.feature_valid,.feature,
+  .enrol(CAPTURE_MODE && training[2]),.enrol_class(training[1:0]),.trained,.result(vowel),.confidence,.reject,.result_valid);
  // Keep HEX and LEDs on the FFT clock; send game events to 50 MHz.
  hex_seg h0(.d(4'(db%10)),.blank(1'b0),.seg(HEX0));
  hex_seg h1(.d(4'(db/10)),.blank(1'b0),.seg(HEX1));
- hex_seg h2(.d({2'b0,vowel}),.blank(!voice || reject || training[2]),.seg(HEX2));
+ hex_seg h2(.d({2'b0,vowel}),.blank(!voice || reject || (CAPTURE_MODE && training[2])),.seg(HEX2));
  hex_seg h3(.d(4'(peak%10)),.blank(1'b0),.seg(HEX3));
  hex_seg h4(.d(4'((peak/10)%10)),.blank(1'b0),.seg(HEX4));
  hex_seg h5(.d(4'(peak/100)),.blank(1'b0),.seg(HEX5));
@@ -71,7 +73,7 @@ wire [23:0][15:0] feature;
  wire [14:0] decision;
  wire decision_valid;
  cdc_mailbox #(.WIDTH(15)) decision_cdc(.src_clk(fft_clk),.src_reset(rf),.src_valid(result_valid),
-  .src_data({trained,(!voice || reject || training[2]),confidence,vowel}),.src_busy(),
+  .src_data({trained,(!voice || reject || (CAPTURE_MODE && training[2])),confidence,vowel}),.src_busy(),
   .dst_clk(CLOCK_50),.dst_reset(r50),.dst_accept(1'b1),.dst_data(decision),.dst_valid(decision_valid));
  wire [6:0] score;
  wire [3:0] active,hit_window,hit_led;
@@ -81,7 +83,7 @@ wire [23:0][15:0] feature;
  logic keys_ready;
  always_ff @(posedge CLOCK_50)
   if(r50) keys_ready<=0;else if(publish) keys_ready<=nbound>=5;
- game game_logic(.clk(CLOCK_50),.reset(r50),.enable(keys_ready && (&decision[14:11]) && !enrol),
+ game game_logic(.clk(CLOCK_50),.reset(r50),.enable(keys_ready && (&decision[14:11]) && !(CAPTURE_MODE && enrol)),
   .decision_valid,.reject(decision[10]),.confidence(decision[9:2]),.vowel(decision[1:0]),.score,.active,.hit_window,.hit_led,.countdown);
  wire [16:0] analysis_address,display_address;
  wire [7:0] analysis_pixel,display_pixel;
@@ -90,26 +92,28 @@ wire [23:0][15:0] feature;
   .analysis_address,.display_address,.analysis_pixel,.display_pixel);
  wire [17:0] edge_address;
  wire [7:0] edge_value,selected_high,selected_low;
- wire [W*8-1:0] profile;
+ wire [W*8-1:0] profile,local_average;
+ wire selected_adaptive,selected_smoothing;
  wire [NMAX*XW-1:0] boundaries;
  // SW8 smooths the image; SW9 uses local thresholds.
  piano_detector detector(.clk(CLOCK_50),.reset(r50),.image_select(switches[4:3]),.use_sobel(switches[5]),
   .use_smoothing(switches[8]),.use_adaptive(switches[9]),
   .high_threshold(hi),.low_threshold(lo),.rom_addr(analysis_address),.rom_pixel(analysis_pixel),.publish_busy,.publish,
-  .profile,.boundaries,.boundary_count(nbound),.edge_bank(bank),.selected_image,.selected_high,.selected_low,
+  .profile,.local_average,.selected_adaptive,.selected_smoothing,.boundaries,.boundary_count(nbound),.edge_bank(bank),.selected_image,.selected_high,.selected_low,
   .edge_write,.edge_address,.edge_value);
- localparam VW=1+2+16+CW+NMAX*XW+W*8;
+ localparam VW=3+2+16+CW+NMAX*XW+W*16;
  wire [VW-1:0] visual;
  wire update_ok;
  cdc_mailbox #(.WIDTH(VW)) video_cdc(.src_clk(CLOCK_50),.src_reset(r50),.src_valid(publish),
-  .src_data({bank,selected_image,selected_high,selected_low,nbound,boundaries,profile}),.src_busy(publish_busy),
+  .src_data({selected_adaptive,selected_smoothing,local_average,bank,selected_image,selected_high,selected_low,nbound,boundaries,profile}),.src_busy(publish_busy),
   .dst_clk(pixel_clk),.dst_reset(rp),.dst_accept(update_ok),.dst_data(visual),.dst_valid());
- wire display_bank;
+ wire display_bank,display_adaptive,display_smoothing;
+ wire [W*8-1:0] display_average;
  wire [7:0] display_high,display_low;
  wire [CW-1:0] display_count;
  wire [NMAX*XW-1:0] display_boundaries;
  wire [W*8-1:0] display_profile;
- assign {display_bank,display_image,display_high,display_low,display_count,display_boundaries,display_profile}=visual;
+ assign {display_adaptive,display_smoothing,display_average,display_bank,display_image,display_high,display_low,display_count,display_boundaries,display_profile}=visual;
  // Store 4-bit display pixels to save 75 M10Ks; detect edges with 12-bit Gx.
  logic [3:0] edges[0:2*W*H-1],edge_nibble;
  wire [7:0] edge_pixel={edge_nibble,edge_nibble};
@@ -123,7 +127,7 @@ wire [23:0][15:0] feature;
  wire [29:0] st_data;
  wire st_valid,st_sop,st_eop,st_ready;
  video_source source(.clk(pixel_clk),.reset(rp),.view(game_display[40:39]),.grey(display_pixel),.edge_pixel,.address(display_address),
-  .profile(display_profile),.boundaries(display_boundaries),.boundary_count(display_count),.high_threshold(display_high),.low_threshold(display_low),
+  .profile(display_profile),.local_average(display_average),.adaptive(display_adaptive),.smoothing(display_smoothing),.boundaries(display_boundaries),.boundary_count(display_count),.high_threshold(display_high),.low_threshold(display_low),
   .score(game_display[38:32]),.active(game_display[31:28]),.hit_window(game_display[27:24]),.hit_led(game_display[23:20]),
   .countdown(game_display[19:4]),.trained(game_display[3:0]),.update_ok,.data(st_data),.valid(st_valid),.startofpacket(st_sop),.endofpacket(st_eop),.ready(st_ready));
  vga_sink vga(.clk_clk(pixel_clk),.reset_reset_n(~rp),.video_in_data(st_data),.video_in_startofpacket(st_sop),

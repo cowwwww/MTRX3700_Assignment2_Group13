@@ -48,8 +48,8 @@ module audio_features #(parameter MODE=3, D=8, RAW_SHIFT=8, LOG_SCALE=64)(
   else if(MODE==2) scaled=energy[band_index] >> RAW_SHIFT;
   doubled=remainder<<1;
   // Look up the Mel weight and multiply this bin by it.
-  mel_up   = MEL_UP[bin];
-  mel_w    = MEL_W[bin];
+  mel_up   = bin<MEL_BINS ? MEL_UP[bin] : 5'd31;
+  mel_w    = bin<MEL_BINS ? MEL_W[bin] : 9'd0;
   mel_prod = 42'(mag) * 42'(mel_w);
   mel_part = mel_prod[41:8];                 // Drop the 8 fraction bits from the weighted power.
   // Estimate log2 from the highest set bit.
@@ -61,7 +61,7 @@ module audio_features #(parameter MODE=3, D=8, RAW_SHIFT=8, LOG_SCALE=64)(
   log_value = (mel[band_index]==0) ? 10'd0 : 10'(lead)*10'd16 + 10'(lead_frac);
   // Changing volume shifts every log2 band by the same amount.
   // Subtract the mean to reduce the effect of microphone gain.
-  centred = 18'sd32768 + 18'sd(LOG_SCALE) * (18'sd(logmel[band_index]) - 18'sd(log_mean));
+  centred = 18'sd32768 + $signed(18'(LOG_SCALE)) * ($signed({8'd0,logmel[band_index]}) - $signed({8'd0,log_mean}));
  end
  always_ff @(posedge clk) begin
   feature_valid<=0;

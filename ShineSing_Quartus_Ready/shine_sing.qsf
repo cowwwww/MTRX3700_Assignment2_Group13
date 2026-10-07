@@ -30,6 +30,7 @@ set_global_assignment -name VERILOG_FILE rtl/reuse/adc_pll.v
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/reuse/conv3x3.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/reuse/fft_mag_sq.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/reuse/hex_seg.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/reuse/low_pass_conv.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/reuse/mic_load.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/reuse/sobel.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/reuse/video_pll.sv
@@ -249,5 +250,3 @@ set_location_assignment PIN_J12 -to FPGA_I2C_SCLK
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FPGA_I2C_SCLK
 set_location_assignment PIN_K12 -to FPGA_I2C_SDAT
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FPGA_I2C_SDAT
-
-set_global_assignment -name LAST_QUARTUS_VERSION "18.1.0 Lite Edition"

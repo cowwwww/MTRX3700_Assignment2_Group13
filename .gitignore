@@ -1,0 +1,4 @@
+ShineSing_Quartus_Ready/build/
+**/__pycache__/
+**/db/
+**/incremental_db/

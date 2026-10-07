@@ -1,24 +1,6 @@
 `timescale 1ns/1ps
-/*
- *  classifier.sv -- nearest-template classifier with a vote and a "don't know" (PROVIDED for A2).
- *
- *  Interface (the same at every rung; only D changes):
- *      feature[D-1:0] of FW-bit unsigned words + feature_valid, once per frame
- *      -> result (0..NCLASS-1), confidence (0..255), result_valid (a pulse per frame), reject
- *
- *  Inside:
- *   1. Distance to every template: d(t) = sum over i of |feature[i] - T[t][i]|   (sum of absolute
- *      differences: a subtract, an absolute value and an add per feature; no multiplier).
- *      Templates are a constant array in templates.svh (written by tools/train_templates.py). There are NT templates per class (NT x NCLASS in all).
- *   2. The nearest template wins; its class is the frame's raw answer. Its distance d1, and the best
- *      distance among the OTHER classes d2, give the confidence: reject if d1 > DMAX or if
- *      d1 * RHO_DEN > d2 * RHO_NUM  (i.e. d1/d2 > rho: two classes almost equally near).
- *   3. Majority vote over the last M raw answers (rejected frames do not vote).
- *
- *  Sequential: one template per clock, so a frame costs NT*NCLASS*D clocks at most (with D=24,
- *  NT=4, NCLASS=4: 384 clocks against a budget of a million). result_valid pulses when done.
- *  Confidence = 255 * (1 - d1/d2), clipped; 0 when rejected.
- */
+// Compare sound features with saved vowel examples and vote on recent results.
+// PRETRAINED keeps the examples through reset; enrolment is only for test/capture builds.
 module classifier #(
     parameter int    D             = 8,        // features per frame
     parameter int    FW            = 16,       // feature width (unsigned)
@@ -27,7 +9,10 @@ module classifier #(
     parameter int    M             = 5,        // vote length (odd)
     parameter int    DMAX          = 65535,    // reject if nearest distance exceeds this
     parameter int    RHO_NUM       = 7,        // reject if d1/d2 > RHO_NUM/RHO_DEN
-    parameter int    RHO_DEN       = 10
+    parameter int    RHO_DEN       = 10,
+    parameter bit PRETRAINED = 0,
+    parameter logic [NCLASS-1:0] SAVED_CLASSES = '1,
+    parameter logic [D-1:0][FW-1:0] SAVED_TEMPLATES [0:NCLASS*NT-1] = '{default:'0}
 ) (
     input  logic                     clk,
     input  logic                     reset,
@@ -44,11 +29,12 @@ module classifier #(
 );
     localparam int NTT = NCLASS * NT;
     localparam int DW  = FW + $clog2(D) + 1;          // distance width
-    // The templates: a constant array from templates.svh, written by tools/train_templates.py
-    // (an include file rather than $readmemh, so Quartus and the simulators see the same ROM).
-    // Train the supplied classifier with samples from the board.
-    // Reset clears the saved training samples.
-    logic [D-1:0][FW-1:0] templ [0:NTT-1];
+    // Use constant examples in the board build, or writable examples for capture tests.
+    wire [D-1:0][FW-1:0] templ [0:NTT-1];
+    logic [D-1:0][FW-1:0] enrolled [0:NTT-1];
+    generate for(genvar n=0;n<NTT;n++) begin: template_source
+        assign templ[n] = PRETRAINED ? SAVED_TEMPLATES[n] : enrolled[n];
+    end endgenerate
     integer enrol_count[0:NCLASS-1];
 
     typedef enum logic [2:0] {IDLE, DIST, DECIDE, CONFIDENCE, VOTE} st_t;
@@ -96,7 +82,7 @@ module classifier #(
         result_valid <= 1'b0;
         if (reset) begin
             st <= IDLE; vptr <= '0; vote_ok <= '0; result <= '0; confidence <= '0; reject <= 1'b1;
-            trained <= '0;
+            trained <= PRETRAINED ? SAVED_CLASSES : '0;
             t<=0;remainder<=0;ratio<=0;ratio_bit<=0;
             for(int c=0;c<NCLASS;c++) enrol_count[c]<=0;
         end
@@ -105,8 +91,8 @@ module classifier #(
             result_valid<=feature_valid;
         end
         else case (st)
-            IDLE: if(feature_valid && enrol) begin
-                templ[enrol_class*NT+enrol_count[enrol_class]]<=feature;
+            IDLE: if(feature_valid && enrol && !PRETRAINED) begin
+                enrolled[enrol_class*NT+enrol_count[enrol_class]]<=feature;
                 if(enrol_count[enrol_class]==NT-1) begin trained[enrol_class]<=1;enrol_count[enrol_class]<=0;end
                 else enrol_count[enrol_class]<=enrol_count[enrol_class]+1;
                 vote_ok<=0;vptr<=0;reject<=1;confidence<=0;result_valid<=1;

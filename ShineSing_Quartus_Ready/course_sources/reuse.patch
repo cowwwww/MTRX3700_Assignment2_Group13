@@ -1,0 +1,463 @@
+--- course_sources/fir/low_pass_conv.sv
++++ rtl/reuse/low_pass_conv.sv
+@@ -1,3 +1,4 @@
++// Adapted from home (1).zip: reset, input busy guard and two gain guard bits.
+ `timescale 1ns/1ns
+ /*
+  *  low_pass_conv.sv -- the 41-tap anti-alias FIR before decimation, computed with ONE multiplier.
+@@ -14,8 +15,9 @@
+  *  Samples must arrive at least N + 2 = 43 clocks apart (they arrive 64 apart here). A sample that
+  *  arrives sooner restarts the walk and the previous output is lost; simulation reports it.
+  */
+-module low_pass_conv #(parameter W = 32, W_FRAC = 16) (
++module low_pass_conv #(parameter W = 32, W_FRAC = 16, OUTPUT_SHIFT = 2) (
+     input clk,
++    input reset,
+ 
+     input  logic x_valid,
+     output logic x_ready,
+@@ -25,7 +27,7 @@
+     input  logic y_ready,
+     output logic [W-1:0] y_data
+ );
+-    assign x_ready = y_ready;
++    assign x_ready = y_ready && !running && !reset;
+ 
+     localparam int N  = 41;
+     localparam int XW = W - W_FRAC;          // integer bits of the sample (16)
+@@ -35,7 +37,9 @@
+ 
+     // the last N samples (integer part only)
+     logic signed [XW-1:0] shift_reg [0:N-1];
+-    always_ff @(posedge clk) if (x_valid & x_ready) begin
++    always_ff @(posedge clk) if(reset) begin
++        for(int i=0;i<N;i++) shift_reg[i] <= '0;
++    end else if (x_valid & x_ready) begin
+         shift_reg[0] <= signed'(x_data[W-1 -: XW]);
+         for (int i = 1; i < N; i++) shift_reg[i] <= shift_reg[i-1];
+     end
+@@ -46,6 +50,9 @@
+     logic signed [XW+CW-1:0] prod;
+     logic signed [XW+CW+$clog2(N)-1:0] acc;
+     always_ff @(posedge clk) begin
++        if(reset) begin
++            running<=0;tap<=0;tap_q<=0;prod_valid<=0;done<=0;prod<=0;acc<=0;
++        end else begin
+         if (x_valid & x_ready) begin running <= 1'b1; tap <= '0; end          // (re)start on every new sample
+ `ifndef SYNTHESIS
+         if (x_valid & x_ready & running) $error("low_pass_conv: a sample arrived before the last one was filtered (need %0d clocks between samples)", N + 2);
+@@ -58,11 +65,21 @@
+         tap_q      <= tap;
+         if (prod_valid) acc <= (tap_q == 0) ? prod : acc + prod;
+         done       <= prod_valid && (tap_q == N-1);
++        end
+     end
+ 
+     // output: sum(x*h) in the W-bit frame the decimator expects (the filtered sample is its top XW bits)
+     always_ff @(posedge clk) begin
+-        if (y_ready) y_valid <= 1'b0;
+-        if (done) begin y_data <= W'(acc); y_valid <= 1'b1; end
++        if(reset) begin y_valid<=0;y_data<=0;end
++        else begin
++            if (y_ready) y_valid <= 1'b0;
++            if (done) begin
++                // Scale before narrowing so loud sounds do not wrap around.
++                if((acc >>> OUTPUT_SHIFT) > 40'sd2147483647) y_data<=32'h7fffffff;
++                else if((acc >>> OUTPUT_SHIFT) < -40'sd2147483648) y_data<=32'h80000000;
++                else y_data <= W'(acc >>> OUTPUT_SHIFT);
++                y_valid <= 1'b1;
++            end
++        end
+     end
+ endmodule
+--- course_sources/video/rtl/conv3x3.sv
++++ rtl/reuse/conv3x3.sv
+@@ -90,7 +90,13 @@
+             // TODO 1: slide the window one column to the left (col 0 <= col 1, col 1 <= col 2 for all three
+             //         rows) and put the new column triple (c_top, c_mid, c_bot) into column 2.
+             //         This is the Lesson 4 shift register, three of them side by side.
+-
++            for (int r = 0; r < 3; r++) begin
++                w[r][0] <= w[r][1];
++                w[r][1] <= w[r][2];
++            end
++            w[0][2] <= c_top;
++            w[1][2] <= c_mid;
++            w[2][2] <= c_bot;
+         end
+     end
+ 
+@@ -101,15 +107,17 @@
+         // TODO 2: acc = sum over r, c of K[r][c] * w[r][c].  Pixels are UNSIGNED 8-bit and the weights are
+         //         SIGNED: cast each pixel with $signed({1'b0, w[r][c]}) and widen both to OW bits before the
+         //         multiply (see the note on signed'() in 2.3).
+-
++        for (int r = 0; r < 3; r++)
++            for (int c = 0; c < 3; c++)
++                acc += OW'($signed(K[r][c])) * OW'($signed({1'b0, w[r][c]}));
+     end
+     always_ff @(posedge clk) begin
+         // TODO 3: the window is complete (three real rows and three real columns) once s2_x >= 2 and s2_y >= 2:
+         //         set out_valid only then. Register acc into out_val. The CENTRE of the window is one column and
+         //         one row behind the pixel that just arrived: out_x = s2_x - 1, out_y = s2_y - 1.
+-        out_valid <= 1'b0;
+-        out_val   <= '0;
+-        out_x     <= '0;
+-        out_y     <= '0;
++        out_valid <= !reset && s2_valid && (s2_x >= 2) && (s2_y >= 2);
++        out_val   <= acc;
++        out_x     <= s2_x - 1'b1;
++        out_y     <= s2_y - 1'b1;
+     end
+ endmodule
+--- course_sources/audio/mic/mic_load.sv
++++ rtl/reuse/mic_load.sv
+@@ -1,14 +1,72 @@
+-`timescale 1ps/1ps
+-module mic_load #(parameter N=16) (
+-	input bclk, // Assume a 18.432 MHz clock
+-    input adclrc,
+-	input adcdat,
++`timescale 1ps/1ps 
++module mic_load #(parameter N=16) ( 
++	input bclk, // Assume a 18.432 MHz clock 
++    input adclrc, 
++	input adcdat, 
++    // No ready signal nor handshake: as this module streams live audio data, it cannot be stalled, therefore we only have the valid signal. 
++    output logic valid, 
++    output logic [N-1:0] sample_data 
++); 
++    // Assume that i2c has already configured the CODEC for LJ data, MSB-first and N-bit samples. 
++ 
++    // Rising edge detect on ADCLRC to sense left channel 
++    logic redge_adclrc, adclrc_q;  
++    always_ff @(posedge  bclk) begin : adclrc_rising_edge_ff 
++        adclrc_q <= adclrc; 
++    end 
++    assign redge_adclrc = ~adclrc_q & adclrc; // rising edge detected! 
++ 
++    /* 
++     * Implement the Timing diagram. 
++     * ----------------------------- 
++     * You should use a temporary N-bit RX register to store the ADCDAT bitstream from MSB to LSB. 
++     * Remember that MSB is first, LSB is last. 
++     * Use `temp_rx_data[(N-1)-bit_index] <= adcdat;` 
++     * BCLK rising is your trigger to sample the value of ADCDAT into the register at the appropriate bit index. 
++     * ADCLRC rising (see `redge_adclrc`) signals that the MSB should be sampled on the next rising edge of BCLK. 
++     * With the above, think about when and how you would reset your bit_index counter. 
++     */ 
+ 
+-    output logic valid,
+-    output logic [N-1:0] sample_data
+-);
++    logic [N-1:0] temp_rx_data;
++    integer bit_index;
++    logic receiving;
+ 
+-    // Copy & Paste your solution to Lesson 3 mic_load.sv here!
++    always_ff @(posedge bclk) begin : receive_audio_data
+ 
++        // valid is only high for one BCLK cycle
++        valid <= 1'b0;
++
++        // ADCLRC rising means that this BCLK rising edge
++        // is where the MSB should be sampled.
++        if (redge_adclrc) begin
++
++            // Sample the MSB immediately
++            temp_rx_data[N-1] <= adcdat;
++
++            // The next bit to receive is bit 1
++            bit_index <= 1;
++            receiving <= 1'b1;
++        end
++
++        else if (receiving) begin
++
++            // Store the serial data from MSB to LSB
++            temp_rx_data[(N-1)-bit_index] <= adcdat;
++
++            // If this is the final bit (LSB)
++            if (bit_index == N-1) begin
++
++                // Use adcdat directly for the final LSB because
++                // temp_rx_data[0] has not updated yet in this clock cycle
++                sample_data <= {temp_rx_data[N-1:1], adcdat};
++
++                valid <= 1'b1;
++                receiving <= 1'b0;
++            end
++
++            else begin
++                bit_index <= bit_index + 1;
++            end
++        end
++    end
+ endmodule
+-
+--- course_sources/audio/fft_mag_sq.sv
++++ rtl/reuse/fft_mag_sq.sv
+@@ -2,14 +2,46 @@
+     parameter W = 16
+ ) (
+     input                clk,
+-	 input                reset,
+-	 input                fft_valid,
++    input                reset,
++    input                fft_valid,
+     input        [W-1:0] fft_imag,
+     input        [W-1:0] fft_real,
+     output logic [W*2:0] mag_sq,
+-	 output logic         mag_valid
++    output logic         mag_valid
+ );
+ 
+-	// Copy & Paste your solution to Lesson 4 fft_mag_sq.sv here!
++    logic signed [W*2-1:0] multiply_stage_real, multiply_stage_imag;
++    logic signed [W*2:0]   add_stage;
++    logic [1:0] valid_shift;
++    always_ff @(posedge clk) begin
++       //TODO Your code here!
++       // We want to implement the 2 pipeline stages, similar to task 1.1.
++       // When multiplying, make sure to use the signed function, e.g: signed'(fft_real)*signed'(fft_real);
++       // Remember to use reset.
++       if (reset) begin
++            multiply_stage_real <= '0;
++            multiply_stage_imag <= '0;
++            add_stage           <= '0;
++            valid_shift         <= '0;
++        end
++        else begin
++            // Pipeline stage 1: calculate real² and imaginary²
++            multiply_stage_real <= signed'(fft_real) * signed'(fft_real);
++            multiply_stage_imag <= signed'(fft_imag) * signed'(fft_imag);
++
++            // Pipeline stage 2: add the two squared values
++            add_stage <= {1'b0, multiply_stage_real}
++                       + {1'b0, multiply_stage_imag};
++
++            // Delay fft_valid by two clock cycles
++            valid_shift <= {valid_shift[0], fft_valid};
++        end
++    end
++
++    assign mag_sq    = add_stage;
++    assign mag_valid =  valid_shift[1];
++
++    //TODO set to `1` when mag_sq valid **this should be 2 cycles after valid input!**
++    // Hint: you can use a shift register to implement valid.
+ 
+ endmodule
+--- course_sources/audio/mic/adc_pll.v
++++ rtl/reuse/adc_pll.v
+@@ -110,7 +110,7 @@
+ 		altpll_component.clk0_phase_shift = "0",
+ 		altpll_component.compensate_clock = "CLK0",
+ 		altpll_component.inclk0_input_frequency = 20000,
+-		altpll_component.intended_device_family = "Cyclone IV E",
++		altpll_component.intended_device_family = "Cyclone V",
+ 		altpll_component.lpm_hint = "CBX_MODULE_PREFIX=adc_pll",
+ 		altpll_component.lpm_type = "altpll",
+ 		altpll_component.operation_mode = "NORMAL",
+@@ -197,7 +197,7 @@
+ // Retrieval info: PRIVATE: INCLK1_FREQ_EDIT_CHANGED STRING "1"
+ // Retrieval info: PRIVATE: INCLK1_FREQ_UNIT_CHANGED STRING "1"
+ // Retrieval info: PRIVATE: INCLK1_FREQ_UNIT_COMBO STRING "MHz"
+-// Retrieval info: PRIVATE: INTENDED_DEVICE_FAMILY STRING "Cyclone IV E"
++// Retrieval info: PRIVATE: INTENDED_DEVICE_FAMILY STRING "Cyclone V"
+ // Retrieval info: PRIVATE: INT_FEEDBACK__MODE_RADIO STRING "1"
+ // Retrieval info: PRIVATE: LOCKED_OUTPUT_CHECK STRING "1"
+ // Retrieval info: PRIVATE: LONG_SCAN_RADIO STRING "1"
+@@ -253,7 +253,7 @@
+ // Retrieval info: CONSTANT: CLK0_PHASE_SHIFT STRING "0"
+ // Retrieval info: CONSTANT: COMPENSATE_CLOCK STRING "CLK0"
+ // Retrieval info: CONSTANT: INCLK0_INPUT_FREQUENCY NUMERIC "20000"
+-// Retrieval info: CONSTANT: INTENDED_DEVICE_FAMILY STRING "Cyclone IV E"
++// Retrieval info: CONSTANT: INTENDED_DEVICE_FAMILY STRING "Cyclone V"
+ // Retrieval info: CONSTANT: LPM_TYPE STRING "altpll"
+ // Retrieval info: CONSTANT: OPERATION_MODE STRING "NORMAL"
+ // Retrieval info: CONSTANT: PLL_TYPE STRING "AUTO"
+@@ -319,3 +319,4 @@
+ // Retrieval info: GEN_FILE: TYPE_NORMAL adc_pll_bb.v TRUE
+ // Retrieval info: LIB_FILE: altera_mf
+ // Retrieval info: CBX_MODULE_PREFIX: ON
++
+--- course_sources/classifier/classifier.sv
++++ rtl/classifier.sv
+@@ -1,24 +1,6 @@
+ `timescale 1ns/1ps
+-/*
+- *  classifier.sv -- nearest-template classifier with a vote and a "don't know" (PROVIDED for A2).
+- *
+- *  Interface (the same at every rung; only D changes):
+- *      feature[D-1:0] of FW-bit unsigned words + feature_valid, once per frame
+- *      -> result (0..NCLASS-1), confidence (0..255), result_valid (a pulse per frame), reject
+- *
+- *  Inside:
+- *   1. Distance to every template: d(t) = sum over i of |feature[i] - T[t][i]|   (sum of absolute
+- *      differences: a subtract, an absolute value and an add per feature; no multiplier).
+- *      Templates are a constant array in templates.svh (written by tools/train_templates.py). There are NT templates per class (NT x NCLASS in all).
+- *   2. The nearest template wins; its class is the frame's raw answer. Its distance d1, and the best
+- *      distance among the OTHER classes d2, give the confidence: reject if d1 > DMAX or if
+- *      d1 * RHO_DEN > d2 * RHO_NUM  (i.e. d1/d2 > rho: two classes almost equally near).
+- *   3. Majority vote over the last M raw answers (rejected frames do not vote).
+- *
+- *  Sequential: one template per clock, so a frame costs NT*NCLASS*D clocks at most (with D=24,
+- *  NT=4, NCLASS=4: 384 clocks against a budget of a million). result_valid pulses when done.
+- *  Confidence = 255 * (1 - d1/d2), clipped; 0 when rejected.
+- */
++// Compare sound features with saved vowel examples and vote on recent results.
++// PRETRAINED keeps the examples through reset; enrolment is only for test/capture builds.
+ module classifier #(
+     parameter int    D             = 8,        // features per frame
+     parameter int    FW            = 16,       // feature width (unsigned)
+@@ -27,13 +9,19 @@
+     parameter int    M             = 5,        // vote length (odd)
+     parameter int    DMAX          = 65535,    // reject if nearest distance exceeds this
+     parameter int    RHO_NUM       = 7,        // reject if d1/d2 > RHO_NUM/RHO_DEN
+-    parameter int    RHO_DEN       = 10
++    parameter int    RHO_DEN       = 10,
++    parameter bit PRETRAINED = 0,
++    parameter logic [NCLASS-1:0] SAVED_CLASSES = '1,
++    parameter logic [D-1:0][FW-1:0] SAVED_TEMPLATES [0:NCLASS*NT-1] = '{default:'0}
+ ) (
+     input  logic                     clk,
+     input  logic                     reset,
+     input  logic                     enable,          // the gate: classify only while open
+     input  logic                     feature_valid,
+     input  logic [D-1:0][FW-1:0]     feature,
++    input  logic                     enrol,
++    input  logic [1:0]               enrol_class,
++    output logic [NCLASS-1:0]        trained,
+     output logic [$clog2(NCLASS)-1:0] result,      // voted class
+     output logic [7:0]               confidence,
+     output logic                     reject,          // this frame's raw answer was rejected
+@@ -41,12 +29,15 @@
+ );
+     localparam int NTT = NCLASS * NT;
+     localparam int DW  = FW + $clog2(D) + 1;          // distance width
+-    // The templates: a constant array from templates.svh, written by tools/train_templates.py
+-    // (an include file rather than $readmemh, so Quartus and the simulators see the same ROM).
+-    `include "templates.svh"
+-    localparam logic [D-1:0][FW-1:0] templ [0:NTT-1] = TEMPLATES;
++    // Use constant examples in the board build, or writable examples for capture tests.
++    wire [D-1:0][FW-1:0] templ [0:NTT-1];
++    logic [D-1:0][FW-1:0] enrolled [0:NTT-1];
++    generate for(genvar n=0;n<NTT;n++) begin: template_source
++        assign templ[n] = PRETRAINED ? SAVED_TEMPLATES[n] : enrolled[n];
++    end endgenerate
++    integer enrol_count[0:NCLASS-1];
+ 
+-    typedef enum logic [1:0] {IDLE, DIST, DECIDE, VOTE} st_t;
++    typedef enum logic [2:0] {IDLE, DIST, DECIDE, CONFIDENCE, VOTE} st_t;
+     st_t st;
+     logic [$clog2(NTT)-1:0] t;
+     logic [D-1:0][FW-1:0] f_q;
+@@ -55,6 +46,10 @@
+     logic [$clog2(NCLASS)-1:0] votes [0:M-1];
+     logic [M-1:0] vote_ok;
+     logic [$clog2(M):0] vptr;
++    logic [DW:0] remainder, doubled;
++    logic [7:0] ratio;
++    logic [3:0] ratio_bit;
++    assign doubled=remainder<<1;
+ 
+     // distance to template t (combinational over D words: D subtract/abs/add = fine for D <= 32)
+     always_comb begin
+@@ -80,16 +75,30 @@
+     end
+ 
+     logic rej_c;
+-    assign rej_c = (d1 > DMAX) || (d1 * RHO_DEN > d2 * RHO_NUM);
++    assign rej_c = (d2 == 0) || (d1 > DMAX) || (64'(d1) * RHO_DEN > 64'(d2) * RHO_NUM);
+     logic [$clog2(M)-1:0] vidx;
+     assign vidx = vptr[$clog2(M)-1:0];
+     always_ff @(posedge clk) begin
+         result_valid <= 1'b0;
+-        if (reset) begin st <= IDLE; vptr <= '0; vote_ok <= '0; result <= '0; confidence <= '0; reject <= 1'b0; end
++        if (reset) begin
++            st <= IDLE; vptr <= '0; vote_ok <= '0; result <= '0; confidence <= '0; reject <= 1'b1;
++            trained <= PRETRAINED ? SAVED_CLASSES : '0;
++            t<=0;remainder<=0;ratio<=0;ratio_bit<=0;
++            for(int c=0;c<NCLASS;c++) enrol_count[c]<=0;
++        end
++        else if (!enable) begin
++            st<=IDLE;vote_ok<='0;vptr<='0;confidence<=0;reject<=1;
++            result_valid<=feature_valid;
++        end
+         else case (st)
+-            IDLE: if (feature_valid && enable) begin
++            IDLE: if(feature_valid && enrol && !PRETRAINED) begin
++                enrolled[enrol_class*NT+enrol_count[enrol_class]]<=feature;
++                if(enrol_count[enrol_class]==NT-1) begin trained[enrol_class]<=1;enrol_count[enrol_class]<=0;end
++                else enrol_count[enrol_class]<=enrol_count[enrol_class]+1;
++                vote_ok<=0;vptr<=0;reject<=1;confidence<=0;result_valid<=1;
++            end else if (feature_valid && (&trained)) begin
+                 f_q <= feature; t <= '0; d1 <= '1; d2 <= '1; best_class <= '0; st <= DIST;
+-            end else if (feature_valid && !enable) begin
++            end else if (feature_valid) begin
+                 vote_ok <= '0;                                 // gate closed: forget the vote
+                 result_valid <= 1'b1; confidence <= '0; reject <= 1'b1;
+             end
+@@ -106,8 +115,16 @@
+                     votes[vidx] <= best_class; vote_ok[vidx] <= 1'b1;
+                     vptr <= (vptr == M-1) ? '0 : vptr + 1'b1;
+                 end
+-                confidence <= rej_c ? 8'd0 : ((d2 == 0) ? 8'd255 : 8'(255 - (255 * d1) / d2));
+-                st <= VOTE;
++                confidence <= 0;
++                remainder<={1'b0,d1};ratio<=0;ratio_bit<=0;
++                st <= rej_c ? VOTE:CONFIDENCE;
++            end
++            CONFIDENCE: begin
++                remainder<=doubled>=d2 ? doubled-d2:doubled;
++                ratio<={ratio[6:0],doubled>=d2};
++                if(ratio_bit==7) begin
++                    confidence<=8'd255-{ratio[6:0],doubled>=d2};st<=VOTE;
++                end else ratio_bit<=ratio_bit+1'b1;
+             end
+             VOTE: begin                                        // one cycle later: the tally includes this frame's vote
+                 result <= winner;
+--- course_sources/audio/fft_ip_r22sdf/DelayBuffer.v
++++ rtl/fft/DelayBuffer.v
+@@ -12,21 +12,25 @@
+     output  [WIDTH-1:0] do_im   //  Data Output (Imag)
+ );
+ 
+-reg [WIDTH-1:0] buf_re[0:DEPTH-1];
+-reg [WIDTH-1:0] buf_im[0:DEPTH-1];
+-integer n;
+-
+-//  Shift Buffer
+-always @(posedge clock) begin
+-    for (n = DEPTH-1; n > 0; n = n - 1) begin
+-        buf_re[n] <= buf_re[n-1];
+-        buf_im[n] <= buf_im[n-1];
++// A2: circular RAM + output register, cycle-equivalent to DEPTH shift registers.
++// The RAM contains DEPTH-1 entries because the registered read adds the last stage.
++// Avoids shifting thousands of FFT registers on every idle clock in simulation.
++wire [WIDTH-1:0] out_re,out_im;
++assign do_re=out_re;
++assign do_im=out_im;
++generate if(DEPTH==1) begin: one
++    reg [WIDTH-1:0] q_re,q_im;
++    always @(posedge clock) begin q_re<=di_re;q_im<=di_im;end
++    assign out_re=q_re;
++    assign out_im=q_im;
++end else begin: ring
++    localparam AW=(DEPTH<=2) ? 1:$clog2(DEPTH-1);
++    reg [AW-1:0] pointer=0;
++    sync_ram #(.WIDTH(2*WIDTH),.DEPTH(DEPTH-1),.AW(AW)) memory(
++        .clk(clock),.we(1'b1),.waddr(pointer),.raddr(pointer),.wdata({di_re,di_im}),.rdata({out_re,out_im}));
++    always @(posedge clock) begin
++        pointer<=pointer==DEPTH-2 ? 0:pointer+1'b1;
+     end
+-    buf_re[0] <= di_re;
+-    buf_im[0] <= di_im;
+-end
+-
+-assign  do_re = buf_re[DEPTH-1];
+-assign  do_im = buf_im[DEPTH-1];
++end endgenerate
+ 
+ endmodule

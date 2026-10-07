@@ -11,7 +11,7 @@ module tb_piano_thresholds;
  wire [1:0] selected_image;wire [7:0] selected_high,selected_low,edge_value;
  wire [9:0] edge_address;
  piano_detector #(.W(W),.H(H),.Y0(0),.Y1(7),.MIN_GAP(8)) dut(
-  .clk,.reset,.image_select(2'd0),.use_sobel(1'b0),.high_threshold,.low_threshold,
+  .clk,.reset,.image_select(2'd0),.use_sobel(1'b0),.use_smoothing(1'b0),.use_adaptive(1'b0),.high_threshold,.low_threshold,
   .rom_addr,.rom_pixel,.publish_busy,.publish,.profile,.boundaries,.boundary_count,
   .edge_bank,.selected_image,.selected_high,.selected_low,.edge_write,.edge_address,.edge_value);
  always @(posedge clk) begin
