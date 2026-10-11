@@ -1,4 +1,4 @@
-"""Package the V9 project for Ed and Quartus without build caches or raw H95 data."""
+"""Package the V9 project for Ed and Quartus without build caches."""
 from pathlib import Path
 import hashlib
 import json
@@ -6,7 +6,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 folders = ['rtl','tb','tools','assets','quartus','course_sources','data/recordings','docs']
-rootfiles = ['README.md','RUN_INSTRUCTIONS.txt','requirements.txt','run_ed.sh','build_quartus.sh',
+rootfiles = ['RUN_INSTRUCTIONS.txt','requirements.txt','run_ed.sh','build_quartus.sh',
              'shine_sing.qpf','shine_sing.qsf','shine_sing.sdc','verification.json']
 files = [ROOT/name for name in rootfiles]
 for folder in folders:

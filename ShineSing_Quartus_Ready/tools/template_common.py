@@ -1,4 +1,4 @@
-"""Use the same integer classification rule for WAV, H95 and SignalTap data."""
+"""Use the same integer classification rule for recorded features and SignalTap data."""
 import numpy as np
 
 

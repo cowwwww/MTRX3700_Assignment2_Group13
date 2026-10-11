@@ -23,13 +23,16 @@ def run(cmd,log):
  return r.stdout
 if a.sim=='modelsim':
  found=shutil.which('vsim') or shutil.which('vsim.exe')
- base=pathlib.Path(os.environ.get('MODELSIM_BIN',str(pathlib.Path(found).parent) if found else r'E:\intelFPGA_lite\18.1\modelsim_ase\win32aloem'))
+ if not found and not os.environ.get('MODELSIM_BIN'):
+  raise SystemExit('ModelSim is not on PATH. Set MODELSIM_BIN to its executable folder.')
+ base=pathlib.Path(os.environ.get('MODELSIM_BIN',str(pathlib.Path(found).parent) if found else ''))
+ suffix='.exe' if os.name=='nt' else ''
  # Use a new library so old ModelSim locks and compiled templates do not affect this run.
  lib=build/('msim_'+uuid.uuid4().hex[:12])
- run([str(base/'vlib.exe'),str(lib)],build/'vlib.log')
- run([str(base/'vlog.exe'),'-sv','-work',str(lib),*sources,*[f'tb/{t}.sv' for t in tests]],build/'compile.log')
+ run([str(base/('vlib'+suffix)),str(lib)],build/'vlib.log')
+ run([str(base/('vlog'+suffix)),'-sv','-work',str(lib),*sources,*[f'tb/{t}.sv' for t in tests]],build/'compile.log')
  for t in tests:
-  out=run([str(base/'vsim.exe'),'-c','-onfinish','stop','-lib',str(lib),t,'-do','onbreak {quit -code 1}; onerror {quit -code 1}; run -all; quit -code 0'],build/f'{t}.log')
+  out=run([str(base/('vsim'+suffix)),'-c','-onfinish','stop','-lib',str(lib),t,'-do','onbreak {quit -code 1}; onerror {quit -code 1}; run -all; quit -code 0'],build/f'{t}.log')
   if f'ALL TESTS PASSED: {t}' not in out: print(out);raise SystemExit(f'{t}: no success marker')
   print(f'PASS {t}',flush=True)
  if not a.keep_build:

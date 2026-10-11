@@ -1,13 +1,32 @@
 --- course_sources/fir/low_pass_conv.sv
 +++ rtl/reuse/low_pass_conv.sv
-@@ -1,3 +1,4 @@
-+// Adapted from home (1).zip: reset, input busy guard and two gain guard bits.
+@@ -1,21 +1,22 @@
++// Adapted from home (1).zip: added reset, a busy check and output scaling.
  `timescale 1ns/1ns
  /*
-  *  low_pass_conv.sv -- the 41-tap anti-alias FIR before decimation, computed with ONE multiplier.
-@@ -14,8 +15,9 @@
-  *  Samples must arrive at least N + 2 = 43 clocks apart (they arrive 64 apart here). A sample that
-  *  arrives sooner restarts the walk and the previous output is lost; simulation reports it.
+- *  low_pass_conv.sv -- the 41-tap anti-alias FIR before decimation, computed with ONE multiplier.
++ * 41-tap FIR filter before downsampling, based on Lesson 4.
++ * Use one multiplier for all taps to save DSP resources.
+  *
+- *  Same ports and same arithmetic as the Lesson 4 parallel version (41 multipliers, 78 DSP blocks on the
+- *  DE1-SoC: every DSP block the chip has, minus the FFT's). Here the taps are walked one per clock:
+- *  a new sample arrives every 64 bit-clocks (48 kHz at 3.072 MHz) and the 41 multiply-accumulates take 43.
++ * With the default widths, x_data holds a signed 16-bit sample followed
++ * by 16 zero bits. Multiply the sample by each Q16 filter weight, then
++ * add the products. OUTPUT_SHIFT scales the result before clipping it
++ * and storing it in y_data.
+  *
+- *      y[n] = sum_{i=0..40} h[i] * x[n-i]            h: 16-bit fraction, |h| < 2^15
+- *
+- *  x_data is {sample, 16'b0} (integer part = the 16-bit sample), so only the top W-W_FRAC bits are
+- *  multiplied and the product needs one 16 x 18 multiplier: one DSP block. Latency 43 clocks instead of 2.
+- *
+- *  Samples must arrive at least N + 2 = 43 clocks apart (they arrive 64 apart here). A sample that
+- *  arrives sooner restarts the walk and the previous output is lost; simulation reports it.
++ * Each result takes 43 filter clocks. On the board, 48 kHz samples arrive
++ * about 384 cycles apart on the 18.432 MHz filter clock. This is also
++ * 64 cycles of the separate 3.072 MHz audio bit clock.
++ * Only accept a sample when x_ready is high; ignore it while busy.
   */
 -module low_pass_conv #(parameter W = 32, W_FRAC = 16) (
 +module low_pass_conv #(parameter W = 32, W_FRAC = 16, OUTPUT_SHIFT = 2) (
@@ -16,7 +35,7 @@
  
      input  logic x_valid,
      output logic x_ready,
-@@ -25,7 +27,8 @@
+@@ -25,44 +26,59 @@
      input  logic y_ready,
      output logic [W-1:0] y_data
  );
@@ -26,9 +45,13 @@
  
      localparam int N  = 41;
      localparam int XW = W - W_FRAC;          // integer bits of the sample (16)
-@@ -35,17 +38,21 @@
+     localparam int CW = 18;                  // coefficient bits kept (signed; the taps fit in 17)
+-    // Impulse response: (32-bit, 16-bit frac, 2's complement) -- unchanged from Lesson 4
++    // Lesson 4 filter weights: signed 32-bit values with 16 fraction bits.
+     localparam logic [W-1:0] h [0:N-1] = '{32'h00000000, 32'h00000014, 32'h0000003f, 32'h00000050, 32'h00000000, 32'hffffff0b, 32'hfffffd56, 32'hfffffb08, 32'hfffff8a1, 32'hfffff6ee, 32'hfffff6f3, 32'hfffff9b5, 32'h00000000, 32'h00000a2d, 32'h000017f4, 32'h00002860, 32'h000039e3, 32'h00004a8b, 32'h0000584b, 32'h0000615d, 32'h00006488, 32'h0000615d, 32'h0000584b, 32'h00004a8b, 32'h000039e3, 32'h00002860, 32'h000017f4, 32'h00000a2d, 32'h00000000, 32'hfffff9b5, 32'hfffff6f3, 32'hfffff6ee, 32'hfffff8a1, 32'hfffffb08, 32'hfffffd56, 32'hffffff0b, 32'h00000000, 32'h00000050, 32'h0000003f, 32'h00000014, 32'h00000000};
  
-     // the last N samples (integer part only)
+-    // the last N samples (integer part only)
++    // Store the last N samples, keeping only their integer bits.
      logic signed [XW-1:0] shift_reg [0:N-1];
 -    always_ff @(posedge clk) if (x_valid & x_ready) begin
 +    always_ff @(posedge clk) if(reset) begin
@@ -38,26 +61,35 @@
          for (int i = 1; i < N; i++) shift_reg[i] <= shift_reg[i-1];
      end
  
-     // walk the taps: one product per clock, accumulated; the sum is published after the last tap
+-    // walk the taps: one product per clock, accumulated; the sum is published after the last tap
++    // Multiply one tap per clock and add its product to the running sum.
      logic [$clog2(N)-1:0] tap = '0, tap_q = '0;
 -    logic running = 1'b0, prod_valid = 1'b0, done = 1'b0;
      logic signed [XW+CW-1:0] prod;
      logic signed [XW+CW+$clog2(N)-1:0] acc;
      always_ff @(posedge clk) begin
+-        if (x_valid & x_ready) begin running <= 1'b1; tap <= '0; end          // (re)start on every new sample
 +        if(reset) begin
 +            running<=0;tap<=0;tap_q<=0;prod_valid<=0;done<=0;prod<=0;acc<=0;
 +        end else begin
-         if (x_valid & x_ready) begin running <= 1'b1; tap <= '0; end          // (re)start on every new sample
++        if (x_valid & x_ready) begin running <= 1'b1; tap <= '0; end          // Start when a new sample is accepted.
  `ifndef SYNTHESIS
          if (x_valid & x_ready & running) $error("low_pass_conv: a sample arrived before the last one was filtered (need %0d clocks between samples)", N + 2);
-@@ -58,11 +65,21 @@
+ `endif
+         else if (running) begin
+             if (tap == N-1) running <= 1'b0; else tap <= tap + 1'b1;
+         end
+-        prod       <= shift_reg[tap] * signed'(h[tap][CW-1:0]);              // the one multiplier
++        prod       <= shift_reg[tap] * signed'(h[tap][CW-1:0]);              // Reuse this multiplier for every tap.
+         prod_valid <= running;
          tap_q      <= tap;
          if (prod_valid) acc <= (tap_q == 0) ? prod : acc + prod;
          done       <= prod_valid && (tap_q == N-1);
 +        end
      end
  
-     // output: sum(x*h) in the W-bit frame the decimator expects (the filtered sample is its top XW bits)
+-    // output: sum(x*h) in the W-bit frame the decimator expects (the filtered sample is its top XW bits)
++    // Store the filtered result in the W-bit format used by the downsampler.
      always_ff @(posedge clk) begin
 -        if (y_ready) y_valid <= 1'b0;
 -        if (done) begin y_data <= W'(acc); y_valid <= 1'b1; end
@@ -76,7 +108,47 @@
  endmodule
 --- course_sources/video/rtl/conv3x3.sv
 +++ rtl/reuse/conv3x3.sv
-@@ -43,22 +43,30 @@
+@@ -1,29 +1,17 @@
+ `timescale 1ns/1ps
+ /*
+- *  conv3x3.sv -- a 3x3 convolution over a streaming raster image, with two line buffers.
++ * Apply a 3x3 filter to an image arriving one pixel at a time.
++ * Pixels arrive from left to right, then top to bottom, when in_valid is high.
++ * Two RAM buffers store the previous rows. Registers keep the previous
++ * columns so the filter can use all nine pixels around each centre.
+  *
+- *  Pixels arrive one per in_valid in raster order (x fastest, then y), with their coordinates.
+- *  For every interior pixel the module outputs
++ * Multiply each pixel by its signed weight in K and add the results.
++ * Choose OW large enough for the weights; Sobel Gx ranges from -1020 to
++ * 1020 with 8-bit pixels.
+  *
+- *      out_val = sum over dy,dx of  K[dy][dx] * pixel(y-1+dy, x-1+dx)
+- *
+- *  i.e. the table K slid over the picture, exactly as the 1-D low-pass in Lesson 4 slides a
+- *  table of taps along a signal. The difference is only where the neighbours come from:
+- *  the two previous ROWS are kept in two line buffers (inferred dual-port RAM, one entry per
+- *  column), and the two previous COLUMNS in a 3-deep shift of "column triples".
+- *
+- *  Delay: the output for centre (cx, cy) appears when input (cx+1, cy+1) has arrived, plus two
+- *  pipeline registers. So the output stream is one row and one column behind the input, and
+- *  out_x/out_y carry the CENTRE coordinates so that downstream logic never has to know.
+- *
+- *  Border policy: interior only. Centres with x = 0, x = W-1, y = 0 or y = H-1 are not output.
+- *  For the pictures in this course that costs nothing (the interesting edges are never on the
+- *  picture border), and it keeps the module small. Replicating the border is the usual
+- *  alternative; it needs extra cycles at the end of every row and frame.
+- *
+- *  Weights are signed 8-bit constants (a parameter, so a different table is a different
+- *  instance: Sobel, smoothing, sharpening). With 8-bit pixels and |K| summing to at most 8 the
+- *  result fits in 12 bits signed (Sobel: +-4*255 = +-1020).
++ * After the bottom-right pixel arrives, two more clock edges produce
++ * the result. out_x and out_y give the centre of the window.
++ * Skip the outer border, where a full 3x3 window is not available.
+  */
+ module conv3x3 #(
+     parameter int W  = 320,
+@@ -43,24 +31,28 @@
      output logic [$clog2(W)-1:0]  out_x,
      output logic [$clog2(H)-1:0]  out_y
  );
@@ -84,10 +156,8 @@
 -    logic [DW-1:0] lb1 [0:W-1];
 -    logic [DW-1:0] lb2 [0:W-1];
 -    logic [DW-1:0] lb1_q, lb2_q;            // the values at column in_x, read as the pixel arrives
-+    // ---- two line buffers, explicitly mapped to M10K -------------------------------
-+    // Quartus 18.1 can fail to infer RAM from the compact read-before-write array style,
-+    // turning these 320x8 buffers into thousands of registers/LABs.  Use the project's
-+    // sync_ram primitive instead so each row buffer is guaranteed to use block RAM.
++    // Use sync_ram to store the previous two rows in M10K memory.
++    // This avoids using large numbers of registers for the row buffers.
 +    logic [DW-1:0] lb1_q, lb2_q;
 +    logic          lb2_we;
 +    logic [$clog2(W)-1:0] lb2_waddr;
@@ -95,15 +165,13 @@
 -    // Read-before-write on the same address in the same cycle: the read returns the OLD value
 -    // (rows y-1 and y-2 at this column) and the write stores the new one (row y moves to lb1,
 -    // row y-1 moves to lb2). Quartus infers a dual-port M10K for each buffer.
-+    // lb1 contains the most recently completed pixel for each column.  Reading and
-+    // writing the same address returns OLD_DATA, i.e. the pixel from row y-1.
++    // Reading and writing the same column returns the old pixel from row y-1.
 +    sync_ram #(.WIDTH(DW), .DEPTH(W), .AW($clog2(W))) linebuf1 (
 +        .clk(clk), .we(in_valid),
 +        .waddr(in_x), .raddr(in_x), .wdata(in_pixel), .rdata(lb1_q));
 +
-+    // One clock later lb1_q is the old row-y-1 value.  Move it into lb2 at the
-+    // delayed column address; lb2's read port still reads the current input column
-+    // and therefore returns row y-2 in parallel.
++    // Copy the previous row into lb2 one clock later, using the delayed address.
++    // Read lb2 at the current column to get the pixel from row y-2.
      always_ff @(posedge clk) begin
 -        if (in_valid) begin
 -            lb1_q   <= lb1[in_x];
@@ -118,13 +186,36 @@
 +        .clk(clk), .we(lb2_we),
 +        .waddr(lb2_waddr), .raddr(in_x), .wdata(lb1_q), .rdata(lb2_q));
  
-     // ---- stage 1: the column triple for column in_x, one cycle after the pixel arrived -----
+-    // ---- stage 1: the column triple for column in_x, one cycle after the pixel arrived -----
++    // Stage 1: line up the current pixel with the two buffered row pixels.
      logic                  s1_valid;
-@@ -90,7 +98,13 @@
-             // TODO 1: slide the window one column to the left (col 0 <= col 1, col 1 <= col 2 for all three
-             //         rows) and put the new column triple (c_top, c_mid, c_bot) into column 2.
-             //         This is the Lesson 4 shift register, three of them side by side.
+     logic [DW-1:0]         s1_pix;
+     logic [$clog2(W)-1:0]  s1_x;
+@@ -71,13 +63,13 @@
+         s1_x     <= in_x;
+         s1_y     <= in_y;
+     end
+-    // column triple (top, middle, bottom) = rows y-2, y-1, y at column s1_x
++    // These three pixels come from rows y-2, y-1 and y at column s1_x.
+     logic [DW-1:0] c_top, c_mid, c_bot;
+     assign c_top = lb2_q;
+     assign c_mid = lb1_q;
+     assign c_bot = s1_pix;
+ 
+-    // ---- stage 2: keep the two previous column triples -> a 3x3 window centred on (x-1, y-1)
++    // Stage 2: keep three columns to form the 3x3 window.
+     logic [DW-1:0] w [0:2][0:2];             // w[row][col]: col 0 = x-2, col 1 = x-1, col 2 = x
+     logic                  s2_valid;
+     logic [$clog2(W)-1:0]  s2_x;
+@@ -87,29 +79,33 @@
+         s2_x     <= s1_x;
+         s2_y     <= s1_y;
+         if (s1_valid) begin
+-            // TODO 1: slide the window one column to the left (col 0 <= col 1, col 1 <= col 2 for all three
+-            //         rows) and put the new column triple (c_top, c_mid, c_bot) into column 2.
+-            //         This is the Lesson 4 shift register, three of them side by side.
 -
++            // Shift each row left and put the new pixels in the right-hand column.
 +            for (int r = 0; r < 3; r++) begin
 +                w[r][0] <= w[r][1];
 +                w[r][1] <= w[r][2];
@@ -135,32 +226,82 @@
          end
      end
  
-@@ -101,15 +115,17 @@
-         // TODO 2: acc = sum over r, c of K[r][c] * w[r][c].  Pixels are UNSIGNED 8-bit and the weights are
-         //         SIGNED: cast each pixel with $signed({1'b0, w[r][c]}) and widen both to OW bits before the
-         //         multiply (see the note on signed'() in 2.3).
+-    // ---- stage 3: the weighted sum, output only for interior centres --------------------
++    // Stage 3: calculate the weighted sum and output complete windows.
+     logic signed [OW-1:0] acc;
+     always_comb begin
+         acc = '0;
+-        // TODO 2: acc = sum over r, c of K[r][c] * w[r][c].  Pixels are UNSIGNED 8-bit and the weights are
+-        //         SIGNED: cast each pixel with $signed({1'b0, w[r][c]}) and widen both to OW bits before the
+-        //         multiply (see the note on signed'() in 2.3).
 -
++        // Keep pixels positive when converting to signed values.
++        // Widen pixels and weights to OW bits before multiplying.
 +        for (int r = 0; r < 3; r++)
 +            for (int c = 0; c < 3; c++)
 +                acc += OW'($signed(K[r][c])) * OW'($signed({1'b0, w[r][c]}));
      end
      always_ff @(posedge clk) begin
-         // TODO 3: the window is complete (three real rows and three real columns) once s2_x >= 2 and s2_y >= 2:
-         //         set out_valid only then. Register acc into out_val. The CENTRE of the window is one column and
-         //         one row behind the pixel that just arrived: out_x = s2_x - 1, out_y = s2_y - 1.
+-        // TODO 3: the window is complete (three real rows and three real columns) once s2_x >= 2 and s2_y >= 2:
+-        //         set out_valid only then. Register acc into out_val. The CENTRE of the window is one column and
+-        //         one row behind the pixel that just arrived: out_x = s2_x - 1, out_y = s2_y - 1.
 -        out_valid <= 1'b0;
 -        out_val   <= '0;
 -        out_x     <= '0;
 -        out_y     <= '0;
++        // Output only when three rows and three columns have arrived.
++        // The centre is one row and one column behind the latest pixel.
 +        out_valid <= !reset && s2_valid && (s2_x >= 2) && (s2_y >= 2);
 +        out_val   <= acc;
 +        out_x     <= s2_x - 1'b1;
 +        out_y     <= s2_y - 1'b1;
      end
  endmodule
+--- course_sources/video/rtl/sobel.sv
++++ rtl/reuse/sobel.sv
+@@ -1,11 +1,9 @@
+ `timescale 1ns/1ps
+ /*
+- *  sobel.sv -- two conv3x3 instances (the Gx and Gy tables) and the magnitudes.
+- *
+- *  |Gx| responds to vertical edges (a change from left to right): the sides of piano keys,
+- *  the sides of barcode bars. |Gy| responds to horizontal edges: the ends of keys. The
+- *  magnitude |Gx| + |Gy| is the cheap version of sqrt(Gx^2 + Gy^2): no multiplier, no root,
+- *  and for "is there an edge here" it is as good.
++ * Use two conv3x3 filters to find edges in the image.
++ * Gx measures changes from left to right, such as the sides of piano keys.
++ * Gy measures changes from top to bottom, such as the ends of keys.
++ * Add |Gx| and |Gy| to estimate edge strength without a square root.
+  */
+ module sobel #(
+     parameter int W  = 320,
+--- course_sources/video/rtl/video_pll.sv
++++ rtl/reuse/video_pll.sv
+@@ -1,16 +1,11 @@
+ `timescale 1ns/1ps
+ /*
+- *  video_pll.sv -- 50 MHz in, 25 MHz pixel clock out, using the PLL Intel FPGA IP.
++ * Generate the 25 MHz pixel clock from the board's 50 MHz clock.
++ * Use Intel's altera_pll IP, as in the course video project.
++ * The VGA controller uses this clock for its 640x480 output.
+  *
+- *  The same altera_pll instantiation that the IP Parameter Editor generates
+- *  (Task 1.2), written out by hand so the project has no wizard files, exactly
+- *  like adc_pll.sv in the mic-input project. The VGA Controller in vga.qsys (or vga_text.qsys)
+- *  is configured for 640x480, whose pixel clock is 25.175 MHz nominal; 25 MHz
+- *  is what the University Program cores use and every monitor accepts it.
+- *
+- *  Simulators cannot run the PLL primitive without Intel's libraries, so in
+- *  simulation (Verilator, or ModelSim via its MODEL_TECH define) the module
+- *  becomes a behavioural stand-in: a clock generator at the same frequency.
++ * For Verilator and ModelSim, use a simple 25 MHz clock generator
++ * instead of the Intel PLL. This model always reports the PLL as locked.
+  */
+ module video_pll (
+     input  wire refclk,     // 50 MHz
 --- course_sources/audio/mic/mic_load.sv
 +++ rtl/reuse/mic_load.sv
-@@ -1,14 +1,72 @@
+@@ -1,14 +1,65 @@
 -`timescale 1ps/1ps
 -module mic_load #(parameter N=16) (
 -	input bclk, // Assume a 18.432 MHz clock
@@ -168,32 +309,25 @@
 -	input adcdat,
 +`timescale 1ps/1ps 
 +module mic_load #(parameter N=16) ( 
-+	input bclk, // Assume a 18.432 MHz clock 
++	input bclk, // Audio bit clock from the codec (3.072 MHz on the board).
 +    input adclrc, 
 +	input adcdat, 
-+    // No ready signal nor handshake: as this module streams live audio data, it cannot be stalled, therefore we only have the valid signal. 
++    // Live audio cannot pause, so this interface has valid but no ready signal.
 +    output logic valid, 
 +    output logic [N-1:0] sample_data 
 +); 
-+    // Assume that i2c has already configured the CODEC for LJ data, MSB-first and N-bit samples. 
++    // The codec must already be set to left-justified, MSB-first, N-bit audio.
 + 
-+    // Rising edge detect on ADCLRC to sense left channel 
++    // Detect the start of a left-channel sample.
 +    logic redge_adclrc, adclrc_q;  
 +    always_ff @(posedge  bclk) begin : adclrc_rising_edge_ff 
 +        adclrc_q <= adclrc; 
 +    end 
-+    assign redge_adclrc = ~adclrc_q & adclrc; // rising edge detected! 
++    assign redge_adclrc = ~adclrc_q & adclrc; // High when ADCLRC rises.
 + 
-+    /* 
-+     * Implement the Timing diagram. 
-+     * ----------------------------- 
-+     * You should use a temporary N-bit RX register to store the ADCDAT bitstream from MSB to LSB. 
-+     * Remember that MSB is first, LSB is last. 
-+     * Use `temp_rx_data[(N-1)-bit_index] <= adcdat;` 
-+     * BCLK rising is your trigger to sample the value of ADCDAT into the register at the appropriate bit index. 
-+     * ADCLRC rising (see `redge_adclrc`) signals that the MSB should be sampled on the next rising edge of BCLK. 
-+     * With the above, think about when and how you would reset your bit_index counter. 
-+     */ 
++    // Read the left-channel sample on rising BCLK edges.
++    // When an ADCLRC rise is detected, store the first bit as the MSB.
++    // Then collect the remaining bits and pulse valid after the LSB arrives.
  
 -    output logic valid,
 -    output logic [N-1:0] sample_data
@@ -215,7 +349,7 @@
 +            // Sample the MSB immediately
 +            temp_rx_data[N-1] <= adcdat;
 +
-+            // The next bit to receive is bit 1
++            // The MSB is stored; receive the second bit next.
 +            bit_index <= 1;
 +            receiving <= 1'b1;
 +        end
@@ -245,7 +379,7 @@
 -
 --- course_sources/audio/fft_mag_sq.sv
 +++ rtl/reuse/fft_mag_sq.sv
-@@ -2,14 +2,46 @@
+@@ -2,14 +2,42 @@
      parameter W = 16
  ) (
      input                clk,
@@ -265,10 +399,7 @@
 +    logic signed [W*2:0]   add_stage;
 +    logic [1:0] valid_shift;
 +    always_ff @(posedge clk) begin
-+       //TODO Your code here!
-+       // We want to implement the 2 pipeline stages, similar to task 1.1.
-+       // When multiplying, make sure to use the signed function, e.g: signed'(fft_real)*signed'(fft_real);
-+       // Remember to use reset.
++       // Clear both pipeline stages and the valid flags on reset.
 +       if (reset) begin
 +            multiply_stage_real <= '0;
 +            multiply_stage_imag <= '0;
@@ -292,8 +423,7 @@
 +    assign mag_sq    = add_stage;
 +    assign mag_valid =  valid_shift[1];
 +
-+    //TODO set to `1` when mag_sq valid **this should be 2 cycles after valid input!**
-+    // Hint: you can use a shift register to implement valid.
++    // mag_valid follows the same two pipeline stages as mag_sq.
  
  endmodule
 --- course_sources/audio/mic/adc_pll.v
@@ -404,7 +534,7 @@
      st_t st;
      logic [$clog2(NTT)-1:0] t;
      logic [D-1:0][FW-1:0] f_q;
-@@ -55,6 +49,10 @@
+@@ -55,8 +49,12 @@
      logic [$clog2(NCLASS)-1:0] votes [0:M-1];
      logic [M-1:0] vote_ok;
      logic [$clog2(M):0] vptr;
@@ -413,9 +543,12 @@
 +    logic [3:0] ratio_bit;
 +    assign doubled=remainder<<1;
  
-     // distance to template t (combinational over D words: D subtract/abs/add = fine for D <= 32)
+-    // distance to template t (combinational over D words: D subtract/abs/add = fine for D <= 32)
++    // Add the absolute difference for each of the D features in template t.
      always_comb begin
-@@ -80,16 +78,30 @@
+         sad = '0;
+         for (int i = 0; i < D; i++)
+@@ -80,22 +78,36 @@
      end
  
      logic rej_c;
@@ -450,7 +583,14 @@
                  vote_ok <= '0;                                 // gate closed: forget the vote
                  result_valid <= 1'b1; confidence <= '0; reject <= 1'b1;
              end
-@@ -106,8 +118,16 @@
+             DIST: begin
+                 if (sad < d1) begin
+-                    if (t_class != best_class) d2 <= d1;       // the old best becomes the runner-up of another class
++                    if (t_class != best_class) d2 <= d1;       // The old best is now the closest match from another class.
+                     d1 <= sad; best_class <= t_class;
+                 end else if (t_class != best_class && sad < d2) d2 <= sad;
+                 if (t == NTT-1) st <= DECIDE; else t <= t + 1'b1;
+@@ -106,10 +118,18 @@
                      votes[vidx] <= best_class; vote_ok[vidx] <= 1'b1;
                      vptr <= (vptr == M-1) ? '0 : vptr + 1'b1;
                  end
@@ -459,18 +599,33 @@
 +                confidence <= 0;
 +                remainder<={1'b0,d1};ratio<=0;ratio_bit<=0;
 +                st <= rej_c ? VOTE:CONFIDENCE;
-+            end
+             end
+-            VOTE: begin                                        // one cycle later: the tally includes this frame's vote
 +            CONFIDENCE: begin
 +                remainder<=doubled>=d2 ? doubled-d2:doubled;
 +                ratio<={ratio[6:0],doubled>=d2};
 +                if(ratio_bit==7) begin
 +                    confidence<=8'd255-{ratio[6:0],doubled>=d2};st<=VOTE;
 +                end else ratio_bit<=ratio_bit+1'b1;
-             end
-             VOTE: begin                                        // one cycle later: the tally includes this frame's vote
++            end
++            VOTE: begin                                        // The count now includes this frame's vote.
                  result <= winner;
+                 result_valid <= 1'b1;
+                 st <= IDLE;
+--- course_sources/video/tools/image_to_mif.py
++++ tools/image_to_mif.py
+@@ -1,7 +1,7 @@
+ #!/usr/bin/env python3
+-"""Any picture -> 320x240 8-bit grey .mif + .hex + .png (for the reader, or for the assignment's piano).
++"""Convert a picture to 320x240 greyscale MIF, HEX and PNG files.
+     python3 tools/image_to_mif.py photo.jpg images/photo
+-Needs Pillow. Resizes to 320x240 (letterboxed, grey borders), converts to greyscale."""
++Needs Pillow. Keep the image proportions and fill unused space with grey."""
+ import sys, os
+ import numpy as np
+ from PIL import Image
 --- course_sources/audio/fft_ip_r22sdf/DelayBuffer.v
-+++ rtl\fft\DelayBuffer.v
++++ rtl/fft/DelayBuffer.v
 @@ -12,21 +12,25 @@
      output  [WIDTH-1:0] do_im   //  Data Output (Imag)
  );

@@ -2,3 +2,6 @@ ShineSing_Quartus_Ready/build/
 **/__pycache__/
 **/db/
 **/incremental_db/
+ShineSing_Quartus_Ready/deliverables/
+ShineSing_Quartus_Ready/output_files/*
+!ShineSing_Quartus_Ready/output_files/*.sof

@@ -15,9 +15,7 @@ class ImageAssetsTest(unittest.TestCase):
     def test_bundled_images_match_course_converter(self):
         with tempfile.TemporaryDirectory() as tmp:
             for slot, name in enumerate(('ParallelPiano.png', 'ParallelPiano2.png')):
-                source = ROOT/'reference_materials/piano_examples'/name
-                if not source.exists():
-                    self.skipTest('Original photos are in the full handoff package')
+                source = ROOT/'assets'/f'piano{slot}.png'
                 prefix = Path(tmp)/f'piano{slot}'
                 subprocess.run([sys.executable, str(ROOT/'tools/image_to_mif.py'),
                                 str(source), str(prefix)], check=True, capture_output=True)

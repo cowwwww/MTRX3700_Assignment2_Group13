@@ -1,5 +1,10 @@
 [
   {
+    "path": "RUN_INSTRUCTIONS.txt",
+    "bytes": 4351,
+    "sha256": "721bfd6d3f3b6341e94483b2049bde308af42ca304065ea88fc27f28acd04230"
+  },
+  {
     "path": "assets/audio_pcm.hex",
     "bytes": 73728,
     "sha256": "85fd41254a4a3192d4799b8242ce1fc61b146d744daba28f64cb5cc50020aa46"
@@ -85,16 +90,6 @@
     "sha256": "95d8bf525775d51c97130f435f72c4c86980fccbb17bb27b61fa0c5b8db12bdd"
   },
   {
-    "path": "assets/db.hex",
-    "bytes": 131076,
-    "sha256": "9501915e447bded0451c3ce3fc10d7c48f3c521d9d37712f3213d260accf7931"
-  },
-  {
-    "path": "assets/db.mif",
-    "bytes": 382200,
-    "sha256": "0fe3eb7c1f2471ef7ca3fc73cf7d7383d7db4b422790539aa34aabc7ebf0f576"
-  },
-  {
     "path": "assets/expected_0_0.hex",
     "bytes": 1280,
     "sha256": "4f85b93b92b351513d6f679fe7c85e8fd59fe42e966469f95998ccf4883a0001"
@@ -166,8 +161,8 @@
   },
   {
     "path": "assets/h95/templates.svh",
-    "bytes": 4303,
-    "sha256": "a555f8aaf0662c5067781b8ba8ea9309985a16f8dc312a97e7bb9c80f07e3d3d"
+    "bytes": 4300,
+    "sha256": "4d817d945b8d89b23e99dcdad677336684ab2d35bcc75c59e1be9d1491bb64f9"
   },
   {
     "path": "assets/h95/test_dimensions.svh",
@@ -246,8 +241,8 @@
   },
   {
     "path": "assets/recordings/manifest.json",
-    "bytes": 8854,
-    "sha256": "25b4a31104566307dd2de770beb831a21fb81c931ea8ddc834fce3cdb717d018"
+    "bytes": 10371,
+    "sha256": "9b3175511a610d43df21201ad879bdc4790f09bd52caa9b43db841d9596b854b"
   },
   {
     "path": "assets/recordings/test_dimensions.svh",
@@ -265,24 +260,9 @@
     "sha256": "274da58b9352187d19b8250b6032946e2e95ef3abe9f65a3df3778a5c81b5dcc"
   },
   {
-    "path": "course_sources/audio/async_fifo.qip",
-    "bytes": 354,
-    "sha256": "b6456c2ff3b1aced39faf5acf97812be22c4b284dd910ae3bc4417e34084e7c8"
-  },
-  {
-    "path": "course_sources/audio/async_fifo.v",
-    "bytes": 47,
-    "sha256": "c118e0f8af7185750041177f45092f118615ca38dde54906e04a3ab8ac861789"
-  },
-  {
     "path": "course_sources/audio/decimate.sv",
     "bytes": 1330,
     "sha256": "a444e2df9e2b7a53017115f5fdfbd7b7acc37c42a1d77ec72db78a7a15bce0df"
-  },
-  {
-    "path": "course_sources/audio/display.sv",
-    "bytes": 3635,
-    "sha256": "8cef6294ac2a4d9854d4b0b116d61a0290b7bcd2fbf566992a2437b340c7bc9b"
   },
   {
     "path": "course_sources/audio/fft_find_peak.sv",
@@ -335,11 +315,6 @@
     "sha256": "4d82703d2878ee9f780840cf6e424f8ac8557a18822a14cfda0a17c468485bb0"
   },
   {
-    "path": "course_sources/audio/fft_ip_r22sdf/twiddle_gen.pl",
-    "bytes": 1448,
-    "sha256": "f6e93fa694274193105c1c734b80e50545735d6722cfb518e94d73ce443c3c09"
-  },
-  {
     "path": "course_sources/audio/fft_ip_r22sdf/TwiddleConvert4.v",
     "bytes": 2147,
     "sha256": "3361f25856aed7acf903a9919fcb559cee9425306a27902a434324decd928aa4"
@@ -355,51 +330,6 @@
     "sha256": "c04db784d3c915500f56e60a6392b93e64851c907406006c150744602fd1b53e"
   },
   {
-    "path": "course_sources/audio/fft_output_buffer.sv",
-    "bytes": 1729,
-    "sha256": "7ee54bb83cdcecb490e3f44fdafd90e16f7ce331326b22a0e08fdf1a46a2d51d"
-  },
-  {
-    "path": "course_sources/audio/fft_pitch_detect.sv",
-    "bytes": 7048,
-    "sha256": "d4ff187e20a10c4517c21a6679a217b115f9ccdf86b834c8c696bc191475a35a"
-  },
-  {
-    "path": "course_sources/audio/fft_pitch_detect_tb.sv",
-    "bytes": 2623,
-    "sha256": "93e2e93efb1c2c4b82650eca1bfaf18d704e52d54a39a51a80d53853228ac230"
-  },
-  {
-    "path": "course_sources/audio/FFT_stream.out.sdc",
-    "bytes": 6368,
-    "sha256": "af9f1384c9d7ec8e5ae18f9277332cd1c982b46d42455b3889af768e4430543a"
-  },
-  {
-    "path": "course_sources/audio/FFT_stream.qpf",
-    "bytes": 1363,
-    "sha256": "59b4935e8c69bc9a9fa8c34a2fe8a94dc31c8638aa53e9a1239951fe9b9c9e43"
-  },
-  {
-    "path": "course_sources/audio/FFT_stream.qsf",
-    "bytes": 73046,
-    "sha256": "ecd415fdefb970e209527d0a41ca142c2ad802b17b47788cec0d07725bcfc16e"
-  },
-  {
-    "path": "course_sources/audio/low_pass_conv.sv",
-    "bytes": 451,
-    "sha256": "9250c14c0ac1d0bfaead38a23be6703c1132cc93057f1852dbfda1d774eebdbc"
-  },
-  {
-    "path": "course_sources/audio/mic/adc_pll.ppf",
-    "bytes": 476,
-    "sha256": "0e30de9fb7788e787f403860dcb726f61c48ccae3ab85456d7586d378751034f"
-  },
-  {
-    "path": "course_sources/audio/mic/adc_pll.qip",
-    "bytes": 436,
-    "sha256": "479344a936514e35529fb667342edc2eebc98a8f63d47b6389984767adfe3b83"
-  },
-  {
     "path": "course_sources/audio/mic/adc_pll.v",
     "bytes": 15341,
     "sha256": "aa829cc94f24765963e4809dda6b2b847ef94193d368f15901637c06def86012"
@@ -408,31 +338,6 @@
     "path": "course_sources/audio/mic/adc_pll_bb.v",
     "bytes": 11440,
     "sha256": "9ea45575a9d81704ae7d76426a4883171936db617188f6e6dc81fcb2290a44af"
-  },
-  {
-    "path": "course_sources/audio/mic/i2c_master.sv",
-    "bytes": 490,
-    "sha256": "dc253c1dc0f73b0a96867cf59550ea894a4c1e65884234098766533981c55af0"
-  },
-  {
-    "path": "course_sources/audio/mic/i2c_pll.ppf",
-    "bytes": 465,
-    "sha256": "0d0c3418d92069cce2114f89d2eebcf65f32be09723612d6dca6d6e0151ed248"
-  },
-  {
-    "path": "course_sources/audio/mic/i2c_pll.qip",
-    "bytes": 430,
-    "sha256": "cd3fe8c1bf4468a57457be94f8309db9843c1797929002ebe34b9a3af6d9808a"
-  },
-  {
-    "path": "course_sources/audio/mic/i2c_pll.v",
-    "bytes": 15014,
-    "sha256": "9ad35401fffa3ec82238bbba19fca1e532c9091133a4dfae16e9e9c292329cb4"
-  },
-  {
-    "path": "course_sources/audio/mic/i2c_pll_bb.v",
-    "bytes": 11226,
-    "sha256": "2e493487737ff96244f6aea4d6d9f5f7fcc7cd451c3e23c6f365aae822f87edd"
   },
   {
     "path": "course_sources/audio/mic/mic_load.sv",
@@ -445,29 +350,9 @@
     "sha256": "101101e604c4bf0c49a4f4240fe5aaaae63005328976d250bb66b7faa2669d79"
   },
   {
-    "path": "course_sources/audio/seven_seg.sv",
-    "bytes": 685,
-    "sha256": "dd2256e6c880dd5bd40127bd6eff38a7493bbc092750e23a09570dc61f4ced2e"
-  },
-  {
-    "path": "course_sources/audio/sim_models/dcfifo.v",
-    "bytes": 2738,
-    "sha256": "22f277d9dbff4f7107163d97ee766a408a3170bf3c50d68e283dea0229712777"
-  },
-  {
-    "path": "course_sources/audio/sim_models/wm8731_model.sv",
-    "bytes": 35539,
-    "sha256": "1f3ef9216bd9c2f90ea65bfbd10df3a4ce0b020ac7e7a4ddcfc856b7237a7468"
-  },
-  {
     "path": "course_sources/audio/test_waveform.hex",
     "bytes": 7165,
     "sha256": "6daf9eb5e98500a7a7c914353237d9e7754c6f67c614d169e3bc34665e4b2422"
-  },
-  {
-    "path": "course_sources/audio/top_level.sv",
-    "bytes": 9659,
-    "sha256": "7a248f1312d066eef60c3990df2a651b69bbb80dfb3941d36d09349dfd35413f"
   },
   {
     "path": "course_sources/audio/window_function.sv",
@@ -478,26 +363,6 @@
     "path": "course_sources/classifier/classifier.sv",
     "bytes": 5826,
     "sha256": "4135d11f1ae1ba9dccbcc51c9ef42d1d321cfa38c4d7c29f4bfb59c6ca2975ae"
-  },
-  {
-    "path": "course_sources/classifier/make_test_templates.py",
-    "bytes": 1058,
-    "sha256": "3342a84e469da5a567a31fdf84e55c2a5a22fd3ba14f234c79587d88aa98d7dc"
-  },
-  {
-    "path": "course_sources/classifier/simulate.sh",
-    "bytes": 300,
-    "sha256": "d441cf18e56d65b45b6c8731b71844ad98668d84b7fa64b90301f4240bc54123"
-  },
-  {
-    "path": "course_sources/classifier/tb_classifier.sv",
-    "bytes": 2872,
-    "sha256": "b68e6382fbe0b20682adb3e0d6c5405c5fb5a9250318907a39c13bc42485513d"
-  },
-  {
-    "path": "course_sources/classifier/templates.svh",
-    "bytes": 1557,
-    "sha256": "a24fb4546e3192d35b9ce4da7d90dc393aa739b523c21205134064f5da448857"
   },
   {
     "path": "course_sources/classifier/templates_test.hex",
@@ -515,49 +380,24 @@
     "sha256": "8bf6c369cb6ce9a8ebd39672ffd71e37691ca72a7ee2d40c059ad075f48a3d12"
   },
   {
-    "path": "course_sources/fir/fft_pitch_detect_tb.sv",
-    "bytes": 3395,
-    "sha256": "83203701d9872cb3aed7ae979dffe120e5a0bbeae451f85f88351f0a825eee5b"
-  },
-  {
     "path": "course_sources/fir/low_pass_conv.sv",
     "bytes": 3677,
     "sha256": "52a5e1b16d32f2fb09c78f88242fedc37b0324fa3855105e78bcd6506534d188"
   },
   {
     "path": "course_sources/manifest.json",
-    "bytes": 22819,
-    "sha256": "6b4a292395004aa7cf1ede1c70a8c0943c69af618d22442b795baa3307921ca4"
-  },
-  {
-    "path": "course_sources/rc_filter/create_vcd.sh",
-    "bytes": 730,
-    "sha256": "b0f690a9e02bd79bf879cbb208cbca4ce71c5819abfa6d2e93fc932b632a0490"
-  },
-  {
-    "path": "course_sources/rc_filter/rc_low_pass.sv",
-    "bytes": 2698,
-    "sha256": "bec57ead072bf695ef63f945282f6277e021a26c4cc48d8091c6588c16f49141"
-  },
-  {
-    "path": "course_sources/rc_filter/rc_low_pass_tb1.sv",
-    "bytes": 2518,
-    "sha256": "9a9a2c1fadde53859789e6ec9602c2c3904a8844f2279cd592e50413f0f4e7d6"
-  },
-  {
-    "path": "course_sources/rc_filter/rc_low_pass_tb2.sv",
-    "bytes": 4586,
-    "sha256": "3608a27860511e18192d2775be32d39e41a389aebcc968c47cbb5b9a17febbd6"
+    "bytes": 9832,
+    "sha256": "c664fe1f93ee314f96120b5ffab103336bb21cc2264dae04481f07475fc32d4d"
   },
   {
     "path": "course_sources/reuse.json",
-    "bytes": 10571,
-    "sha256": "f3645c9ae252cc5d1d520550cf9b0e0742ff1f78ff139894566b9efb3272f5fc"
+    "bytes": 10418,
+    "sha256": "b333b40ffb220478882fb1b3a5a14f05f67922ac2f1366994418207a69bf124a"
   },
   {
     "path": "course_sources/reuse.patch",
-    "bytes": 22999,
-    "sha256": "4fb009979e5c8b3b072b310a89213f77ffada79aad99012ef2f4cb07051205ff"
+    "bytes": 31537,
+    "sha256": "37a2ae020c363ed6b5ce81f47b61af0ed6875ffbf6170d88e79e9917c12737e9"
   },
   {
     "path": "course_sources/video/images/barcode.hex",
@@ -565,79 +405,9 @@
     "sha256": "83f42bdb973a45780a020a5ed4d64ad2cc6bbdb0097fbd3838ddcc9b29822b69"
   },
   {
-    "path": "course_sources/video/images/barcode.mif",
-    "bytes": 51615,
-    "sha256": "3df2c6a910bdb875f2e34a825601707f3c8c30ec8b495cd20968dd8201e4df0d"
-  },
-  {
-    "path": "course_sources/video/images/barcode.png",
-    "bytes": 596,
-    "sha256": "ac9fc4081cab11432de61d36601c4573b8620c7b88094e2013ffce3ad038a473"
-  },
-  {
-    "path": "course_sources/video/images/barcode.txt",
-    "bytes": 80,
-    "sha256": "406439566d01307813a353acd1fffcc628095a9a5e5f9455c5604e7b213a9f71"
-  },
-  {
     "path": "course_sources/video/images/barcode2.hex",
     "bytes": 230400,
     "sha256": "0a4f128f109001df39ceff370096b1d0e2de209b780ab48a224ca3671a044cc4"
-  },
-  {
-    "path": "course_sources/video/images/barcode2.mif",
-    "bytes": 1054240,
-    "sha256": "28654abfe943b21969d0020e461e7c8e49ec3f924b79830ac0da8eeae38ad8e5"
-  },
-  {
-    "path": "course_sources/video/images/barcode2.png",
-    "bytes": 57012,
-    "sha256": "9d49dad91e0ff688819ce0cdb33616ace8ee9001e1c3660fcfad808036bf9cb9"
-  },
-  {
-    "path": "course_sources/video/images/barcode2.txt",
-    "bytes": 80,
-    "sha256": "9be7dc4117ad74ba3df76996b4a8c058bba18bfd3be2a014ecd81429a489e8d1"
-  },
-  {
-    "path": "course_sources/video/quartus/barcode.qpf",
-    "bytes": 54,
-    "sha256": "1fba232c69f487fe7f3004c4cfcf27b65e4aa23578d26183e5d238f12622cdff"
-  },
-  {
-    "path": "course_sources/video/quartus/barcode.qsf",
-    "bytes": 40876,
-    "sha256": "89f83af6f811a66ac1cb043067d43cb0cf049f174e33ff13fc43927cbe51f476"
-  },
-  {
-    "path": "course_sources/video/quartus/barcode.sdc",
-    "bytes": 452,
-    "sha256": "0e055bb832f2639fc970cf3812c4e6b3a05010330914bcf0d946d4303d43fb2e"
-  },
-  {
-    "path": "course_sources/video/quartus/build_on_vm.sh",
-    "bytes": 892,
-    "sha256": "c8eb992f3b442a43025f589d18ee17a7d9543dff026c32f9fba9183b98420c90"
-  },
-  {
-    "path": "course_sources/video/quartus/make_vga_sink_qsys.tcl",
-    "bytes": 1565,
-    "sha256": "23647e15931dfff340411ba813732b3a793b9172efeae861025998ec8828a717"
-  },
-  {
-    "path": "course_sources/video/quartus/vga_sink.qsys",
-    "bytes": 3243,
-    "sha256": "5942928415e94927c7d0521c50e837ca0e6e9fd0f036a0ef103ba8e7cefdf16d"
-  },
-  {
-    "path": "course_sources/video/rtl/bar_decode.sv",
-    "bytes": 2904,
-    "sha256": "18dfd1303ac15a60007a2d1b084351ef4aa67bda06befba6a121322061650404"
-  },
-  {
-    "path": "course_sources/video/rtl/barcode_reader.sv",
-    "bytes": 5112,
-    "sha256": "4793ec9d89f924be19ea09aecfab74be7d34c8d740a51d1858901041a0653315"
   },
   {
     "path": "course_sources/video/rtl/cdc_latch.sv",
@@ -675,74 +445,14 @@
     "sha256": "39c2d419b08ad79a7d2fa53b0ff58dc0ed9efce67d4a3a9687df49ed2b32362a"
   },
   {
-    "path": "course_sources/video/rtl/raster_source.sv",
-    "bytes": 2361,
-    "sha256": "aa0f61765ad638876194b35ef5bb8c2b29ee6cf055092a6c7f2afa2ebff994a4"
-  },
-  {
-    "path": "course_sources/video/rtl/seven_seg.v",
-    "bytes": 939,
-    "sha256": "4b9e650c3abc4cafb7cb98fd95a9e20dcecdef816da0f449f33440e9252eaf63"
-  },
-  {
     "path": "course_sources/video/rtl/sobel.sv",
     "bytes": 2040,
     "sha256": "af52dea7421cb44c84e434df277ac251e9d80df1aea3b13eeed168a351712351"
   },
   {
-    "path": "course_sources/video/rtl/top_level.sv",
-    "bytes": 5533,
-    "sha256": "22dfe7ada22d8a6acb834ce4748081d552d82e1bd9088b6df9f5813084d29196"
-  },
-  {
     "path": "course_sources/video/rtl/video_pll.sv",
     "bytes": 1788,
     "sha256": "3217b94521544e0830db9c13e308ee42bc090bfc86181dba012f620079cfa13d"
-  },
-  {
-    "path": "course_sources/video/run_msim.sh",
-    "bytes": 1143,
-    "sha256": "f4a50d60e591f0ed52b43bd7e4d0d3a19d953eb55fb0ffd619f18f9c919ec766"
-  },
-  {
-    "path": "course_sources/video/simulate.sh",
-    "bytes": 1660,
-    "sha256": "338ffc3631e952e38599eb4e82e1e614dc846e8bacd9c6c8cd8945816f8fbc1a"
-  },
-  {
-    "path": "course_sources/video/tb/barcode_system_tb.sv",
-    "bytes": 4710,
-    "sha256": "abb0c85ca609fe4d974144c2e22f3e555ba0dacddba63cefcdb79e1666a61a11"
-  },
-  {
-    "path": "course_sources/video/tb/tb_bar_decode.sv",
-    "bytes": 1584,
-    "sha256": "2349398f737ebbf2a22a0060b559c312ac9e8b2e344a6241b90bbaf429249760"
-  },
-  {
-    "path": "course_sources/video/tb/tb_col_profile.sv",
-    "bytes": 1889,
-    "sha256": "60eb265328af1369cd4911d05ca6401824f7d667dfcba800d117b4e292d09ce0"
-  },
-  {
-    "path": "course_sources/video/tb/tb_conv3x3.sv",
-    "bytes": 2033,
-    "sha256": "90c57dd9ebda7b6115cee079bb3a195000a813e4c392f79a1514b64444c485ef"
-  },
-  {
-    "path": "course_sources/video/tb/tb_peak_pick.sv",
-    "bytes": 1973,
-    "sha256": "5ef186be148461f3fceb5ed185b55a7889dc507be11ba0da3c9f3369fed7f6d5"
-  },
-  {
-    "path": "course_sources/video/tb/tb_reader_only.sv",
-    "bytes": 2142,
-    "sha256": "f2f8f48ff4f12003a74e3cf52b761a83be69d835e0bbab9d9de101241d4dbfbc"
-  },
-  {
-    "path": "course_sources/video/tb/vga_monitor_model.sv",
-    "bytes": 16619,
-    "sha256": "963e48d7fdec3203258688c5516c0aacc7611ad7bfcf41d96ca5ecf5edb47513"
   },
   {
     "path": "course_sources/video/tools/image_to_mif.py",
@@ -753,16 +463,6 @@
     "path": "course_sources/video/tools/make_barcode.py",
     "bytes": 3264,
     "sha256": "3a55b2c7b02ff4a2cbf79dee73e0ed7a0da22688b9fa814f196290737f438be4"
-  },
-  {
-    "path": "course_sources/video/tools/mif_to_hex.py",
-    "bytes": 2772,
-    "sha256": "f37e92c77a96570d06cfb8fa14d662e80d5382cf9589d0372a0344321da92a4e"
-  },
-  {
-    "path": "course_sources/video/tools/render_frames.py",
-    "bytes": 833,
-    "sha256": "02d5144ce20ef5151060c1692ceab07406943d6d65f6424f7bfa1bb4255786ff"
   },
   {
     "path": "data/recordings/ah-001.wav",
@@ -803,11 +503,6 @@
     "path": "data/recordings/oo.wav",
     "bytes": 123378,
     "sha256": "3fea85d4e149692afd3de409af8ede34b59bc67d217e84849f1f432e3938b0d4"
-  },
-  {
-    "path": "docs/baseline/V8x_verification.json",
-    "bytes": 1857,
-    "sha256": "e3926723d26a2810e797d959d743560552b643f2c3ec8b1bd3cffa95be261fe0"
   },
   {
     "path": "docs/evidence/demo/01_untrained.png",
@@ -1105,14 +800,19 @@
     "sha256": "7d5ae3eb4ffdf3974600a171b7ea36af6b59e17d93903c10bba1c5eb0696d3e0"
   },
   {
-    "path": "output_files/shine_sing.sof",
-    "bytes": 6695987,
-    "sha256": "39d27cd06e736b275e5126ac83c0742a85a990f35c6a8d0d4fdd0bde33956341"
-  },
-  {
     "path": "quartus/de1_soc_pins.qsf",
     "bytes": 11839,
     "sha256": "d812ef1420b88c6ada3e0082518cc565d9dbbdca8d6d2537d6e3dcf3f85ce445"
+  },
+  {
+    "path": "quartus/vga_sink.qsys",
+    "bytes": 3262,
+    "sha256": "a76228b81d42f32200b15c9b7200049e6a33c15f2faed91080d719077ea996c5"
+  },
+  {
+    "path": "quartus/vga_sink.sopcinfo",
+    "bytes": 27979,
+    "sha256": "cd40249d406fdb2b4826b973a7dda6827d87959e69085cb5cc8adde95a0c14ab"
   },
   {
     "path": "quartus/vga_sink/synthesis/submodules/altera_up_avalon_video_vga_timing.v",
@@ -1158,21 +858,6 @@
     "path": "quartus/vga_sink/vga_sink_generation.rpt",
     "bytes": 1244,
     "sha256": "97f78365e56a08495f4fc20f5aec7550007c33693d36533753c35349dc56eb8e"
-  },
-  {
-    "path": "quartus/vga_sink.qsys",
-    "bytes": 3262,
-    "sha256": "a76228b81d42f32200b15c9b7200049e6a33c15f2faed91080d719077ea996c5"
-  },
-  {
-    "path": "quartus/vga_sink.sopcinfo",
-    "bytes": 27979,
-    "sha256": "cd40249d406fdb2b4826b973a7dda6827d87959e69085cb5cc8adde95a0c14ab"
-  },
-  {
-    "path": "README.md",
-    "bytes": 6258,
-    "sha256": "f48f91287526ede92f119eeeef2128843485228cee587c901351b906936bad2b"
   },
   {
     "path": "requirements.txt",
@@ -1366,8 +1051,8 @@
   },
   {
     "path": "rtl/templates_training.json",
-    "bytes": 6217,
-    "sha256": "0ee94906265a78c05e058401c30488e3cb15fe98a5ce4013af7e0422f0c30561"
+    "bytes": 7799,
+    "sha256": "b540afb8587d79a3b27783edce1f6a7565d815b2212b595310942b5e88b92333"
   },
   {
     "path": "rtl/video_source.sv",
@@ -1378,11 +1063,6 @@
     "path": "run_ed.sh",
     "bytes": 144,
     "sha256": "50912e95734e2676ed7ef7aaa3231928112f0702ddd3791583cef782c6500059"
-  },
-  {
-    "path": "RUN_INSTRUCTIONS.txt",
-    "bytes": 473,
-    "sha256": "6b87847b8815b3b7a53324eeeb4b25ddf1271125a0be8ea0968ace2baf3c49bc"
   },
   {
     "path": "shine_sing.qpf",
@@ -1403,11 +1083,6 @@
     "path": "tb/demo_visual.sv",
     "bytes": 8327,
     "sha256": "0db8f1bdde00714c6e97a3875cb6e972983f681068053f47198343510533a7dd"
-  },
-  {
-    "path": "tb/extract_h95_features.sv",
-    "bytes": 1995,
-    "sha256": "88d6fa23a8365c3499d3f662984c0341daf4552cc579994ba0bb575bbe69ca77"
   },
   {
     "path": "tb/extract_recording_features.sv",
@@ -1551,13 +1226,8 @@
   },
   {
     "path": "tools/audit_course_sources.py",
-    "bytes": 3648,
-    "sha256": "0fe48ac793f149c5c8cc70aacc52ca79f2d811bc82060e0bb7d0bde19d1e3f62"
-  },
-  {
-    "path": "tools/build_h95_templates.sh",
-    "bytes": 240,
-    "sha256": "0a2ecdd592b4ce555125747aeaff8b0141cc5e2ec19db814477586e14d04c1e7"
+    "bytes": 3659,
+    "sha256": "22778122c9da7de218de48705b2383e57b07b68270821107278d5d84b84bbaf1"
   },
   {
     "path": "tools/check_project.py",
@@ -1573,11 +1243,6 @@
     "path": "tools/create_project.py",
     "bytes": 1740,
     "sha256": "a2dbb4e76bc72fac85fb2fd32787eccb74baff72d2e4d32a2403c687aee41972"
-  },
-  {
-    "path": "tools/freeze_sources.py",
-    "bytes": 1703,
-    "sha256": "30ba47d3edfc34f1020c042122496033df96bf26b2f3991b90bf14c5fdf55848"
   },
   {
     "path": "tools/gen_mel.py",
@@ -1611,18 +1276,13 @@
   },
   {
     "path": "tools/package_handoff.py",
-    "bytes": 2078,
-    "sha256": "c841693c8657214ea6e9f3fe2b3bd5acb34e3dee834eba12f9cf61142d4ce39e"
+    "bytes": 2050,
+    "sha256": "adea77273be1aedc3add986f6e5478019d46c7975f45e41c5c11c56b50f388dd"
   },
   {
     "path": "tools/prepare_assets.py",
-    "bytes": 1815,
-    "sha256": "e948930e26573e69fd5435cd2183d24ad69fee3ddb252e0aca3cd8e175daf0d9"
-  },
-  {
-    "path": "tools/prepare_h95.py",
-    "bytes": 3402,
-    "sha256": "a3b761572c06db03ebc57371d534b4251f199c7c29cb413d7ad44c9f88799a69"
+    "bytes": 1958,
+    "sha256": "cd996b43366f93c25cf58494c5e73ef0e6a67e1603e30a690ac0af9a860524a2"
   },
   {
     "path": "tools/provided_train_templates.py",
@@ -1640,14 +1300,9 @@
     "sha256": "744a28d67bb9bd85158a125a753a503966538cb6de2b83a777e0e32fd7dc02ee"
   },
   {
-    "path": "tools/reuse_audit.py",
-    "bytes": 3642,
-    "sha256": "05a7e0c9c962a645e1868dee3a2a50e19ccd85927c548387dece0e472ffbce04"
-  },
-  {
     "path": "tools/run_demo.py",
-    "bytes": 3743,
-    "sha256": "2626c38ae2345f8551a41dba021da647769ff8c1b9d26b7f0afe0dd4bf85e817"
+    "bytes": 3826,
+    "sha256": "1feefc79ceff37d8c81237c1bc42f788533c31a2734f060d88e335e82259c501"
   },
   {
     "path": "tools/run_mutation.py",
@@ -1656,8 +1311,8 @@
   },
   {
     "path": "tools/run_tests.py",
-    "bytes": 3239,
-    "sha256": "601615c4266b2157cb39a74f3e93092c2d92e054d1c45214cb2d054024e72e30"
+    "bytes": 3391,
+    "sha256": "30f62082c1981f54942122808e40a074ba48eb1e7962299c1712528975525d6f"
   },
   {
     "path": "tools/sync_mif_hex.py",
@@ -1666,8 +1321,8 @@
   },
   {
     "path": "tools/template_common.py",
-    "bytes": 645,
-    "sha256": "dcf8645734b341b8ad495580c77f94f95f8583113d412054efe708c5e8a9d06a"
+    "bytes": 654,
+    "sha256": "03109c84b61ae358e323374b83e60ca781e93561d02b4a94511e10abd33a5be7"
   },
   {
     "path": "tools/test_course_mutations.py",
@@ -1676,8 +1331,8 @@
   },
   {
     "path": "tools/test_image_assets.py",
-    "bytes": 3416,
-    "sha256": "d5fcf66fcbce6f5e590f42046fe96d1d22b8344ee7aa3b6079a3969616e834db"
+    "bytes": 3277,
+    "sha256": "57fb7cb258cdeebd070c1fad734727e23707dcefe869f523a44a2900f285bd2a"
   },
   {
     "path": "tools/test_image_mutations.py",
@@ -1700,16 +1355,6 @@
     "sha256": "9dd9995cd98540b8a1229633e2664bf12d58249907323c98426a4534ace4a128"
   },
   {
-    "path": "tools/test_transfer.py",
-    "bytes": 1401,
-    "sha256": "0a8294b4a84abf08850b087901217c3e7e6f5c420ce463dce5275bbc9f59e181"
-  },
-  {
-    "path": "tools/train_h95.py",
-    "bytes": 4765,
-    "sha256": "a1c198329c9ab4fc5896821c1243b9b6cac1484279d72485f9e69e90991114fe"
-  },
-  {
     "path": "tools/train_recordings.py",
     "bytes": 14237,
     "sha256": "8e81c9358cc4dc27c8ac778739b9356543bf453c220a9caae9556937366e44ae"
@@ -1726,7 +1371,7 @@
   },
   {
     "path": "verification.json",
-    "bytes": 3350,
-    "sha256": "13741376989862519e090cd350059c98154179c5fe98ba62215a71ceb13dbc40"
+    "bytes": 3361,
+    "sha256": "3280ee627f4ce62e86d0b54b1828b4036b69d23874acbe7e6fd609e82f257299"
   }
 ]

@@ -36,7 +36,7 @@
   "python_saved_template_tests_passed": 2,
   "intel_ram_primitive": "passed: registered read latency and OLD_DATA on same-address read/write",
   "local_verilator_lint": "passed for final board top and both recording benches; binary reports rev vUNKNOWN-built20260516-4e853d8 (pip package 5.48.0)",
-  "ed_verilator_5_050": "Not run in Ed; commands supplied in README.md",
+  "ed_verilator_5_050": "Not run in Ed; commands supplied in RUN_INSTRUCTIONS.txt",
   "training_confusion": [
     [
       15,

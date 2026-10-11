@@ -6,9 +6,9 @@ import json
 ROOT=Path(__file__).resolve().parents[1]
 pairs={
  'rtl/reuse/low_pass_conv.sv':('fir/low_pass_conv.sv','Added reset, busy guard and scaling/saturation; kept supplied taps and serial multiply pipeline.'),
- 'rtl/reuse/conv3x3.sv':('video/rtl/conv3x3.sv','Completed the three exercise TODOs: window shift, signed multiply-sum, valid/coordinates.'),
- 'rtl/reuse/sobel.sv':('video/rtl/sobel.sv','Direct reuse.'),
- 'rtl/reuse/video_pll.sv':('video/rtl/video_pll.sv','Course PLL wrapper.'),
+ 'rtl/reuse/conv3x3.sv':('video/rtl/conv3x3.sv','Added the window shift, weighted sum and output coordinates; simplified comments.'),
+ 'rtl/reuse/sobel.sv':('video/rtl/sobel.sv','Same logic; comments simplified.'),
+ 'rtl/reuse/video_pll.sv':('video/rtl/video_pll.sv','Course PLL wrapper; comments simplified.'),
  'rtl/reuse/hex_seg.sv':('video/rtl/hex_seg.sv','Course display driver.'),
  'rtl/reuse/mic_load.sv':('audio/mic/mic_load.sv','Completed the supplied receiver stub using the left-justified codec interface.'),
  'rtl/reuse/fft_mag_sq.sv':('audio/fft_mag_sq.sv','Completed the supplied stub with two signed squares, their sum, and a two-cycle valid delay.'),
@@ -16,7 +16,7 @@ pairs={
  'rtl/classifier.sv':('classifier/classifier.sv','Kept nearest-template distance and vote logic; added saved-template parameters, test/capture enrolment, immediate gate clear, zero-distance rejection, and a sequential confidence divider.'),
  'tools/provided_train_templates.py':('classifier/train_templates.py','Direct reuse; HD wrapper validates four classes and 24 dimensions.'),
  'assets/test_waveform.hex':('audio/test_waveform.hex','Supplied tone fixture, not recorded speech.'),
- 'tools/image_to_mif.py':('video/tools/image_to_mif.py','Course image converter.'),
+ 'tools/image_to_mif.py':('video/tools/image_to_mif.py','Course image converter; comments simplified.'),
 }
 for f in (ROOT/'rtl/fft').glob('*.v'):
  pairs[str(f.relative_to(ROOT))]=('audio/fft_ip_r22sdf/'+f.name,'Direct reuse except DelayBuffer, which uses circular RAM to reduce registers.')

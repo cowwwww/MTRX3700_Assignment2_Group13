@@ -1,5 +1,6 @@
-"""Build image ROMs from the two Canvas examples without saved key positions."""
+"""Rebuild image memories from the bundled PNGs or a supplied image folder."""
 from pathlib import Path
+import argparse
 import math
 import subprocess
 import sys
@@ -20,16 +21,18 @@ def write_memory(path, values, width):
         ''.join(f'{i}: {v:0{(width+3)//4}x};\n' for i,v in enumerate(values)) + 'END;\n')
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--images', type=Path, help='Folder containing ParallelPiano.png and ParallelPiano2.png')
+    args = parser.parse_args()
     assets=ROOT/'assets'
     for i,name in enumerate(('ParallelPiano.png','ParallelPiano2.png')):
-        source=ROOT/'reference_materials'/'piano_examples'/name
+        source=(args.images/name) if args.images else assets/f'piano{i}.png'
         convert_image(source, assets/f'piano{i}')
     # Use a copy in slot 2 until the tutor photo is available.
     # tools/import_image.py replaces it; the ROM stores pixels, not key edges.
     for suffix in ('.hex','.mif','.png'):
         (assets/('piano2'+suffix)).write_bytes((assets/('piano1'+suffix)).read_bytes())
     write_memory(assets/'hamming',[round((.54-.46*math.cos(2*math.pi*n/1023))*32767) for n in range(1024)],16)
-    write_memory(assets/'db',[round(20*math.log10(max(i,1))) for i in range(32769)],7)
     thresholds=[math.ceil(10**((d-.5)/20)) for d in range(1,91)]
     (ROOT/'rtl'/'db_thresholds.svh').write_text("localparam logic [15:0] DB_THRESHOLD[1:90]='{"+', '.join(map(str,thresholds))+"};\n")
 

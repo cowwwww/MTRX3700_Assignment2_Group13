@@ -11,11 +11,12 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--render-only', action='store_true')
+parser.add_argument('--sim', choices=['verilator', 'modelsim'], default='verilator')
 args = parser.parse_args()
 build = ROOT/'build/demo'
 build.mkdir(parents=True, exist_ok=True)
 if not args.render_only:
-    subprocess.run([sys.executable, str(ROOT/'tools/run_tests.py'), '--sim', 'modelsim', 'demo_visual'],
+    subprocess.run([sys.executable, str(ROOT/'tools/run_tests.py'), '--sim', args.sim, 'demo_visual'],
                    cwd=ROOT, check=True)
 log = (ROOT/'build/demo_visual.log').read_text(encoding='utf-8')
 if 'ALL TESTS PASSED: demo_visual' not in log:
