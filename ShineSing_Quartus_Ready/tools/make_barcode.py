@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Make a barcode picture for the reader: 320x240 8-bit grey, as barcode.mif (Quartus), barcode.hex
-($readmemh) and barcode.png (to look at).
+"""Make a 320x240 greyscale barcode image. Save MIF for Quartus, HEX for
+simulation and PNG for viewing.
 
     python3 tools/make_barcode.py --code 0xA5 [--narrow 6 --wide 12 --space 6 --noise 0 --gradient 0 --blur 0]
 
-The code is NB bits (8): one dark bar per bit, wide = 1, narrow = 0, spaces of fixed width
-between them. Quiet zones left and right. The .mif uses address ranges for runs of equal
-pixels so it stays small (Ed's workspace disk is tiny)."""
+Use one dark bar per bit: wide for 1 and narrow for 0, with equal gaps.
+Leave blank space on both sides. Group repeated pixels into address ranges
+to keep the MIF file small."""
 import argparse, os
 import numpy as np
 

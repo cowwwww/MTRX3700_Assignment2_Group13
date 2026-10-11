@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Any picture -> 320x240 8-bit grey .mif + .hex + .png (for the reader, or for the assignment's piano).
+"""Convert a picture to 320x240 greyscale MIF, HEX and PNG files.
     python3 tools/image_to_mif.py photo.jpg images/photo
-Needs Pillow. Resizes to 320x240 (letterboxed, grey borders), converts to greyscale."""
+Needs Pillow. Keep the image proportions and fill unused space with grey."""
 import sys, os
 import numpy as np
 from PIL import Image

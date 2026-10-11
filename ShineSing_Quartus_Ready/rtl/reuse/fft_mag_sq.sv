@@ -14,10 +14,7 @@ module fft_mag_sq #(
     logic signed [W*2:0]   add_stage;
     logic [1:0] valid_shift;
     always_ff @(posedge clk) begin
-       //TODO Your code here!
-       // We want to implement the 2 pipeline stages, similar to task 1.1.
-       // When multiplying, make sure to use the signed function, e.g: signed'(fft_real)*signed'(fft_real);
-       // Remember to use reset.
+       // Clear both pipeline stages and the valid flags on reset.
        if (reset) begin
             multiply_stage_real <= '0;
             multiply_stage_imag <= '0;
@@ -41,7 +38,6 @@ module fft_mag_sq #(
     assign mag_sq    = add_stage;
     assign mag_valid =  valid_shift[1];
 
-    //TODO set to `1` when mag_sq valid **this should be 2 cycles after valid input!**
-    // Hint: you can use a shift register to implement valid.
+    // mag_valid follows the same two pipeline stages as mag_sq.
 
 endmodule

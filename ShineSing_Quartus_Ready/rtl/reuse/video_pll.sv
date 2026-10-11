@@ -1,16 +1,11 @@
 `timescale 1ns/1ps
 /*
- *  video_pll.sv -- 50 MHz in, 25 MHz pixel clock out, using the PLL Intel FPGA IP.
+ * Generate the 25 MHz pixel clock from the board's 50 MHz clock.
+ * Use Intel's altera_pll IP, as in the course video project.
+ * The VGA controller uses this clock for its 640x480 output.
  *
- *  The same altera_pll instantiation that the IP Parameter Editor generates
- *  (Task 1.2), written out by hand so the project has no wizard files, exactly
- *  like adc_pll.sv in the mic-input project. The VGA Controller in vga.qsys (or vga_text.qsys)
- *  is configured for 640x480, whose pixel clock is 25.175 MHz nominal; 25 MHz
- *  is what the University Program cores use and every monitor accepts it.
- *
- *  Simulators cannot run the PLL primitive without Intel's libraries, so in
- *  simulation (Verilator, or ModelSim via its MODEL_TECH define) the module
- *  becomes a behavioural stand-in: a clock generator at the same frequency.
+ * For Verilator and ModelSim, use a simple 25 MHz clock generator
+ * instead of the Intel PLL. This model always reports the PLL as locked.
  */
 module video_pll (
     input  wire refclk,     // 50 MHz

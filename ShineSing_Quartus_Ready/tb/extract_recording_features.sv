@@ -29,7 +29,7 @@ module extract_recording_features;
     @(negedge clk);sample=pcm[offset+i];sample_valid=1;
     @(negedge clk);sample_valid=0;repeat(62) @(negedge clk);
    end
-   // The last FFT and feature conversion must drain in far less than 4096 clocks.
+   // Allow 4096 clocks for the last FFT and feature result to finish.
    repeat(4096) @(negedge clk);
    if(received!=counts[token]) $fatal(1,"recording %0d: got %0d frames, expected %0d",token,received,counts[token]);
    $fflush(output_file);

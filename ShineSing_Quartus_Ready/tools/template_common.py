@@ -1,9 +1,9 @@
-"""Integer decision rule shared by the WAV, H95 and SignalTap training paths."""
+"""Use the same integer classification rule for WAV, H95 and SignalTap data."""
 import numpy as np
 
 
 def decision(feature, templates):
-    # Cast before subtracting to prevent unsigned 16-bit distance wraparound.
+    # Convert to signed values before subtracting so negative differences do not wrap around.
     distances = np.abs(np.asarray(templates, dtype=np.int64) -
                        np.asarray(feature, dtype=np.int64)).sum(axis=2).min(axis=1)
     order = distances.argsort(kind='stable')

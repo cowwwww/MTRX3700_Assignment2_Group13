@@ -1,4 +1,4 @@
-"""Save recorded HD vowel features for startup without live enrolment.
+"""Save HD vowel templates so the board can start without live training.
 
 python tools/train_saved_templates.py ee.csv ah.csv oo.csv aw.csv
 Use SignalTap exports from MODE=4, D=24, LOG_SCALE=64 in lane order.

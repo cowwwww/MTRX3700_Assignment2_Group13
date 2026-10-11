@@ -1,7 +1,7 @@
-"""WAV -> actual board RTL features -> saved four-vowel templates.
+"""Build four-vowel templates from WAV recordings using the board RTL.
 
 python tools/train_recordings.py --samples data/recordings --sim verilator
-The two-fold score holds out whole files. The final ROM uses all recordings.
+Split whole recordings into two groups for validation. Train the final ROM on all recordings.
 """
 import argparse
 import csv
@@ -73,7 +73,7 @@ def prepare(samples):
             data = decode_pcm(stream.readframes(stream.getnframes()), width, channels)
         if not len(data):
             raise ValueError(f'{path}: empty recording')
-        # Choose the strongest channel; never average anti-phase stereo to silence.
+        # Use the strongest channel so opposite-phase stereo channels do not cancel out.
         channel = int(np.argmax(np.mean(data * data, axis=0)))
         mono = data[:, channel]
         divisor = math.gcd(rate, 48000)
@@ -84,8 +84,8 @@ def prepare(samples):
             raise ValueError(f'{path}: need at least two complete 85.33 ms frames')
         blocks = pcm16[:count * FRAME].reshape(count, FRAME)
         rms = np.sqrt(np.mean(blocks.astype(float) ** 2, axis=1))
-        # A fixed, label-independent energy rule excludes silence and vowel tails.
-        # Preserve every earlier sample in RTL so the FIR state is not reset per frame.
+        # Use the same energy rule for every vowel to skip quiet frames.
+        # Still feed earlier samples through the RTL to keep the FIR history between frames.
         threshold = max(128.0, 0.40 * float(rms.max()))
         keep = np.flatnonzero(rms >= threshold).tolist()
         if len(keep) < 2:
@@ -109,7 +109,7 @@ def prepare(samples):
     (WORK/'pcm.hex').write_text(''.join(f'{int(x)&65535:04x}\n' for x in pcm))
     (WORK/'counts.hex').write_text(''.join(f'{r["frames"]:08x}\n' for r in records))
     (WORK/'dimensions.svh').write_text(f'localparam int TOKENS={len(records)}, SAMPLES={len(pcm)};\n')
-    # A fresh prepare invalidates any feature capture from a previous input set.
+    # Remove old feature results when preparing a new set of recordings.
     (WORK/'features.csv').unlink(missing_ok=True)
     (ROOT/'build/extract_recording_features.log').unlink(missing_ok=True)
     print(f'Prepared {len(records)} recordings, {sum(r["frames"] for r in records)} frames; '
@@ -117,11 +117,11 @@ def prepare(samples):
 
 
 def centres(values, count=4):
-    """Reuse the Ed-provided L1/median trainer, with deterministic training-only seed selection."""
+    """Use the Ed L1/median trainer and choose a repeatable seed from training data only."""
     candidates = [np.rint(kmeans_sad(values.astype(float), count, seed=s, iters=40)).astype(np.int64)
                   for s in range(12)]
     best = min(candidates, key=lambda t: np.abs(values[:, None, :] - t).sum(axis=2).min(axis=1).sum())
-    # Short recordings may have <4 frames. Repeat existing centres, never invent extra observations.
+    # If there are fewer than four frames, repeat existing centres to fill the template slots.
     return np.concatenate([best, np.repeat(best[-1:], max(0, count-len(best)), axis=0)])
 
 
@@ -130,8 +130,8 @@ def fit(rows):
     for label in range(4):
         tokens = sorted(set(t for c,t,_ in rows if c == label))
         if len(tokens) <= 4:
-            # Reserve slots per recording: two takes from two people receive two each.
-            # A longer take cannot displace the other person's templates.
+            # Share the template slots between recordings; two recordings get two slots each.
+            # This stops a longer recording from taking all the slots.
             groups = []
             for i, token in enumerate(tokens):
                 count = 4//len(tokens) + int(i < 4%len(tokens))
@@ -180,7 +180,7 @@ def train(sim):
             seen[token] += 1
     if seen != [r['frames'] for r in records]:
         raise ValueError('RTL frame counts do not match the WAV manifest')
-    # Alternate whole recordings of EACH vowel between folds. No frame random split.
+    # Split each vowel's recordings between two groups, keeping each file together.
     fold_of = {}
     for label in range(4):
         for i, token in enumerate(t for t, r in enumerate(records) if r['class_index'] == label):
@@ -204,7 +204,7 @@ def train(sim):
                       'localparam bit TEMPLATES_READY = 1;\nlocalparam int TEMPLATE_D = 24;\n'
                       'localparam int TEMPLATE_NT = 4;\n'+header.read_text())
     (ROOT/'rtl/templates.hex').write_text(''.join(pack(row)+'\n' for row in final.reshape(16, 24)))
-    # All captured frames (including discarded low-energy ones) exercise Python/RTL agreement.
+    # Compare Python and RTL results for every captured frame, including quiet frames.
     expected = []
     for _, _, f in all_rows:
         result, reject, confidence = decision(f, final)

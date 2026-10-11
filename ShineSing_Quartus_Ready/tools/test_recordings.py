@@ -1,4 +1,4 @@
-"""Boundary tests for PCM conversion and the short-recording template path."""
+"""Test PCM conversion limits and template training with short recordings."""
 import unittest
 import numpy as np
 from train_recordings import decode_pcm, centres, pack, fit

@@ -1,4 +1,4 @@
-"""Calculate regression results from the supplied mini-project datasets."""
+"""Calculate expected test results from the supplied mini-project data."""
 from pathlib import Path
 import re
 import numpy as np
@@ -12,7 +12,7 @@ for picture,name in enumerate(['barcode','barcode2']):
         edge,profile,keys=analyse(pixels,mode,gap=3)
         for suffix,values,width in [('',profile,2),('_edges',edge.flat,2),('_keys',[len(keys),*keys,*([0]*(16-len(keys)))],3)]:
             (OUT/f'image_{picture}_{mode}{suffix}.hex').write_text(''.join(f'{int(v):0{width}x}\n' for v in values))
-# Read the exact tap values from the supplied FIR, not a second copied table.
+# Read the filter weights directly from the supplied FIR file.
 source=(ROOT/'course_sources/fir/low_pass_conv.sv').read_text()
 coeff=np.array([int(v,16) for v in re.findall(r"32'h([0-9a-f]+)",source)],dtype=np.int64)
 coeff=np.where(coeff>=2**31,coeff-2**32,coeff)

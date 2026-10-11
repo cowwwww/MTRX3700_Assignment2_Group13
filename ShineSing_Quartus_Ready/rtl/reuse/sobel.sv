@@ -1,11 +1,9 @@
 `timescale 1ns/1ps
 /*
- *  sobel.sv -- two conv3x3 instances (the Gx and Gy tables) and the magnitudes.
- *
- *  |Gx| responds to vertical edges (a change from left to right): the sides of piano keys,
- *  the sides of barcode bars. |Gy| responds to horizontal edges: the ends of keys. The
- *  magnitude |Gx| + |Gy| is the cheap version of sqrt(Gx^2 + Gy^2): no multiplier, no root,
- *  and for "is there an edge here" it is as good.
+ * Use two conv3x3 filters to find edges in the image.
+ * Gx measures changes from left to right, such as the sides of piano keys.
+ * Gy measures changes from top to bottom, such as the ends of keys.
+ * Add |Gx| and |Gy| to estimate edge strength without a square root.
  */
 module sobel #(
     parameter int W  = 320,

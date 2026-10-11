@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-// Check recorded frames (including final training frames) against independent Python distance results.
+// Compare recorded frames, including training frames, with distances calculated in Python.
 module tb_recording_classifier;
  `include "rtl/templates.svh"
  `include "assets/recordings/test_dimensions.svh"

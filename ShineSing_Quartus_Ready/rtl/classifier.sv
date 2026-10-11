@@ -54,7 +54,7 @@ module classifier #(
     logic [3:0] ratio_bit;
     assign doubled=remainder<<1;
 
-    // distance to template t (combinational over D words: D subtract/abs/add = fine for D <= 32)
+    // Add the absolute difference for each of the D features in template t.
     always_comb begin
         sad = '0;
         for (int i = 0; i < D; i++)
@@ -107,7 +107,7 @@ module classifier #(
             end
             DIST: begin
                 if (sad < d1) begin
-                    if (t_class != best_class) d2 <= d1;       // the old best becomes the runner-up of another class
+                    if (t_class != best_class) d2 <= d1;       // The old best is now the closest match from another class.
                     d1 <= sad; best_class <= t_class;
                 end else if (t_class != best_class && sad < d2) d2 <= sad;
                 if (t == NTT-1) st <= DECIDE; else t <= t + 1'b1;
@@ -129,7 +129,7 @@ module classifier #(
                     confidence<=8'd255-{ratio[6:0],doubled>=d2};st<=VOTE;
                 end else ratio_bit<=ratio_bit+1'b1;
             end
-            VOTE: begin                                        // one cycle later: the tally includes this frame's vote
+            VOTE: begin                                        // The count now includes this frame's vote.
                 result <= winner;
                 result_valid <= 1'b1;
                 st <= IDLE;

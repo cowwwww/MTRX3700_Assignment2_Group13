@@ -1,4 +1,4 @@
-"""Create a self-contained V9 Ed/Quartus ZIP, excluding compiler caches and H95 raw data."""
+"""Package the V9 project for Ed and Quartus without build caches or raw H95 data."""
 from pathlib import Path
 import hashlib
 import json

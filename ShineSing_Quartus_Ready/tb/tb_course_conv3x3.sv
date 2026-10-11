@@ -1,6 +1,7 @@
 `timescale 1ns/1ps
-// tb_course_conv3x3: a 16x12 picture, dark on the left, bright on the right (a vertical edge at x=8).
-// Sobel Gx must be +4*(bright-dark) at centre columns 7 and 8, 0 elsewhere; interior only; coordinates carried.
+// Test a 16x12 image with a vertical edge at x=8: dark left, bright right.
+// Expect Gx = 4*(bright-dark) at columns 7 and 8, and zero elsewhere.
+// Check output coordinates and skip the outer border.
 module tb_course_conv3x3;
     localparam int W = 16, H = 12;
     logic clk = 0; always #10 clk = ~clk;
@@ -9,7 +10,7 @@ module tb_course_conv3x3;
     conv3x3 #(.W(W), .H(H)) dut (.*);
     int errors = 0, outputs = 0;
     function automatic logic [7:0] pix(int x, int y); return (x < 8) ? 8'd40 : 8'd200; endfunction
-    // checker
+    // Check each output pixel.
     always @(posedge clk) if (out_valid) begin : chk
         int expect_v;
         outputs++;
@@ -23,7 +24,7 @@ module tb_course_conv3x3;
         repeat (3) @(posedge clk); reset = 0;
         for (int y = 0; y < H; y++) for (int x = 0; x < W; x++) begin
             @(negedge clk); in_valid = 1; in_pixel = pix(x, y); in_x = x; in_y = y;
-            if (x == W-1 && y % 3 == 0) begin @(negedge clk); in_valid = 0; end   // a gap now and then: must not matter
+            if (x == W-1 && y % 3 == 0) begin @(negedge clk); in_valid = 0; end   // Add input gaps; the output should stay the same.
         end
         @(negedge clk); in_valid = 0; repeat (6) @(posedge clk);
         if (outputs != (W-2)*(H-2)) begin errors++; $fatal(1,"FAIL: %0d outputs, expected %0d", outputs, (W-2)*(H-2)); end

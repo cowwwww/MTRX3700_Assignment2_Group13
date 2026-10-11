@@ -1,4 +1,4 @@
-"""Build saved HD templates from H95 features measured by the RTL, with held-out speakers."""
+"""Build HD templates from RTL features, keeping separate speakers for testing."""
 from pathlib import Path
 import csv
 import hashlib
@@ -28,7 +28,7 @@ def main():
     for frames in by:
         values=np.array(frames,dtype=np.int64)
         candidates=[np.rint(kmeans_sad(values.astype(float),4,seed=s,iters=40)).astype(np.int64) for s in range(12)]
-        # Pick the seed using training error only; held-out speakers never select templates.
+        # Choose the seed using training errors only. Keep test speakers out of this step.
         templates.append(min(candidates,key=lambda centres:np.abs(values[:,None,:]-centres).sum(axis=2).min(axis=1).sum()))
     templates=np.array(templates)
     header=ROOT/'rtl/templates.svh'

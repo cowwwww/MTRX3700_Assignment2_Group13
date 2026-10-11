@@ -1,4 +1,4 @@
-"""Prepare real H95 vowel segments for feature extraction by the RTL pipeline."""
+"""Prepare H95 vowel samples for the RTL audio processing stages."""
 from pathlib import Path
 import hashlib
 import io
@@ -32,7 +32,7 @@ def main():
                     if (sound.getnchannels(),sound.getsampwidth(),sound.getframerate())!=(1,2,16000):
                         raise ValueError('Unexpected WAV format: '+filename)
                     pcm=np.frombuffer(sound.readframes(sound.getnframes()),dtype='<i2').astype(float)
-                # Upsample to the codec rate; all later filtering is done by the real RTL.
+                # Resample to the codec rate, then let the RTL do the filtering.
                 pcm48=np.clip(np.rint(resample_poly(pcm,3,1)),-32768,32767).astype(np.int64)
                 start,end,c1,c2=timing[token]
                 first=int(np.ceil(start*48));last=int(np.floor(end*48))
