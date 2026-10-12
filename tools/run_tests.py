@@ -47,7 +47,7 @@ else:
   if f'ALL TESTS PASSED: {t}' not in out: raise SystemExit(f'{t}: no success marker')
   print(f'PASS {t}',flush=True)
   if not a.keep_build:
-   # Delete only the generated directory for this validated test, inside build/.
+   # Clear this test's previous build directory.
    if directory.resolve().parent != build.resolve(): raise SystemExit('Unsafe build directory')
    shutil.rmtree(directory)
 print(f'ALL {len(tests)} RTL TESTS PASSED ({a.sim})')

@@ -33,7 +33,7 @@ rtl/classifier.sv
   Changes: Kept nearest-template distance and vote logic; added saved-template parameters, test/capture enrolment, immediate gate clear, zero-distance rejection, and a sequential confidence divider.
 tools/provided_train_templates.py
   Course source: classifier/train_templates.py
-  Changes: Same training logic; comments shortened. HD wrapper checks four classes and 24 dimensions.
+  Changes: Same training logic; comments shortened. The training wrapper checks for four vowel classes and 24 features.
 assets/test_waveform.hex
   Course source: audio/test_waveform.hex
   Changes: Supplied tone fixture, not recorded speech.
@@ -42,22 +42,22 @@ tools/image_to_mif.py
   Changes: Course image converter; comments simplified.
 rtl/fft/SdfUnit.v
   Course source: audio/fft_ip_r22sdf/SdfUnit.v
-  Changes: Direct reuse except DelayBuffer, which uses circular RAM to reduce registers.
+  Changes: Reused without logic changes.
 rtl/fft/Butterfly.v
   Course source: audio/fft_ip_r22sdf/Butterfly.v
-  Changes: Direct reuse except DelayBuffer, which uses circular RAM to reduce registers.
+  Changes: Reused without logic changes.
 rtl/fft/FFT.v
   Course source: audio/fft_ip_r22sdf/FFT.v
-  Changes: Direct reuse except DelayBuffer, which uses circular RAM to reduce registers.
+  Changes: Reused without logic changes.
 rtl/fft/Twiddle.v
   Course source: audio/fft_ip_r22sdf/Twiddle.v
-  Changes: Direct reuse except DelayBuffer, which uses circular RAM to reduce registers.
+  Changes: Reused without logic changes.
 rtl/fft/DelayBuffer.v
   Course source: audio/fft_ip_r22sdf/DelayBuffer.v
-  Changes: Direct reuse except DelayBuffer, which uses circular RAM to reduce registers.
+  Changes: Replaced the shift buffer with circular RAM to reduce register use.
 rtl/fft/Multiply.v
   Course source: audio/fft_ip_r22sdf/Multiply.v
-  Changes: Direct reuse except DelayBuffer, which uses circular RAM to reduce registers.
+  Changes: Reused without logic changes.
 
 game_controller.sv and reaction_time_fsm.sv build on Assignment 1.
 The H95 fixture is used only by tb_h95_classifier.sv; it is separate from the group recordings.

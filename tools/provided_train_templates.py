@@ -14,11 +14,11 @@ import numpy as np
 # Prefer individual bit columns because grouped buses can reverse the bit order.
 # Use the grouped hex column only when individual bits are not available.
 def _tail(name):
-    """'classifier:u_clf|feature[0][0..15]' -> 'feature[0][0..15]' (the node's own name, hierarchy stripped)"""
+    """Remove the hierarchy prefix from a SignalTap column name."""
     return name.strip().strip('"').split("|")[-1].split(":")[-1].strip()
 
 def _parse_name(tail, feature):
-    """feature column? -> (kind, element, width_or_bit): kind 'bus' (a multi-bit column) or 'bit'.
+    """Identify a feature column and return its type, element and width or bit index.
     feature[23..0][15..0] is a bus of 24 x 16 bits (element None); feature[0][0..15] a bus of 16 bits, element 0;
     feature[5][3] the bit 3 of element 5; feature[83] the bit 83 of a flat bus."""
     m = re.fullmatch(re.escape(feature) + r"((?:\[[^\]]+\])*)", tail)
@@ -37,7 +37,7 @@ def _parse_name(tail, feature):
     return None
 
 def _value(v, radix):
-    """one field -> int, or None for X/Z (an unfilled buffer position)"""
+    """Read an integer field; return None for an unfilled X/Z value."""
     v = v.strip().strip('"').replace("_", "").replace(" ", "")
     for pre in ("0x", "0X"):
         if v.startswith(pre): v = v[len(pre):]
@@ -62,8 +62,11 @@ def _radix_of(vals, width, radix, path, name):
              f"Hexadecimal, or pass --radix hex|dec|bin")
 
 def read_capture(path, feature="feature", fw=16, radix="auto", label_col=None):
-    """-> (list of int arrays of D features, list of labels or None, D). A SignalTap export, or any CSV with a header
-    naming the columns (what a bench $fwrites: "feature, feature_valid, enable" then one hex word per frame)."""
+    """Read feature rows from a SignalTap or testbench CSV.
+
+    Return the feature arrays, optional labels and number of features.
+    Testbench CSVs use feature, feature_valid and enable columns.
+    """
     rows = [r for r in csv.reader(open(path, newline="", encoding="utf-8", errors="replace"))]
     start = next((i + 1 for i, r in enumerate(rows) if r and r[0].strip().lower().startswith("data:")), 0)
     hdr = next((i for i in range(start, len(rows)) if any(_parse_name(_tail(c), feature) for c in rows[i])), None)
@@ -158,7 +161,7 @@ def write_svh(path, rows, D, fw=16):
     open(path, "w").write("\n".join(lines) + "\n")
 
 def classify(f, T, rho):
-    """the hardware's rule: nearest template by SAD; reject when the runner-up class is almost as near"""
+    """Match the hardware: choose the nearest template and reject close ties between classes."""
     d = {c: np.abs(T[c] - f).sum(axis=1).min() for c in T}
     best = min(d, key=d.get); d1 = d[best]; d2 = min([v for c, v in d.items() if c != best] or [np.inf])
     return (None if (d2 > 0 and d1 / d2 > rho) else best), d1, d2

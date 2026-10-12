@@ -11,7 +11,7 @@ for picture,name in enumerate(['barcode','barcode2']):
         edge,profile,keys=analyse(pixels,mode,gap=3)
         for suffix,values,width in [('',profile,2),('_edges',edge.flat,2),('_keys',[len(keys),*keys,*([0]*(16-len(keys)))],3)]:
             (OUT/f'image_{picture}_{mode}{suffix}.hex').write_text(''.join(f'{int(v):0{width}x}\n' for v in values))
-# Use the saved Lesson 4 filter weights for the reference calculation.
+# Calculate the expected output using the supplied FIR coefficients.
 coeff=np.array([int(v,16) for v in (ROOT/'tb/fixtures/fir_coefficients.hex').read_text().split()],dtype=np.int64)
 coeff=np.where(coeff>=2**31,coeff-2**32,coeff)
 assert len(coeff)==41
